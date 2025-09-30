@@ -1,0 +1,22 @@
+# Semua file teks secara otomatis
+* text=auto
+
+# File Laravel khusus
+*.blade.php text
+*.php text
+*.css text
+*.js text
+*.html text
+*.md text
+
+# Atur diff (opsional)
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
+
+# File yang di-ignore saat export (opsional)
+/.github export-ignore
+CHANGELOG.md export-ignore
+.styleci.yml export-ignore
