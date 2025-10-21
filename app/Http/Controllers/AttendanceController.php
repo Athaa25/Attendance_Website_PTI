@@ -17,6 +17,16 @@ class AttendanceController extends Controller
         return view('attendances.index', compact('attendances'));
     }
 
+    public function editPresensi($id)
+    {
+        // Ambil data attendance berdasarkan ID
+        $attendance = \App\Models\Attendance::with('employee')->findOrFail($id);
+
+        // Arahkan ke view editpresensi.blade.php
+        return view('attendances.editpresensi', compact('attendance'));
+    }
+
+
     /**
      * Show the form for creating a new resource.
      */
