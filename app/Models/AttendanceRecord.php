@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class AttendanceRecord extends Model
 {
@@ -16,10 +17,16 @@ class AttendanceRecord extends Model
     public const STATUS_SICK = 'sick';
     public const STATUS_ABSENT = 'absent';
 
+    public const LEAVE_REASON_FIELDWORK = 'dinas_diluar';
+    public const LEAVE_REASON_SICK = 'sakit';
+    public const LEAVE_REASON_ABSENT = 'alpa';
+
     protected $fillable = [
         'employee_id',
         'attendance_date',
         'status',
+        'leave_reason',
+        'supporting_document_path',
         'check_in_time',
         'check_out_time',
         'late_minutes',
@@ -34,6 +41,8 @@ class AttendanceRecord extends Model
 
     protected $appends = [
         'status_label',
+        'leave_reason_label',
+        'supporting_document_url',
     ];
 
     public function employee()
@@ -81,5 +90,36 @@ class AttendanceRecord extends Model
     public function getStatusBadgeClassAttribute(): string
     {
         return static::statusBadgeClasses()[$this->status] ?? 'status-unknown';
+    }
+
+    public static function leaveReasonOptions(): array
+    {
+        return [
+            self::LEAVE_REASON_FIELDWORK => 'Dinas diluar',
+            self::LEAVE_REASON_SICK => 'Sakit',
+            self::LEAVE_REASON_ABSENT => 'Alpa',
+        ];
+    }
+
+    public function getLeaveReasonLabelAttribute(): ?string
+    {
+        if (! $this->leave_reason) {
+            return null;
+        }
+
+        return static::leaveReasonOptions()[$this->leave_reason] ?? ucfirst(str_replace('_', ' ', $this->leave_reason));
+    }
+
+    public function getSupportingDocumentUrlAttribute(): ?string
+    {
+        if (! $this->supporting_document_path) {
+            return null;
+        }
+
+        if (Storage::disk('public')->exists($this->supporting_document_path)) {
+            return Storage::disk('public')->url($this->supporting_document_path);
+        }
+
+        return null;
     }
 }

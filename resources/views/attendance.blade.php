@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Pegawai</title>
+    <title>Absensi Harian</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -260,20 +260,49 @@
             color: var(--blue-primary);
         }
 
+        .btn-danger {
+            background-color: rgba(239, 68, 68, 0.18);
+            color: #b91c1c;
+        }
+
         .btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 10px 24px rgba(17, 43, 105, 0.2);
         }
 
-        .table-card {
-            border-radius: 24px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-card {
+            border-radius: 20px;
+            background-color: var(--highlight);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-value {
+            font-size: 26px;
+            font-weight: 700;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
         thead {
@@ -281,7 +310,7 @@
         }
 
         th {
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-muted);
@@ -297,40 +326,6 @@
 
         tr:nth-child(even) td {
             background-color: rgba(17, 43, 105, 0.02);
-        }
-
-        .table-name-link {
-            color: var(--blue-primary);
-            font-weight: 600;
-        }
-
-        .table-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .action-link {
-            font-size: 13px;
-            padding: 6px 12px;
-            border-radius: 10px;
-            border: 1px solid transparent;
-            font-weight: 600;
-        }
-
-        .action-link.detail {
-            background-color: rgba(17, 43, 105, 0.08);
-            color: var(--blue-primary);
-        }
-
-        .action-link.edit {
-            background-color: rgba(59, 130, 246, 0.12);
-            color: #1d4ed8;
-        }
-
-        .action-link.delete {
-            background-color: rgba(239, 68, 68, 0.12);
-            color: #b91c1c;
         }
 
         .status-badge {
@@ -353,10 +348,14 @@
             color: #b45309;
         }
 
-        .status-leave,
-        .status-sick {
+        .status-leave {
             background-color: rgba(59, 130, 246, 0.18);
             color: #1d4ed8;
+        }
+
+        .status-sick {
+            background-color: rgba(14, 165, 233, 0.18);
+            color: #0f766e;
         }
 
         .status-absent {
@@ -364,57 +363,55 @@
             color: #b91c1c;
         }
 
-        .status-active {
-            background-color: rgba(34, 197, 94, 0.18);
-            color: #15803d;
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
         }
 
-        .status-probation {
-            background-color: rgba(234, 179, 8, 0.18);
-            color: #b45309;
-        }
-
-        .status-contract {
-            background-color: rgba(59, 130, 246, 0.18);
-            color: #1d4ed8;
-        }
-
-        .status-inactive {
-            background-color: rgba(148, 163, 184, 0.2);
-            color: #475569;
-        }
-
-        .status-resigned {
-            background-color: rgba(239, 68, 68, 0.18);
-            color: #b91c1c;
-        }
-
-        .pagination {
+        .form-group {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            border-top: 1px solid var(--border-color);
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
             font-size: 14px;
-        }
-
-        .pagination-controls {
-            display: flex;
-            gap: 12px;
-        }
-
-        .pagination-button {
-            padding: 8px 14px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            background-color: var(--card-background);
+            font-weight: 600;
             color: var(--text-dark);
-            font-weight: 500;
         }
 
-        .pagination-button.disabled {
-            opacity: 0.5;
-            pointer-events: none;
+        .form-control {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--highlight);
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .form-control:focus {
+            outline: 2px solid rgba(17, 43, 105, 0.25);
+            background-color: #fff;
+        }
+
+        textarea.form-control {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
         @media (max-width: 1200px) {
@@ -443,15 +440,17 @@
                 padding-left: 24px;
             }
 
-            .filter-actions {
-                width: 100%;
-                justify-content: flex-end;
+            .filter-actions,
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
     </style>
 </head>
 <body>
     @php
+        $page = $page ?? 'list';
         $user = auth()->user();
         $userInitials = \Illuminate\Support\Str::of($user?->name ?? '')
             ->trim()
@@ -484,6 +483,10 @@
                         <img src="{{ asset('images/manage-user-icon.png') }}" alt="Manage User Icon">
                         Manage User
                     </a>
+                    <a href="#" class="sidebar-nav-item">
+                        <img src="{{ asset('images/user-setting-icon.png') }}" alt="User Setting Icon">
+                        User Setting
+                    </a>
                 </div>
 
                 <div class="sidebar-nav-group">
@@ -493,8 +496,8 @@
                         Schedule
                     </a>
                     <a href="{{ route('attendance.index') }}" class="sidebar-nav-item {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
-                        <img src="{{ asset('images/daily-attendance-icon.png') }}" alt="Attendance Icon">
-                        Attendance
+                        <img src="{{ asset('images/daily-attendance-icon.png') }}" alt="Daily Attendance Icon">
+                        Daily Attendance
                     </a>
                     <a href="{{ route('reports.sheet') }}" class="sidebar-nav-item {{ request()->routeIs('reports.sheet') ? 'active' : '' }}">
                         <img src="{{ asset('images/sheet-report-icon.png') }}" alt="Sheet Report Icon">
@@ -517,7 +520,7 @@
         <main class="main-content">
             <header class="top-header">
                 <div>
-                    <h1 class="top-header-title">Kelola Pegawai</h1>
+                    <h1 class="top-header-title">Absensi Harian</h1>
                     <p class="top-header-subtitle">
                         Halo, {{ $user?->name ?? 'Administrator' }} &middot;
                         <span>{{ now()->translatedFormat('d F Y') }}</span>
@@ -536,109 +539,157 @@
                     </div>
                 @endif
 
-                <form method="GET" class="filter-bar">
-                    <div class="filter-group">
-                        <label for="search">Pencarian</label>
-                        <div class="filter-input">
-                            <input type="search" id="search" name="search" placeholder="Nama atau kode pegawai" value="{{ $filters['search'] ?? '' }}">
+                @if ($page === 'list')
+                    <form method="GET" class="filter-bar">
+                        <div class="filter-group">
+                            <label for="date">Tanggal</label>
+                            <div class="filter-input">
+                                <input type="date" id="date" name="date" value="{{ $attendanceDate->format('Y-m-d') }}">
+                            </div>
                         </div>
-                    </div>
-                    <div class="filter-group">
-                        <label for="department_id">Departemen</label>
-                        <div class="filter-input">
-                            <select id="department_id" name="department_id">
-                                <option value="">Semua</option>
-                                @foreach ($departments as $department)
-                                    <option value="{{ $department->id }}" {{ ($filters['department_id'] ?? null) == $department->id ? 'selected' : '' }}>
-                                        {{ $department->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <div class="filter-group">
+                            <label for="status">Status</label>
+                            <div class="filter-input">
+                                <select id="status" name="status">
+                                    <option value="">Semua</option>
+                                    @foreach ($statusOptions as $value => $label)
+                                        <option value="{{ $value }}" {{ ($filters['status'] ?? '') === $value ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="filter-group">
-                        <label for="status">Status</label>
-                        <div class="filter-input">
-                            <select id="status" name="status">
-                                <option value="">Semua</option>
-                                @foreach ($statusOptions as $value => $label)
-                                    <option value="{{ $value }}" {{ ($filters['status'] ?? '') === $value ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <div class="filter-group">
+                            <label for="search">Pencarian</label>
+                            <div class="filter-input">
+                                <input type="search" id="search" name="search" placeholder="Nama atau kode pegawai" value="{{ $filters['search'] ?? '' }}">
+                            </div>
                         </div>
-                    </div>
-                    <div class="filter-actions">
-                        <button type="submit" class="btn btn-secondary">Terapkan</button>
-                        <a href="{{ route('manage-users.create') }}" class="btn btn-primary">
-                            <span>+</span> Tambah Pegawai
-                        </a>
-                    </div>
-                </form>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-secondary">Terapkan</button>
+                        </div>
+                    </form>
 
-                <div class="table-card">
+                    <div class="summary-grid">
+                        <div class="summary-card">
+                            <span class="summary-label">Total Pegawai</span>
+                            <span class="summary-value">{{ $summary['total_employees'] }}</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Hadir</span>
+                            <span class="summary-value">{{ $summary['present'] }}</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Terlambat</span>
+                            <span class="summary-value">{{ $summary['late'] }}</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Izin</span>
+                            <span class="summary-value">{{ $summary['leave'] }}</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Sakit</span>
+                            <span class="summary-value">{{ $summary['sick'] }}</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Alpa</span>
+                            <span class="summary-value">{{ $summary['absent'] }}</span>
+                        </div>
+                    </div>
+
                     <table>
                         <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Nama</th>
                                 <th>Departemen</th>
-                                <th>Jadwal</th>
                                 <th>Status</th>
+                                <th>Check-In</th>
+                                <th>Keterangan</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($employees as $employee)
+                            @forelse ($records as $record)
                                 <tr>
-                                    <td>{{ ($employees->currentPage() - 1) * $employees->perPage() + $loop->iteration }}</td>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>
-                                        <a class="table-name-link" href="{{ route('manage-users.show', $employee) }}">
-                                            {{ $employee->full_name }}
-                                        </a>
+                                        {{ $record->employee->full_name }}
                                         <div style="font-size: 12px; color: var(--text-muted);">
-                                            {{ $employee->user->email }}
+                                            {{ $record->employee->employee_code }}
                                         </div>
                                     </td>
-                                    <td>{{ $employee->department->name ?? 'â€”' }}</td>
-                                    <td>{{ $employee->schedule->name ?? 'â€”' }}</td>
+                                    <td>{{ $record->employee->department->name ?? 'GÇö' }}</td>
                                     <td>
-                                        <span class="status-badge status-{{ $employee->employment_status }}">
-                                            {{ $employee->employment_status_label }}
+                                        <span class="status-badge status-{{ $record->status }}">
+                                            {{ $record->status_label }}
                                         </span>
                                     </td>
+                                    <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
+                                    <td>{{ $record->notes ?? 'GÇö' }}</td>
                                     <td>
-                                        <div class="table-actions">
-                                            <a class="action-link detail" href="{{ route('manage-users.show', $employee) }}">Detail</a>
-                                            <a class="action-link edit" href="{{ route('manage-users.edit', $employee) }}">Edit</a>
-                                            <form method="POST" action="{{ route('manage-users.destroy', $employee) }}" onsubmit="return confirm('Hapus pegawai ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="action-link delete">Hapus</button>
-                                            </form>
-                                        </div>
+                                        <a class="btn btn-secondary" href="{{ route('attendance.edit', $record) }}">Edit</a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                        Belum ada data pegawai yang sesuai filter.
+                                    <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                                        Belum ada data absensi pada tanggal ini.
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
-                    @if ($employees->hasPages())
-                        <div class="pagination">
-                            <span>Halaman {{ $employees->currentPage() }} dari {{ $employees->lastPage() }}</span>
-                            <div class="pagination-controls">
-                                <a class="pagination-button {{ $employees->onFirstPage() ? 'disabled' : '' }}" href="{{ $employees->previousPageUrl() ?? '#' }}">Sebelumnya</a>
-                                <a class="pagination-button {{ $employees->hasMorePages() ? '' : 'disabled' }}" href="{{ $employees->nextPageUrl() ?? '#' }}">Selanjutnya</a>
+                @else
+                    <div class="form-header">
+                        <div>
+                            <h2 class="form-title">Edit Absensi Pegawai</h2>
+                            <p class="form-subtitle">
+                                {{ $record->employee->full_name }} &middot;
+                                {{ $attendanceDate->translatedFormat('d F Y') }}
+                            </p>
+                        </div>
+                        <a href="{{ route('attendance.index', ['date' => $attendanceDate->format('Y-m-d')]) }}" class="btn btn-secondary">Kembali</a>
+                    </div>
+
+                    <form method="POST" action="{{ route('attendance.update', $record) }}">
+                        @csrf
+                        @method('PUT')
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="status">Status Kehadiran</label>
+                                <select id="status" name="status" class="form-control" required>
+                                    @foreach ($statusOptions as $value => $label)
+                                        <option value="{{ $value }}" {{ old('status', $record->status) === $value ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="check_in_time">Jam Masuk</label>
+                                <input id="check_in_time" name="check_in_time" type="time" class="form-control" value="{{ old('check_in_time', optional($record->check_in_time)->format('H:i')) }}">
+                                <p class="helper-text">
+                                    Jadwal: {{ optional($record->employee->schedule)->start_time?->format('H:i') ?? '08:00' }}
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <label for="check_out_time">Jam Pulang</label>
+                                <input id="check_out_time" name="check_out_time" type="time" class="form-control" value="{{ old('check_out_time', optional($record->check_out_time)->format('H:i')) }}">
+                            </div>
+                            <div class="form-group form-row-span">
+                                <label for="notes">Keterangan</label>
+                                <textarea id="notes" name="notes" class="form-control">{{ old('notes', $record->notes) }}</textarea>
                             </div>
                         </div>
-                    @endif
-                </div>
+
+                        <div class="form-actions">
+                            <a href="{{ route('attendance.index', ['date' => $attendanceDate->format('Y-m-d')]) }}" class="btn btn-secondary">Batal</a>
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                @endif
             </section>
         </main>
     </div>

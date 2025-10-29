@@ -355,10 +355,6 @@
                         <img src="{{ asset('images/manage-user-icon.png') }}" alt="Manage User Icon">
                         Manage User
                     </a>
-                    <a href="#" class="sidebar-nav-item">
-                        <img src="{{ asset('images/user-setting-icon.png') }}" alt="User Setting Icon">
-                        User Setting
-                    </a>
                 </div>
 
                 <div class="sidebar-nav-group">
@@ -368,8 +364,8 @@
                         Schedule
                     </a>
                     <a href="{{ route('attendance.index') }}" class="sidebar-nav-item {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
-                        <img src="{{ asset('images/daily-attendance-icon.png') }}" alt="Daily Attendance Icon">
-                        Daily Attendance
+                        <img src="{{ asset('images/daily-attendance-icon.png') }}" alt="Attendance Icon">
+                        Attendance
                     </a>
                     <a href="{{ route('reports.sheet') }}" class="sidebar-nav-item {{ request()->routeIs('reports.sheet') ? 'active' : '' }}">
                         <img src="{{ asset('images/sheet-report-icon.png') }}" alt="Sheet Report Icon">

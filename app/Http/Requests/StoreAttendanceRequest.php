@@ -6,7 +6,7 @@ use App\Models\AttendanceRecord;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateAttendanceRequest extends FormRequest
+class StoreAttendanceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,9 +19,6 @@ class UpdateAttendanceRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'check_in_time' => $this->input('check_in_time') ?: null,
-            'check_out_time' => $this->input('check_out_time') ?: null,
-            'notes' => $this->input('notes') ?: null,
             'leave_reason' => $this->input('status') === AttendanceRecord::STATUS_LEAVE
                 ? $this->input('leave_reason')
                 : null,
@@ -35,9 +32,7 @@ class UpdateAttendanceRequest extends FormRequest
      */
     public function rules(): array
     {
-        $attendanceRecord = $this->route('attendanceRecord');
-        $attendanceRecordId = $attendanceRecord?->id;
-        $employeeId = $this->input('employee_id') ?? $attendanceRecord?->employee_id;
+        $employeeId = $this->input('employee_id');
 
         return [
             'employee_id' => ['required', 'exists:employees,id'],
@@ -45,8 +40,7 @@ class UpdateAttendanceRequest extends FormRequest
                 'required',
                 'date',
                 Rule::unique('attendance_records', 'attendance_date')
-                    ->where(fn ($query) => $query->where('employee_id', $employeeId))
-                    ->ignore($attendanceRecordId),
+                    ->where(fn ($query) => $query->where('employee_id', $employeeId)),
             ],
             'status' => ['required', Rule::in([AttendanceRecord::STATUS_PRESENT, AttendanceRecord::STATUS_LEAVE])],
             'leave_reason' => [
@@ -55,6 +49,7 @@ class UpdateAttendanceRequest extends FormRequest
                 Rule::in(array_keys(AttendanceRecord::leaveReasonOptions())),
             ],
             'supporting_document' => [
+                Rule::requiredIf(fn () => $this->input('status') === AttendanceRecord::STATUS_LEAVE),
                 'nullable',
                 'file',
                 'mimes:pdf,jpg,jpeg,png',

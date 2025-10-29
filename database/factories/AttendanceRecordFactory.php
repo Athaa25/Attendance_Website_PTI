@@ -21,10 +21,7 @@ class AttendanceRecordFactory extends Factory
     {
         $status = fake()->randomElement([
             AttendanceRecord::STATUS_PRESENT,
-            AttendanceRecord::STATUS_LATE,
             AttendanceRecord::STATUS_LEAVE,
-            AttendanceRecord::STATUS_SICK,
-            AttendanceRecord::STATUS_ABSENT,
         ]);
 
         $date = fake()->dateTimeBetween('-2 months', 'now');
@@ -32,32 +29,34 @@ class AttendanceRecordFactory extends Factory
         $checkOut = null;
         $lateMinutes = 0;
         $notes = null;
+        $leaveReason = null;
 
-        if (in_array($status, [AttendanceRecord::STATUS_PRESENT, AttendanceRecord::STATUS_LATE], true)) {
+        if ($status === AttendanceRecord::STATUS_PRESENT) {
             $scheduledStart = Carbon::createFromTime(8, 0);
             $actualStart = (clone $scheduledStart)->addMinutes(fake()->numberBetween(0, 90));
 
             $checkIn = $actualStart->format('H:i');
             $checkOut = $actualStart->copy()->addHours(8)->format('H:i');
             $lateMinutes = max(0, $actualStart->diffInMinutes($scheduledStart));
-            $notes = $lateMinutes > 0 ? 'Datang terlambat' : 'Tepat waktu';
-            $status = $lateMinutes > 0 ? AttendanceRecord::STATUS_LATE : AttendanceRecord::STATUS_PRESENT;
-        } elseif ($status === AttendanceRecord::STATUS_LEAVE) {
-            $notes = 'Izin';
-        } elseif ($status === AttendanceRecord::STATUS_SICK) {
-            $notes = 'Sakit';
+            $notes = $lateMinutes > 5 ? 'Terlambat' : 'Tepat waktu';
+            if ($lateMinutes > 5) {
+                $status = AttendanceRecord::STATUS_PRESENT;
+            }
         } else {
-            $notes = 'Alpa';
+            $leaveReason = fake()->randomElement(array_keys(AttendanceRecord::leaveReasonOptions()));
+            $notes = AttendanceRecord::leaveReasonOptions()[$leaveReason];
         }
 
         return [
             'employee_id' => Employee::factory(),
             'attendance_date' => $date,
             'status' => $status,
+            'leave_reason' => $leaveReason,
             'check_in_time' => $checkIn,
             'check_out_time' => $checkOut,
             'late_minutes' => $lateMinutes,
             'notes' => $notes,
+            'supporting_document_path' => null,
         ];
     }
 }
