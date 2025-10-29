@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin</title>
+    <title>Kelola Pegawai</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -15,6 +15,7 @@
             --card-background: #FFFFFF;
             --border-color: #E5E7EB;
             --highlight: #F3F4F6;
+            --danger: #EF4444;
         }
 
         * {
@@ -174,68 +175,162 @@
             box-shadow: 0 10px 40px rgba(17, 43, 105, 0.05);
             display: flex;
             flex-direction: column;
-            gap: 32px;
+            gap: 24px;
         }
 
-        .section-header {
+        .status-banner {
+            padding: 16px 20px;
+            border-radius: 16px;
+            background-color: rgba(17, 43, 105, 0.08);
+            color: var(--blue-primary);
+            font-weight: 500;
+        }
+
+        .filter-bar {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
         }
 
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .section-subtitle {
-            margin-top: 8px;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .primary-button {
-            background-color: var(--blue-primary);
-            color: #FFFFFF;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 20px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(17, 43, 105, 0.25);
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        .metric-card {
-            border-radius: 20px;
-            background-color: var(--highlight);
-            padding: 20px;
+        .filter-group {
             display: flex;
             flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .filter-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--highlight);
+        }
+
+        .filter-input input,
+        .filter-input select {
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-dark);
+            width: 100%;
+        }
+
+        .filter-input input:focus,
+        .filter-input select:focus {
+            outline: none;
+        }
+
+        .filter-actions {
+            margin-left: auto;
+            display: flex;
             gap: 12px;
         }
 
-        .metric-title {
-            font-size: 14px;
-            color: var(--text-muted);
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .metric-value {
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0;
+        .btn-primary {
+            background-color: var(--blue-primary);
+            color: #FFFFFF;
+            box-shadow: 0 8px 20px rgba(17, 43, 105, 0.2);
         }
 
-        .metric-description {
-            font-size: 14px;
+        .btn-secondary {
+            background-color: var(--highlight);
+            color: var(--blue-primary);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(17, 43, 105, 0.2);
+        }
+
+        .table-card {
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: rgba(17, 43, 105, 0.05);
+        }
+
+        th {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
+            padding: 16px;
+            text-align: left;
+        }
+
+        td {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        tr:nth-child(even) td {
+            background-color: rgba(17, 43, 105, 0.02);
+        }
+
+        .table-name-link {
+            color: var(--blue-primary);
+            font-weight: 600;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .action-link {
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            font-weight: 600;
+        }
+
+        .action-link.detail {
+            background-color: rgba(17, 43, 105, 0.08);
+            color: var(--blue-primary);
+        }
+
+        .action-link.edit {
+            background-color: rgba(59, 130, 246, 0.12);
+            color: #1d4ed8;
+        }
+
+        .action-link.delete {
+            background-color: rgba(239, 68, 68, 0.12);
+            color: #b91c1c;
         }
 
         .status-badge {
@@ -258,7 +353,8 @@
             color: #b45309;
         }
 
-        .status-leave, .status-sick {
+        .status-leave,
+        .status-sick {
             background-color: rgba(59, 130, 246, 0.18);
             color: #1d4ed8;
         }
@@ -268,111 +364,70 @@
             color: #b91c1c;
         }
 
-        .analysis-section {
-            display: grid;
-            grid-template-columns: 2fr 1.5fr;
-            gap: 24px;
+        .status-active {
+            background-color: rgba(34, 197, 94, 0.18);
+            color: #15803d;
         }
 
-        .chart-card {
-            border-radius: 24px;
-            background-color: var(--highlight);
-            padding: 24px;
+        .status-probation {
+            background-color: rgba(234, 179, 8, 0.18);
+            color: #b45309;
+        }
+
+        .status-contract {
+            background-color: rgba(59, 130, 246, 0.18);
+            color: #1d4ed8;
+        }
+
+        .status-inactive {
+            background-color: rgba(148, 163, 184, 0.2);
+            color: #475569;
+        }
+
+        .status-resigned {
+            background-color: rgba(239, 68, 68, 0.18);
+            color: #b91c1c;
+        }
+
+        .pagination {
             display: flex;
-            flex-direction: column;
-        }
-
-        .chart-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin: 0 0 8px;
-        }
-
-        .chart-subtitle {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-        }
-
-        .chart-bars {
-            flex: 1;
-            display: flex;
-            align-items: flex-end;
-            gap: 16px;
-        }
-
-        .chart-bar-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 6px;
+            justify-content: space-between;
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
         }
 
-        .chart-bar {
-            width: 100%;
-            background: linear-gradient(180deg, rgba(17, 43, 105, 0.6), rgba(17, 43, 105, 0.2));
-            border-radius: 12px 12px 4px 4px;
-            min-height: 12px;
-            transition: height 0.3s ease;
+        .pagination-controls {
+            display: flex;
+            gap: 12px;
         }
 
-        .chart-bar-label {
-            font-size: 12px;
-            color: var(--text-muted);
+        .pagination-button {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-background);
+            color: var(--text-dark);
             font-weight: 500;
         }
 
-        .chart-bar-value {
-            font-size: 12px;
-            color: var(--blue-primary);
-            font-weight: 600;
-        }
-
-        .attendance-section {
-            display: flex;
-            flex-direction: column;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 18px;
-            overflow: hidden;
-        }
-
-        thead {
-            background-color: rgba(17, 43, 105, 0.05);
-        }
-
-        th {
-            text-align: left;
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 600;
-            padding: 16px;
-        }
-
-        td {
-            padding: 16px;
-            font-size: 14px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        tr:nth-child(even) td {
-            background-color: #FAFAFA;
+        .pagination-button.disabled {
+            opacity: 0.5;
+            pointer-events: none;
         }
 
         @media (max-width: 1200px) {
             .dashboard-layout {
                 flex-direction: column;
+                padding: 24px;
             }
 
             .sidebar {
                 width: 100%;
                 flex-direction: row;
                 align-items: flex-start;
-                gap: 32px;
+                gap: 24px;
             }
 
             .sidebar-nav {
@@ -388,8 +443,9 @@
                 padding-left: 24px;
             }
 
-            .analysis-section {
-                grid-template-columns: 1fr;
+            .filter-actions {
+                width: 100%;
+                justify-content: flex-end;
             }
         }
     </style>
@@ -407,9 +463,6 @@
         if ($userInitials === '') {
             $userInitials = 'AD';
         }
-        $maxChartValue = max(1, $monthlyChart->max('value') ?? 1);
-        $startOfMonthLabel = $now->copy()->startOfMonth()->translatedFormat('d F');
-        $endOfMonthLabel = $now->copy()->endOfMonth()->translatedFormat('d F Y');
     @endphp
     <div class="dashboard-layout">
         <aside class="sidebar">
@@ -468,10 +521,10 @@
         <main class="main-content">
             <header class="top-header">
                 <div>
-                    <h1 class="top-header-title">Dashboard Admin</h1>
+                    <h1 class="top-header-title">Kelola Pegawai</h1>
                     <p class="top-header-subtitle">
-                        Halo, selamat datang {{ $user?->name ?? 'Administrator' }} &middot;
-                        <span>{{ $now->translatedFormat('d F Y') }}</span>
+                        Halo, {{ $user?->name ?? 'Administrator' }} &middot;
+                        <span>{{ now()->translatedFormat('d F Y') }}</span>
                     </p>
                 </div>
                 <div class="profile-info">
@@ -481,97 +534,114 @@
             </header>
 
             <section class="content-wrapper">
-                <div class="analysis-section">
-                    <div>
-                        <div class="section-header">
-                            <div>
-                                <h2 class="section-title">Analisis Metrik</h2>
-                                <p class="section-subtitle">Kehadiran Bulan Ini</p>
-                            </div>
-                            <a class="primary-button" href="{{ route('reports.sheet') }}">Laporan Detail</a>
-                        </div>
+                @if (session('status'))
+                    <div class="status-banner">
+                        {{ session('status') }}
+                    </div>
+                @endif
 
-                        <div class="metrics-grid">
-                            <div class="metric-card">
-                                <span class="metric-title">Total Absensi Bulan Ini</span>
-                                <p class="metric-value">{{ number_format($metrics['total_absence']) }}</p>
-                                <span class="metric-description">Periode {{ $startOfMonthLabel }} - {{ $endOfMonthLabel }}</span>
-                            </div>
-                            <div class="metric-card">
-                                <span class="metric-title">Jumlah Keterlambatan</span>
-                                <p class="metric-value">{{ number_format($metrics['late_count']) }}</p>
-                                <span class="metric-description">Termasuk hadir terlambat</span>
-                            </div>
-                            <div class="metric-card">
-                                <span class="metric-title">Tingkat Kehadiran</span>
-                                <p class="metric-value">{{ number_format($metrics['attendance_rate'], 1) }}%</p>
-                                <span class="metric-description">Dari seluruh catatan absensi</span>
-                            </div>
-                            <div class="metric-card">
-                                <span class="metric-title">Pegawai Aktif</span>
-                                <p class="metric-value">{{ number_format($metrics['employee_count']) }}</p>
-                                <span class="metric-description">Terdaftar dalam sistem</span>
-                            </div>
+                <form method="GET" class="filter-bar">
+                    <div class="filter-group">
+                        <label for="search">Pencarian</label>
+                        <div class="filter-input">
+                            <input type="search" id="search" name="search" placeholder="Nama atau kode pegawai" value="{{ $filters['search'] ?? '' }}">
                         </div>
                     </div>
-
-                    <div class="chart-card">
-                        <h3 class="chart-title">Kehadiran Bulanan</h3>
-                        <p class="chart-subtitle">Jumlah kehadiran selama 5 bulan terakhir</p>
-                        <div class="chart-bars">
-                            @forelse ($monthlyChart as $item)
-                                @php($height = max(12, ($item['value'] / $maxChartValue) * 100))
-                                <div class="chart-bar-wrapper">
-                                    <div class="chart-bar" style="height: {{ $height }}%;" title="{{ $item['label'] }} - {{ $item['value'] }} absensi"></div>
-                                    <span class="chart-bar-value">{{ $item['value'] }}</span>
-                                    <span class="chart-bar-label">{{ $item['label'] }}</span>
-                                </div>
-                            @empty
-                                <p style="font-size: 13px; color: var(--text-muted);">Belum ada data absensi</p>
-                            @endforelse
+                    <div class="filter-group">
+                        <label for="department_id">Departemen</label>
+                        <div class="filter-input">
+                            <select id="department_id" name="department_id">
+                                <option value="">Semua</option>
+                                @foreach ($departments as $department)
+                                    <option value="{{ $department->id }}" {{ ($filters['department_id'] ?? null) == $department->id ? 'selected' : '' }}>
+                                        {{ $department->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
-                </div>
-
-                <div class="attendance-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Riwayat Absensi</h2>
-                        <a href="{{ route('attendance.index') }}" class="primary-button">Lihat Detail</a>
+                    <div class="filter-group">
+                        <label for="status">Status</label>
+                        <div class="filter-input">
+                            <select id="status" name="status">
+                                <option value="">Semua</option>
+                                @foreach ($statusOptions as $value => $label)
+                                    <option value="{{ $value }}" {{ ($filters['status'] ?? '') === $value ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn-secondary">Terapkan</button>
+                        <a href="{{ route('manage-users.create') }}" class="btn btn-primary">
+                            <span>+</span> Tambah Pegawai
+                        </a>
+                    </div>
+                </form>
+
+                <div class="table-card">
                     <table>
                         <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Nama</th>
+                                <th>Departemen</th>
+                                <th>Jadwal</th>
                                 <th>Status</th>
-                                <th>Check-In</th>
-                                <th>Tanggal</th>
-                                <th>Keterangan</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($recentAttendances as $record)
+                            @forelse ($employees as $employee)
                                 <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $record->employee->full_name }}</td>
+                                    <td>{{ ($employees->currentPage() - 1) * $employees->perPage() + $loop->iteration }}</td>
                                     <td>
-                                        <span class="status-badge {{ $record->status_badge_class }}">
-                                            {{ $record->status_label }}
+                                        <a class="table-name-link" href="{{ route('manage-users.show', $employee) }}">
+                                            {{ $employee->full_name }}
+                                        </a>
+                                        <div style="font-size: 12px; color: var(--text-muted);">
+                                            {{ $employee->user->email }}
+                                        </div>
+                                    </td>
+                                    <td>{{ $employee->department->name ?? '—' }}</td>
+                                    <td>{{ $employee->schedule->name ?? '—' }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ $employee->employment_status }}">
+                                            {{ $employee->employment_status_label }}
                                         </span>
                                     </td>
-                                    <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
-                                    <td>{{ $record->attendance_date->translatedFormat('d M Y') }}</td>
-                                    <td>{{ $record->notes ?? '-' }}</td>
+                                    <td>
+                                        <div class="table-actions">
+                                            <a class="action-link detail" href="{{ route('manage-users.show', $employee) }}">Detail</a>
+                                            <a class="action-link edit" href="{{ route('manage-users.edit', $employee) }}">Edit</a>
+                                            <form method="POST" action="{{ route('manage-users.destroy', $employee) }}" onsubmit="return confirm('Hapus pegawai ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="action-link delete">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                        Belum ada data absensi terbaru.
+                                        Belum ada data pegawai yang sesuai filter.
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
+                    @if ($employees->hasPages())
+                        <div class="pagination">
+                            <span>Halaman {{ $employees->currentPage() }} dari {{ $employees->lastPage() }}</span>
+                            <div class="pagination-controls">
+                                <a class="pagination-button {{ $employees->onFirstPage() ? 'disabled' : '' }}" href="{{ $employees->previousPageUrl() ?? '#' }}">Sebelumnya</a>
+                                <a class="pagination-button {{ $employees->hasMorePages() ? '' : 'disabled' }}" href="{{ $employees->nextPageUrl() ?? '#' }}">Selanjutnya</a>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </section>
         </main>

@@ -20,7 +20,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'username',
         'password',
+        'role',
     ];
 
     /**
@@ -43,6 +45,22 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => 'string',
         ];
+    }
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return in_array($this->role, ['admin', 'super-admin'], true);
+    }
+
+    public function isHr(): bool
+    {
+        return in_array($this->role, ['hr', 'admin', 'super-admin'], true);
     }
 }

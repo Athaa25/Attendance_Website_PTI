@@ -1,40 +1,38 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('auth.login');
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-});
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/manage-users', function () {
-    return view('manage-user', ['page' => 'list']);
-});
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/manage-users/view', function () {
-    return view('manage-user', ['page' => 'view']);
-});
+    Route::prefix('manage-users')->name('manage-users.')->group(function () {
+        Route::get('/', [EmployeeController::class, 'index'])->name('index');
+        Route::get('/create', [EmployeeController::class, 'create'])->name('create');
+        Route::post('/', [EmployeeController::class, 'store'])->name('store');
+        Route::get('/{employee}', [EmployeeController::class, 'show'])->name('show');
+        Route::get('/{employee}/edit', [EmployeeController::class, 'edit'])->name('edit');
+        Route::put('/{employee}', [EmployeeController::class, 'update'])->name('update');
+        Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('destroy');
+    });
 
-Route::get('/manage-users/add', function () {
-    return view('manage-user', ['page' => 'add']);
-});
+    Route::get('/daily-attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('/daily-attendance/{attendanceRecord}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
+    Route::put('/daily-attendance/{attendanceRecord}', [AttendanceController::class, 'update'])->name('attendance.update');
 
-Route::get('/manage-users/edit', function () {
-    return view('manage-user', ['page' => 'edit']);
+    Route::get('/sheet-report', [ReportController::class, 'index'])->name('reports.sheet');
 });
-
-Route::get('/daily-attendance', function () {
-    return view('dailly-attendance', ['page' => 'list']);
-});
-
-Route::get('/daily-attendance/edit', function () {
-    return view('dailly-attendance', ['page' => 'edit']);
-});
-
-Route::get('/sheet-report', function () {
-    return view('sheet-report');
-});
-

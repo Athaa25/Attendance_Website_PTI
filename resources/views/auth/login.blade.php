@@ -25,7 +25,13 @@
                             </svg>
                         </div>
                     </div>
-                    <form class="mt-10 space-y-6">
+                    @if ($errors->any())
+                        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {{ __('Email atau kata sandi tidak valid.') }}
+                        </div>
+                    @endif
+                    <form class="mt-10 space-y-6" method="POST" action="{{ route('login.submit') }}">
+                        @csrf
                         <div class="text-left">
                             <label for="email" class="block text-sm font-semibold text-gray-700">Email</label>
                             <div class="mt-2">
@@ -34,10 +40,14 @@
                                     id="email"
                                     name="email"
                                     placeholder="Masukkan email Anda"
-                                    class="w-full rounded-2xl border border-gray-300 bg-white px-5 py-3 text-base text-gray-800 shadow-inner focus:border-[#123a5d] focus:outline-none focus:ring-2 focus:ring-[#5ba1d3]"
+                                    class="w-full rounded-2xl border border-gray-300 bg-white px-5 py-3 text-base text-gray-800 shadow-inner focus:border-[#123a5d] focus:outline-none focus:ring-2 focus:ring-[#5ba1d3] @error('email') border-red-400 focus:border-red-500 focus:ring-red-300 @enderror"
                                     autocomplete="email"
+                                    value="{{ old('email') }}"
                                 />
                             </div>
+                            @error('email')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="text-left">
@@ -48,7 +58,7 @@
                                     id="password"
                                     name="password"
                                     placeholder="Masukkan kata sandi Anda"
-                                    class="w-full rounded-2xl border border-gray-300 bg-white px-5 py-3 text-base text-gray-800 shadow-inner focus:border-[#123a5d] focus:outline-none focus:ring-2 focus:ring-[#5ba1d3]"
+                                    class="w-full rounded-2xl border border-gray-300 bg-white px-5 py-3 text-base text-gray-800 shadow-inner focus:border-[#123a5d] focus:outline-none focus:ring-2 focus:ring-[#5ba1d3] @error('password') border-red-400 focus:border-red-500 focus:ring-red-300 @enderror"
                                     autocomplete="current-password"
                                 />
                                 <button type="button" class="absolute inset-y-0 right-4 flex items-center text-gray-500 transition hover:text-[#123a5d]" data-toggle-password>
@@ -58,6 +68,16 @@
                                     </svg>
                                 </button>
                             </div>
+                            @error('password')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="flex items-center justify-between text-sm text-gray-600">
+                            <label class="inline-flex items-center gap-2">
+                                <input type="checkbox" name="remember" value="1" class="rounded border-gray-300 text-[#1f66a6] focus:ring-[#1f66a6]" />
+                                <span>Ingat saya</span>
+                            </label>
                         </div>
 
                         <button

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sheet Report</title>
+    <title>Laporan Absensi</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -15,7 +15,6 @@
             --card-background: #FFFFFF;
             --border-color: #E5E7EB;
             --highlight: #F3F4F6;
-            --accent: #1F6FEB;
         }
 
         * {
@@ -178,93 +177,61 @@
             gap: 24px;
         }
 
-        .content-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .content-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0;
-            color: var(--blue-primary);
-        }
-
-        .action-bar {
-            display: flex;
-            align-items: flex-end;
-            gap: 16px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .export-button {
+        .tab-bar {
             display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 28px;
+            background-color: var(--highlight);
+            border-radius: 16px;
+            padding: 4px;
+            gap: 4px;
+            align-self: flex-start;
+        }
+
+        .tab {
+            padding: 8px 18px;
             border-radius: 12px;
-            border: none;
-            background-color: var(--blue-primary);
-            color: #FFFFFF;
             font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-            box-shadow: 0 6px 18px rgba(17, 43, 105, 0.25);
+            font-size: 14px;
+            color: var(--text-muted);
         }
 
-        .export-button img {
-            width: 18px;
-            height: 18px;
-            object-fit: contain;
+        .tab.active {
+            background-color: var(--card-background);
+            color: var(--blue-primary);
+            box-shadow: 0 8px 20px rgba(17, 43, 105, 0.15);
         }
 
-        .export-button:hover {
-            background-color: #143b82;
-            transform: translateY(-1px);
-        }
-
-        .filters {
+        .filter-bar {
             display: flex;
-            align-items: flex-end;
-            gap: 12px;
             flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
         }
 
-        .export-button,
-        .edit-button {
-            align-self: flex-end;
-        }
-
-        .filter-control {
+        .filter-group {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
-        .filter-label {
+        .filter-group label {
             font-size: 12px;
-            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            color: var(--text-muted);
         }
 
-        .input-shell {
+        .filter-input {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: 10px 14px;
-            border-radius: 12px;
             border: 1px solid var(--border-color);
+            border-radius: 12px;
             background-color: var(--highlight);
-            min-width: 180px;
         }
 
-        .input-shell input,
-        .input-shell select {
+        .filter-input input,
+        .filter-input select {
             border: none;
             background: transparent;
             font-family: inherit;
@@ -273,64 +240,75 @@
             width: 100%;
         }
 
-        .input-shell input:focus,
-        .input-shell select:focus {
+        .filter-input input:focus,
+        .filter-input select:focus {
             outline: none;
         }
 
-        .edit-button {
-            background-color: var(--blue-primary);
-            color: #FFFFFF;
-            border: none;
-            border-radius: 12px;
-            padding: 12px 24px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+        .filter-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 12px;
         }
 
-        .edit-button:hover {
-            transform: translateY(-1px);
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--blue-primary);
+            color: #FFFFFF;
             box-shadow: 0 8px 20px rgba(17, 43, 105, 0.2);
         }
 
-        .report-table {
+        .btn-secondary {
+            background-color: var(--highlight);
+            color: var(--blue-primary);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(17, 43, 105, 0.2);
+        }
+
+        table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background-color: var(--card-background);
+            border-collapse: collapse;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 12px 30px rgba(17, 43, 105, 0.06);
+            border: 1px solid var(--border-color);
         }
 
-        .report-table thead {
-            background-color: var(--highlight);
+        thead {
+            background-color: rgba(17, 43, 105, 0.05);
         }
 
-        .report-table th {
-            text-align: left;
-            padding: 18px 24px;
-            font-weight: 600;
-            font-size: 14px;
+        th {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
+            padding: 16px;
+            text-align: left;
         }
 
-        .report-table tbody tr {
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .report-table tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        .report-table td {
-            padding: 18px 24px;
+        td {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
             font-size: 14px;
-            color: var(--text-dark);
+            vertical-align: middle;
+        }
+
+        tr:nth-child(even) td {
+            background-color: rgba(17, 43, 105, 0.02);
         }
 
         .table-scroll {
@@ -338,83 +316,98 @@
             overflow-x: auto;
             border-radius: 24px;
             background-color: var(--card-background);
-            box-shadow: 0 12px 30px rgba(17, 43, 105, 0.06);
-            padding: 16px;
-        }
-
-        .table-scroll .report-table {
-            box-shadow: none;
-            border-radius: 0;
-            min-width: 1200px;
-        }
-
-        .monthly-report-table {
-            border-collapse: collapse;
-            table-layout: fixed;
-            width: 100%;
-        }
-
-        .monthly-report-table thead {
-            background-color: #F9FAFB;
-        }
-
-        .monthly-report-table th,
-        .monthly-report-table td {
+            padding: 12px;
             border: 1px solid var(--border-color);
-            padding: 12px 16px;
+        }
+
+        .table-scroll table {
+            min-width: 900px;
+            border: none;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-present {
+            background-color: rgba(34, 197, 94, 0.18);
+            color: #15803d;
+        }
+
+        .status-late {
+            background-color: rgba(234, 179, 8, 0.18);
+            color: #b45309;
+        }
+
+        .status-leave {
+            background-color: rgba(59, 130, 246, 0.18);
+            color: #1d4ed8;
+        }
+
+        .status-sick {
+            background-color: rgba(14, 165, 233, 0.18);
+            color: #0f766e;
+        }
+
+        .status-absent {
+            background-color: rgba(239, 68, 68, 0.18);
+            color: #b91c1c;
+        }
+
+        .legend {
+            display: flex;
+            gap: 16px;
             font-size: 13px;
-            text-align: center;
-        }
-
-        .monthly-report-table th:first-child,
-        .monthly-report-table td:first-child {
-            width: 56px;
-            font-weight: 600;
-        }
-
-        .monthly-report-table th:nth-child(2),
-        .monthly-report-table td:nth-child(2) {
-            text-align: left;
-            min-width: 200px;
-            font-weight: 600;
-        }
-
-        .monthly-report-table tbody tr:nth-child(even) {
-            background-color: rgba(17, 43, 105, 0.02);
-        }
-
-        .notes-text {
             color: var(--text-muted);
-            font-size: 13px;
-            font-style: italic;
         }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .legend-badge.present { background-color: #16a34a; }
+        .legend-badge.late { background-color: #f59e0b; }
+        .legend-badge.leave { background-color: #2563eb; }
+        .legend-badge.sick { background-color: #0ea5e9; }
+        .legend-badge.absent { background-color: #ef4444; }
 
         @media (max-width: 1200px) {
             .dashboard-layout {
-                padding: 24px;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .dashboard-layout {
                 flex-direction: column;
+                padding: 24px;
             }
 
             .sidebar {
                 width: 100%;
                 flex-direction: row;
+                align-items: flex-start;
                 gap: 24px;
-                align-items: center;
-                border-radius: 24px;
-                padding: 24px;
-                flex-wrap: wrap;
             }
 
             .sidebar-nav {
                 flex: 1;
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-                gap: 12px;
+                flex-direction: row;
+                flex-wrap: wrap;
             }
 
             .sidebar-footer {
@@ -424,82 +417,32 @@
                 padding-left: 24px;
             }
 
-            .content-header {
-                align-items: flex-start;
+            .filter-actions {
+                width: 100%;
+                justify-content: flex-end;
             }
 
-            .action-bar {
-                justify-content: flex-start;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .top-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-
-            .content-wrapper {
-                padding: 24px;
-            }
-
-            .report-table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            .input-shell {
-                min-width: 140px;
+            .tab-bar {
+                width: 100%;
+                justify-content: space-between;
             }
         }
     </style>
 </head>
 <body>
     @php
-        $activeType = request('type', 'harian');
-        $allowedTypes = ['harian', 'mingguan', 'bulanan', 'custom'];
-        $activeType = in_array($activeType, $allowedTypes) ? $activeType : 'harian';
-
-        $customReportEmployees = [
-            'fefe-fifi-fufu-fafa' => [
-                'name' => 'Fefe Fifi Fufu Fafa',
-                'records' => [
-                    ['status' => 'Hadir', 'time' => '09:54', 'date' => '1 September 2025', 'notes' => 'Tepat waktu'],
-                    ['status' => 'Hadir', 'time' => '09:54', 'date' => '2 September 2025', 'notes' => 'Terlambat'],
-                    ['status' => 'Hadir', 'time' => '09:54', 'date' => '3 September 2025', 'notes' => 'Tepat waktu'],
-                    ['status' => 'Hadir', 'time' => '09:54', 'date' => '4 September 2025', 'notes' => 'Tepat waktu'],
-                    ['status' => 'Izin', 'time' => '--:--', 'date' => '5 September 2025', 'notes' => 'Izin'],
-                    ['status' => 'Hadir', 'time' => '09:54', 'date' => '6 September 2025', 'notes' => 'Tepat waktu'],
-                    ['status' => 'Hadir', 'time' => '09:54', 'date' => '7 September 2025', 'notes' => 'Tepat waktu'],
-                    ['status' => 'Hadir', 'time' => '09:54', 'date' => '8 September 2025', 'notes' => 'Terlambat'],
-                    ['status' => 'Izin', 'time' => '--:--', 'date' => '9 September 2025', 'notes' => 'Izin'],
-                    ['status' => 'Izin', 'time' => '--:--', 'date' => '10 September 2025', 'notes' => 'Izin hadir'],
-                ],
-            ],
-            'rio-hu' => [
-                'name' => 'Rio Hu',
-                'records' => [
-                    ['status' => 'Hadir', 'time' => '09:02', 'date' => '1 September 2025', 'notes' => 'Tepat waktu'],
-                    ['status' => 'Hadir', 'time' => '09:10', 'date' => '2 September 2025', 'notes' => 'Terlambat'],
-                    ['status' => 'Hadir', 'time' => '08:55', 'date' => '3 September 2025', 'notes' => 'Tepat waktu'],
-                ],
-            ],
-            'pepet-siebor' => [
-                'name' => 'Pepet Siebor',
-                'records' => [
-                    ['status' => 'Hadir', 'time' => '09:05', 'date' => '1 September 2025', 'notes' => 'Tepat waktu'],
-                    ['status' => 'Sakit', 'time' => '--:--', 'date' => '2 September 2025', 'notes' => 'Sakit'],
-                ],
-            ],
-        ];
-
-        $defaultEmployeeKey = array_key_first($customReportEmployees);
-        $selectedEmployeeKey = request('employee', $defaultEmployeeKey);
-        $selectedEmployeeKey = array_key_exists($selectedEmployeeKey, $customReportEmployees)
-            ? $selectedEmployeeKey
-            : $defaultEmployeeKey;
-        $selectedEmployee = $customReportEmployees[$selectedEmployeeKey];
+        $type = $activeType ?? 'harian';
+        $user = auth()->user();
+        $userInitials = \Illuminate\Support\Str::of($user?->name ?? '')
+            ->trim()
+            ->explode(' ')
+            ->filter()
+            ->map(fn ($segment) => mb_strtoupper(mb_substr($segment, 0, 1)))
+            ->take(2)
+            ->implode('');
+        if ($userInitials === '') {
+            $userInitials = 'AD';
+        }
     @endphp
     <div class="dashboard-layout">
         <aside class="sidebar">
@@ -509,7 +452,7 @@
             <div class="sidebar-nav">
                 <div class="sidebar-nav-group">
                     <p class="sidebar-section-title">Menu</p>
-                    <a href="{{ url('/dashboard') }}" class="sidebar-nav-item">
+                    <a href="{{ route('dashboard') }}" class="sidebar-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                         <img src="{{ asset('images/dashboard-icon.png') }}" alt="Dashboard Icon">
                         Dashboard
                     </a>
@@ -517,7 +460,7 @@
 
                 <div class="sidebar-nav-group">
                     <p class="sidebar-section-title">Users Management</p>
-                    <a href="{{ url('/manage-users') }}" class="sidebar-nav-item">
+                    <a href="{{ route('manage-users.index') }}" class="sidebar-nav-item {{ request()->routeIs('manage-users.*') ? 'active' : '' }}">
                         <img src="{{ asset('images/manage-user-icon.png') }}" alt="Manage User Icon">
                         Manage User
                     </a>
@@ -533,11 +476,11 @@
                         <img src="{{ asset('images/schedule-icon.png') }}" alt="Schedule Icon">
                         Schedule
                     </a>
-                    <a href="{{ url('/daily-attendance') }}" class="sidebar-nav-item">
+                    <a href="{{ route('attendance.index') }}" class="sidebar-nav-item {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
                         <img src="{{ asset('images/daily-attendance-icon.png') }}" alt="Daily Attendance Icon">
                         Daily Attendance
                     </a>
-                    <a href="{{ url('/sheet-report') }}" class="sidebar-nav-item active">
+                    <a href="{{ route('reports.sheet') }}" class="sidebar-nav-item {{ request()->routeIs('reports.sheet') ? 'active' : '' }}">
                         <img src="{{ asset('images/sheet-report-icon.png') }}" alt="Sheet Report Icon">
                         Sheet Report
                     </a>
@@ -545,208 +488,108 @@
             </div>
 
             <div class="sidebar-footer">
-                <a href="#" class="logout-link">
+                <a href="{{ route('logout') }}" class="logout-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <img src="{{ asset('images/logout-box-icon.png') }}" alt="Logout Icon">
                     Keluar
                 </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                    @csrf
+                </form>
             </div>
         </aside>
 
         <main class="main-content">
             <header class="top-header">
                 <div>
-                    <h1 class="top-header-title">Dashboard Admin</h1>
-                    <p class="top-header-subtitle">Halo, Selamat Datang Prabo</p>
+                    <h1 class="top-header-title">Laporan Absensi</h1>
+                    <p class="top-header-subtitle">
+                        Halo, {{ $user?->name ?? 'Administrator' }} &middot;
+                        <span>{{ now()->translatedFormat('d F Y') }}</span>
+                    </p>
                 </div>
                 <div class="profile-info">
-                    <div class="avatar">AP</div>
-                    <span class="profile-name">Akbar Prabo</span>
+                    <div class="avatar">{{ $userInitials }}</div>
+                    <span class="profile-name">{{ $user?->name ?? 'Administrator' }}</span>
                 </div>
             </header>
 
             <section class="content-wrapper">
-                <div class="content-header">
-                    <h2 class="content-title">Rekapan</h2>
-                    <div class="action-bar">
-                        <button type="button" class="export-button">
-                            <img src="{{ asset('images/file-download-icon.png') }}" alt="Export Icon">
-                            Export PDF
-                        </button>
-                        <div class="filters">
-                            @if ($activeType === 'harian')
-                                <label class="filter-control">
-                                    <span class="filter-label">Tanggal</span>
-                                    <div class="input-shell">
-                                        <input type="text" value="10/09/2024" readonly>
-                                    </div>
-                                </label>
-                            @elseif ($activeType === 'mingguan')
-                                <label class="filter-control">
-                                    <span class="filter-label">Mulai</span>
-                                    <div class="input-shell">
-                                        <input type="text" value="10/19/2024" readonly>
-                                    </div>
-                                </label>
-                                <label class="filter-control">
-                                    <span class="filter-label">Selesai</span>
-                                    <div class="input-shell">
-                                        <input type="text" value="10/26/2024" readonly>
-                                    </div>
-                                </label>
-                            @elseif ($activeType === 'bulanan')
-                                <label class="filter-control">
-                                    <span class="filter-label">Nama Pegawai</span>
-                                    <div class="input-shell">
-                                        <select>
-                                            <option>Fefe Fifi Fufu Fafa</option>
-                                            <option>Rio Hu</option>
-                                            <option>Pepet Siebor</option>
-                                            <option>Mie Ayam Gedangan</option>
-                                            <option>Hasan Suandoro</option>
-                                        </select>
-                                    </div>
-                                </label>
-                                <label class="filter-control">
-                                    <span class="filter-label">Periode</span>
-                                    <div class="input-shell">
-                                        <select>
-                                            <option>Custom</option>
-                                            <option>Januari 2024</option>
-                                            <option>Februari 2024</option>
-                                            <option>Maret 2024</option>
-                                            <option>April 2024</option>
-                                        </select>
-                                    </div>
-                                </label>
-                            @elseif ($activeType === 'custom')
-                                <label class="filter-control">
-                                    <span class="filter-label">Nama Pegawai</span>
-                                    <div class="input-shell">
-                                        <select id="employeeSelect">
-                                            @foreach ($customReportEmployees as $employeeKey => $employee)
-                                                <option value="{{ $employeeKey }}" {{ $employeeKey === $selectedEmployeeKey ? 'selected' : '' }}>
-                                                    {{ $employee['name'] }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </label>
-                            @endif
-                            <label class="filter-control">
-                                <span class="filter-label">Mode Rekapan</span>
-                                <div class="input-shell">
-                                    <select id="reportViewSelect">
-                                        <option value="harian" {{ $activeType === 'harian' ? 'selected' : '' }}>Harian</option>
-                                        <option value="mingguan" {{ $activeType === 'mingguan' ? 'selected' : '' }}>Mingguan</option>
-                                        <option value="bulanan" {{ $activeType === 'bulanan' ? 'selected' : '' }}>Bulanan</option>
-                                        <option value="custom" {{ $activeType === 'custom' ? 'selected' : '' }}>Custom</option>
-                                    </select>
-                                </div>
-                            </label>
-                        </div>
-                        <button type="button" class="edit-button">Edit</button>
-                    </div>
+                <div class="tab-bar">
+                    <a href="{{ route('reports.sheet', ['type' => 'harian']) }}" class="tab {{ $type === 'harian' ? 'active' : '' }}">Harian</a>
+                    <a href="{{ route('reports.sheet', ['type' => 'mingguan']) }}" class="tab {{ $type === 'mingguan' ? 'active' : '' }}">Mingguan</a>
+                    <a href="{{ route('reports.sheet', ['type' => 'bulanan']) }}" class="tab {{ $type === 'bulanan' ? 'active' : '' }}">Bulanan</a>
+                    <a href="{{ route('reports.sheet', ['type' => 'custom']) }}" class="tab {{ $type === 'custom' ? 'active' : '' }}">Custom</a>
                 </div>
 
-                @if ($activeType === 'harian')
-                    <table class="report-table">
+                @if ($type === 'harian')
+                    <form method="GET" class="filter-bar">
+                        <input type="hidden" name="type" value="harian">
+                        <div class="filter-group">
+                            <label for="date">Tanggal</label>
+                            <div class="filter-input">
+                                <input type="date" id="date" name="date" value="{{ optional($period['date'] ?? null)->format('Y-m-d') ?? now()->format('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-secondary">Terapkan</button>
+                        </div>
+                    </form>
+
+                    <table>
                         <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Nama</th>
                                 <th>Departemen</th>
-                                <th>Check In</th>
-                                <th>Check Out</th>
-                                <th>Keterangan</th>
                                 <th>Status</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Keterangan</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Fefe Fifi Fufu Fafa</td>
-                                <td>Front End</td>
-                                <td>08.50</td>
-                                <td>17.45</td>
-                                <td>Jika pegawai izin/alfa/sakit</td>
-                                <td>Sakit</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Rio Hu</td>
-                                <td>Back End</td>
-                                <td>08.50</td>
-                                <td>17.45</td>
-                                <td>-</td>
-                                <td>Hadir</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Pepet Siebor</td>
-                                <td>Back End</td>
-                                <td>08.50</td>
-                                <td>17.45</td>
-                                <td>-</td>
-                                <td>Hadir</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Mie Ayam Gedangan</td>
-                                <td>Administrasi</td>
-                                <td>08.50</td>
-                                <td>17.45</td>
-                                <td>-</td>
-                                <td>Hadir</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>Hasan Suandoro</td>
-                                <td>UI/UX</td>
-                                <td>08.50</td>
-                                <td>17.45</td>
-                                <td>-</td>
-                                <td>Hadir</td>
-                            </tr>
-                            <tr>
-                                <td>6</td>
-                                <td>Rio Hu</td>
-                                <td>Back End</td>
-                                <td>08.48</td>
-                                <td>17.45</td>
-                                <td>-</td>
-                                <td>Hadir</td>
-                            </tr>
-                            <tr>
-                                <td>7</td>
-                                <td>Pepet Siebor</td>
-                                <td>TU</td>
-                                <td>08.43</td>
-                                <td>17.45</td>
-                                <td>-</td>
-                                <td>Hadir</td>
-                            </tr>
-                            <tr>
-                                <td>8</td>
-                                <td>Mie Ayam Gedangan</td>
-                                <td>Marketing</td>
-                                <td>08.50</td>
-                                <td>17.45</td>
-                                <td>-</td>
-                                <td>Hadir</td>
-                            </tr>
-                            <tr>
-                                <td>9</td>
-                                <td>Hasan Suandoro</td>
-                                <td>Back End</td>
-                                <td>08.50</td>
-                                <td>17.45</td>
-                                <td>-</td>
-                                <td>Hadir</td>
-                            </tr>
+                            @forelse ($dailyRecords as $record)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $record->employee->full_name }}</td>
+                                    <td>{{ $record->employee->department->name ?? '—' }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ $record->status }}">{{ $record->status_label }}</span>
+                                    </td>
+                                    <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
+                                    <td>{{ optional($record->check_out_time)->format('H:i') ?? '--:--' }}</td>
+                                    <td>{{ $record->notes ?? '—' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                                        Tidak ada data absensi untuk tanggal ini.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
-                @elseif ($activeType === 'mingguan')
-                    <table class="report-table">
+                @elseif ($type === 'mingguan')
+                    <form method="GET" class="filter-bar">
+                        <input type="hidden" name="type" value="mingguan">
+                        <div class="filter-group">
+                            <label for="start">Mulai</label>
+                            <div class="filter-input">
+                                <input type="date" id="start" name="start" value="{{ optional($period['start'] ?? null)->format('Y-m-d') ?? now()->startOfWeek()->format('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label for="end">Selesai</label>
+                            <div class="filter-input">
+                                <input type="date" id="end" name="end" value="{{ optional($period['end'] ?? null)->format('Y-m-d') ?? now()->endOfWeek()->format('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-secondary">Terapkan</button>
+                        </div>
+                    </form>
+
+                    <table>
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -754,246 +597,190 @@
                                 <th>Departemen</th>
                                 <th>Jumlah Presensi</th>
                                 <th>Hadir</th>
-                                <th>Izin</th>
-                                <th>Alfa</th>
+                                <th>Izin/Sakit</th>
+                                <th>Alpa</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Fefe Fifi Fufu Fafa</td>
-                                <td>Front End</td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Rio Hu</td>
-                                <td>Back End</td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Pepet Siebor</td>
-                                <td>UI/UX</td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Mie Ayam Gedangan</td>
-                                <td>Administrasi</td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>Hasan Susanto</td>
-                                <td>Front End</td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td>6</td>
-                                <td>Rio Hu</td>
-                                <td>Back End</td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td>7</td>
-                                <td>Pepet Siebor</td>
-                                <td>TU/UX</td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td>8</td>
-                                <td>Mie Ayam Gedangan</td>
-                                <td>Marketing</td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td>9</td>
-                                <td>Hasan Susanto</td>
-                                <td>Operational</td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td>10</td>
-                                <td>Mie Ayam Gedangan</td>
-                                <td>Operational</td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                @elseif ($activeType === 'custom')
-                    <table class="report-table">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama</th>
-                                <th>Status</th>
-                                <th>Waktu</th>
-                                <th>Tanggal</th>
-                                <th>Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($selectedEmployee['records'] as $index => $record)
+                            @forelse ($weeklySummary as $summary)
                                 <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $selectedEmployee['name'] }}</td>
-                                    <td>{{ $record['status'] }}</td>
-                                    <td>{{ $record['time'] }}</td>
-                                    <td>{{ $record['date'] }}</td>
-                                    <td>{{ $record['notes'] }}</td>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $summary['employee']->full_name }}</td>
+                                    <td>{{ $summary['employee']->department->name ?? '—' }}</td>
+                                    <td>{{ $summary['total'] }}</td>
+                                    <td>{{ $summary['attended'] }}</td>
+                                    <td>{{ $summary['leave'] }}</td>
+                                    <td>{{ $summary['absent'] }}</td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                                        Tidak ada data mingguan untuk rentang ini.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
-                @else
+                @elseif ($type === 'bulanan')
+                    @php
+                        $month = $period['month'] ?? now()->month;
+                        $year = $period['year'] ?? now()->year;
+                        $start = $period['start'] ?? now()->startOfMonth();
+                        $end = $period['end'] ?? now()->endOfMonth();
+                        $daysInMonth = $start->daysInMonth ?? now()->daysInMonth;
+                        $monthsOptions = [
+                            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+                        ];
+                    @endphp
+                    <form method="GET" class="filter-bar">
+                        <input type="hidden" name="type" value="bulanan">
+                        <div class="filter-group">
+                            <label for="month">Bulan</label>
+                            <div class="filter-input">
+                                <select id="month" name="month">
+                                    @foreach ($monthsOptions as $number => $label)
+                                        <option value="{{ $number }}" {{ (int) $month === $number ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label for="year">Tahun</label>
+                            <div class="filter-input">
+                                <select id="year" name="year">
+                                    @for ($y = now()->year - 2; $y <= now()->year + 2; $y++)
+                                        <option value="{{ $y }}" {{ (int) $year === $y ? 'selected' : '' }}>{{ $y }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-secondary">Terapkan</button>
+                        </div>
+                    </form>
+
+                    <div class="legend">
+                        <span><span class="legend-badge present">H</span> Hadir</span>
+                        <span><span class="legend-badge late">T</span> Terlambat</span>
+                        <span><span class="legend-badge leave">I</span> Izin</span>
+                        <span><span class="legend-badge sick">S</span> Sakit</span>
+                        <span><span class="legend-badge absent">A</span> Alpa</span>
+                    </div>
+
                     <div class="table-scroll">
-                        <table class="report-table monthly-report-table">
+                        <table>
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th>Nama</th>
-                                    @for ($day = 1; $day <= 31; $day++)
+                                    @for ($day = 1; $day <= $daysInMonth; $day++)
                                         <th>{{ $day }}</th>
                                     @endfor
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Fefe Fifi Fufu Fafa</td>
-                                    @for ($day = 1; $day <= 31; $day++)
-                                        <td></td>
-                                    @endfor
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Rio Hiu</td>
-                                    @for ($day = 1; $day <= 31; $day++)
-                                        <td></td>
-                                    @endfor
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Pepet Siebor</td>
-                                    @for ($day = 1; $day <= 31; $day++)
-                                        <td></td>
-                                    @endfor
-                                </tr>
-                                <tr>
-                                    <td>4</td>
-                                    <td>Mie Ayam Gedangan</td>
-                                    @for ($day = 1; $day <= 31; $day++)
-                                        <td></td>
-                                    @endfor
-                                </tr>
-                                <tr>
-                                    <td>5</td>
-                                    <td>Hasan Susanto</td>
-                                    @for ($day = 1; $day <= 31; $day++)
-                                        <td></td>
-                                    @endfor
-                                </tr>
-                                <tr>
-                                    <td>6</td>
-                                    <td>Pepet Siebor</td>
-                                    @for ($day = 1; $day <= 31; $day++)
-                                        <td></td>
-                                    @endfor
-                                </tr>
-                                <tr>
-                                    <td>7</td>
-                                    <td>Mie Ayam Gedangan</td>
-                                    @for ($day = 1; $day <= 31; $day++)
-                                        <td></td>
-                                    @endfor
-                                </tr>
-                                <tr>
-                                    <td>8</td>
-                                    <td>Hasan Susanto</td>
-                                    @for ($day = 1; $day <= 31; $day++)
-                                        <td></td>
-                                    @endfor
-                                </tr>
-                                <tr>
-                                    <td>9</td>
-                                    <td>Mie Ayam Gedangan</td>
-                                    @for ($day = 1; $day <= 31; $day++)
-                                        <td></td>
-                                    @endfor
-                                </tr>
-                                <tr>
-                                    <td>10</td>
-                                    <td>Hasan Susanto</td>
-                                    @for ($day = 1; $day <= 31; $day++)
-                                        <td></td>
-                                    @endfor
-                                </tr>
+                                @forelse ($monthlyMatrix as $row)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $row['employee']->full_name }}</td>
+                                        @for ($day = 1; $day <= $daysInMonth; $day++)
+                                            @php($symbol = $row['days'][$day] ?? '')
+                                            <td style="text-align: center; font-weight: 600;">
+                                                {{ $symbol }}
+                                            </td>
+                                        @endfor
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="{{ $daysInMonth + 2 }}" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                                            Tidak ada data bulanan untuk periode ini.
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
-                @endif
+                @else
+                    <form method="GET" class="filter-bar">
+                        <input type="hidden" name="type" value="custom">
+                        <div class="filter-group">
+                            <label for="employee_id">Pegawai</label>
+                            <div class="filter-input">
+                                <select id="employee_id" name="employee_id">
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->id }}" {{ optional($selectedEmployee)->id === $employee->id ? 'selected' : '' }}>
+                                            {{ $employee->full_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label for="start">Mulai</label>
+                            <div class="filter-input">
+                                <input type="date" id="start" name="start" value="{{ optional($period['start'] ?? null)->format('Y-m-d') ?? now()->subMonth()->format('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label for="end">Selesai</label>
+                            <div class="filter-input">
+                                <input type="date" id="end" name="end" value="{{ optional($period['end'] ?? null)->format('Y-m-d') ?? now()->format('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-secondary">Terapkan</button>
+                        </div>
+                    </form>
 
-                <p class="notes-text">Catatan: Jika pegawai izin/alfa/sakit harap tambahkan keterangan pada kolom terakhir.</p>
+                    @if ($selectedEmployee)
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h2 style="margin: 0; font-size: 20px;">{{ $selectedEmployee->full_name }}</h2>
+                                <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 14px;">
+                                    {{ $selectedEmployee->position->name ?? 'Jabatan belum diatur' }} &middot;
+                                    {{ $selectedEmployee->department->name ?? 'Departemen belum diatur' }}
+                                </p>
+                            </div>
+                        </div>
+                    @endif
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($customRecords as $record)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $record->attendance_date->translatedFormat('d F Y') }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ $record->status }}">{{ $record->status_label }}</span>
+                                    </td>
+                                    <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
+                                    <td>{{ optional($record->check_out_time)->format('H:i') ?? '--:--' }}</td>
+                                    <td>{{ $record->notes ?? '—' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                                        Tidak ada data pada rentang tanggal yang dipilih.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                @endif
             </section>
         </main>
     </div>
-
-    <script>
-        const baseSheetReportUrl = "{{ url('/sheet-report') }}";
-        const selectedEmployeeKey = @json($selectedEmployeeKey);
-        const reportViewSelect = document.getElementById('reportViewSelect');
-        const employeeSelect = document.getElementById('employeeSelect');
-
-        if (reportViewSelect) {
-            reportViewSelect.addEventListener('change', function () {
-                const viewValue = this.value;
-                let targetUrl = `${baseSheetReportUrl}?type=${viewValue}`;
-
-                if (viewValue === 'custom' && selectedEmployeeKey) {
-                    targetUrl += `&employee=${encodeURIComponent(selectedEmployeeKey)}`;
-                }
-
-                window.location.href = targetUrl;
-            });
-        }
-
-        if (employeeSelect) {
-            employeeSelect.addEventListener('change', function () {
-                const targetUrl = `${baseSheetReportUrl}?type=custom&employee=${encodeURIComponent(this.value)}`;
-                window.location.href = targetUrl;
-            });
-        }
-    </script>
 </body>
 </html>

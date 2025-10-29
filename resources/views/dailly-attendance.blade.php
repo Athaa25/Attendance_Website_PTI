@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @php($page = $page ?? 'list')
-    <title>
-        @switch($page)
-            @case('edit')Edit Absensi@break
-            @default Daily Attendance
-        @endswitch
-    </title>
+    <title>Absensi Harian</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -21,11 +15,7 @@
             --card-background: #FFFFFF;
             --border-color: #E5E7EB;
             --highlight: #F3F4F6;
-            --success: #16A34A;
-            --warning: #F59E0B;
             --danger: #EF4444;
-            --maroon: #590815;
-            --navy: #0C1C47;
         }
 
         * {
@@ -188,286 +178,259 @@
             gap: 24px;
         }
 
-        .content-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-        }
-
-        .content-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0;
+        .status-banner {
+            padding: 16px 20px;
+            border-radius: 16px;
+            background-color: rgba(17, 43, 105, 0.08);
             color: var(--blue-primary);
+            font-weight: 500;
         }
 
-        .edit-button {
-            background-color: var(--blue-primary);
-            color: #FFFFFF;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 24px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
         }
 
-        .edit-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 20px rgba(17, 43, 105, 0.2);
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
-        .attendance-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background-color: var(--card-background);
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 12px 30px rgba(17, 43, 105, 0.06);
-        }
-
-        .attendance-table thead {
-            background-color: var(--highlight);
-        }
-
-        .attendance-table th {
-            text-align: left;
-            padding: 18px 24px;
-            font-weight: 600;
-            font-size: 14px;
+        .filter-group label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
         }
 
-        .attendance-table tbody tr {
-            border-bottom: 1px solid var(--border-color);
+        .filter-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--highlight);
         }
 
-        .attendance-table tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        .attendance-table td {
-            padding: 18px 24px;
+        .filter-input input,
+        .filter-input select {
+            border: none;
+            background: transparent;
+            font-family: inherit;
             font-size: 14px;
             color: var(--text-dark);
+            width: 100%;
+        }
+
+        .filter-input input:focus,
+        .filter-input select:focus {
+            outline: none;
+        }
+
+        .filter-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--blue-primary);
+            color: #FFFFFF;
+            box-shadow: 0 8px 20px rgba(17, 43, 105, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: var(--highlight);
+            color: var(--blue-primary);
+        }
+
+        .btn-danger {
+            background-color: rgba(239, 68, 68, 0.18);
+            color: #b91c1c;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(17, 43, 105, 0.2);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-card {
+            border-radius: 20px;
+            background-color: var(--highlight);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-value {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        thead {
+            background-color: rgba(17, 43, 105, 0.05);
+        }
+
+        th {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            padding: 16px;
+            text-align: left;
+        }
+
+        td {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        tr:nth-child(even) td {
+            background-color: rgba(17, 43, 105, 0.02);
         }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 999px;
+            font-size: 12px;
             font-weight: 600;
-            font-size: 13px;
+            text-transform: capitalize;
         }
 
         .status-present {
-            background-color: rgba(22, 163, 74, 0.12);
-            color: var(--success);
+            background-color: rgba(34, 197, 94, 0.18);
+            color: #15803d;
         }
 
         .status-late {
-            background-color: rgba(245, 158, 11, 0.12);
-            color: var(--warning);
+            background-color: rgba(234, 179, 8, 0.18);
+            color: #b45309;
+        }
+
+        .status-leave {
+            background-color: rgba(59, 130, 246, 0.18);
+            color: #1d4ed8;
+        }
+
+        .status-sick {
+            background-color: rgba(14, 165, 233, 0.18);
+            color: #0f766e;
         }
 
         .status-absent {
-            background-color: rgba(239, 68, 68, 0.12);
-            color: var(--danger);
+            background-color: rgba(239, 68, 68, 0.18);
+            color: #b91c1c;
         }
 
-        .empty-time {
-            color: var(--text-muted);
-            font-style: italic;
-        }
-
-        .attendance-edit {
-            scroll-margin-top: 120px;
-        }
-
-        .attendance-edit form {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .attendance-edit .form-grid {
+        .form-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
         }
 
-        .attendance-edit .form-group {
+        .form-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 6px;
         }
 
-        .attendance-edit label {
+        .form-group label {
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-dark);
-            font-size: 14px;
         }
 
-        .attendance-edit select,
-        .attendance-edit input[type="text"],
-        .attendance-edit input[type="time"],
-        .attendance-edit textarea {
-            width: 100%;
+        .form-control {
+            padding: 12px 14px;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 14px 16px;
-            font-size: 14px;
-            font-family: inherit;
             background-color: var(--highlight);
+            font-family: inherit;
+            font-size: 14px;
             color: var(--text-dark);
         }
 
-        .attendance-edit select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%236F6F6F'%3E%3Cpath d='M6 8l4 4 4-4' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            background-size: 18px;
-            padding-right: 48px;
+        .form-control:focus {
+            outline: 2px solid rgba(17, 43, 105, 0.25);
+            background-color: #fff;
         }
 
-        .attendance-edit input[type="text"],
-        .attendance-edit input[type="time"] {
-            appearance: none;
-        }
-
-        .attendance-edit textarea {
+        textarea.form-control {
             min-height: 140px;
             resize: vertical;
         }
 
-        .attendance-edit .status-toggle {
+        .form-actions {
             display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-
-        .attendance-edit .status-option {
-            display: flex;
+            justify-content: space-between;
             align-items: center;
             gap: 12px;
-            cursor: pointer;
+            margin-top: 16px;
         }
 
-        .attendance-edit .status-option input {
-            display: none;
-        }
-
-        .attendance-edit .status-indicator {
-            width: 42px;
-            height: 24px;
-            border-radius: 999px;
-            background-color: #CBD5F5;
-            position: relative;
-            transition: background-color 0.2s ease;
-        }
-
-        .attendance-edit .status-indicator::after {
-            content: "";
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 16px;
-            height: 16px;
-            background-color: var(--blue-primary);
-            border-radius: 50%;
-            transition: transform 0.2s ease;
-        }
-
-        .attendance-edit .status-option input:checked + .status-indicator::after {
-            transform: translateX(18px);
-        }
-
-        .attendance-edit .status-option input[value="hadir"]:checked + .status-indicator {
-            background-color: rgba(17, 43, 105, 0.2);
-        }
-
-        .attendance-edit .status-option input[value="izin"]:checked + .status-indicator {
-            background-color: rgba(189, 28, 37, 0.2);
-        }
-
-        .attendance-edit .status-option input[value="izin"]:checked + .status-indicator::after {
-            background-color: var(--danger);
-        }
-
-        .attendance-edit .status-label {
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .attendance-edit .button-row {
-            display: flex;
-            justify-content: flex-end;
-            gap: 16px;
-        }
-
-        .attendance-edit .btn {
-            border: none;
-            border-radius: 14px;
-            padding: 14px 32px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .attendance-edit .btn:focus {
-            outline: none;
-        }
-
-        .attendance-edit .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(17, 43, 105, 0.12);
-        }
-
-        .attendance-edit .btn-cancel {
-            background: linear-gradient(90deg, var(--maroon), var(--danger));
-            color: #FFFFFF;
-        }
-
-        .attendance-edit .btn-submit {
-            background: linear-gradient(90deg, var(--blue-primary), var(--navy));
-            color: #FFFFFF;
+        .helper-text {
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
         @media (max-width: 1200px) {
             .dashboard-layout {
-                padding: 24px;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .dashboard-layout {
                 flex-direction: column;
+                padding: 24px;
             }
 
             .sidebar {
                 width: 100%;
                 flex-direction: row;
+                align-items: flex-start;
                 gap: 24px;
-                align-items: center;
-                border-radius: 24px;
-                padding: 24px;
-                flex-wrap: wrap;
             }
 
             .sidebar-nav {
                 flex: 1;
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-                gap: 12px;
+                flex-direction: row;
+                flex-wrap: wrap;
             }
 
             .sidebar-footer {
@@ -477,44 +440,29 @@
                 padding-left: 24px;
             }
 
-            .attendance-edit .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .top-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-
-            .content-wrapper {
-                padding: 24px;
-            }
-
-            .content-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .attendance-table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            .attendance-edit .button-row {
+            .filter-actions,
+            .form-actions {
                 flex-direction: column;
                 align-items: stretch;
-            }
-
-            .attendance-edit .btn {
-                width: 100%;
             }
         }
     </style>
 </head>
 <body>
+    @php
+        $page = $page ?? 'list';
+        $user = auth()->user();
+        $userInitials = \Illuminate\Support\Str::of($user?->name ?? '')
+            ->trim()
+            ->explode(' ')
+            ->filter()
+            ->map(fn ($segment) => mb_strtoupper(mb_substr($segment, 0, 1)))
+            ->take(2)
+            ->implode('');
+        if ($userInitials === '') {
+            $userInitials = 'AD';
+        }
+    @endphp
     <div class="dashboard-layout">
         <aside class="sidebar">
             <div class="sidebar-logo">
@@ -523,7 +471,7 @@
             <div class="sidebar-nav">
                 <div class="sidebar-nav-group">
                     <p class="sidebar-section-title">Menu</p>
-                    <a href="{{ url('/dashboard') }}" class="sidebar-nav-item">
+                    <a href="{{ route('dashboard') }}" class="sidebar-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                         <img src="{{ asset('images/dashboard-icon.png') }}" alt="Dashboard Icon">
                         Dashboard
                     </a>
@@ -531,7 +479,7 @@
 
                 <div class="sidebar-nav-group">
                     <p class="sidebar-section-title">Users Management</p>
-                    <a href="{{ url('/manage-users') }}" class="sidebar-nav-item">
+                    <a href="{{ route('manage-users.index') }}" class="sidebar-nav-item {{ request()->routeIs('manage-users.*') ? 'active' : '' }}">
                         <img src="{{ asset('images/manage-user-icon.png') }}" alt="Manage User Icon">
                         Manage User
                     </a>
@@ -547,11 +495,11 @@
                         <img src="{{ asset('images/schedule-icon.png') }}" alt="Schedule Icon">
                         Schedule
                     </a>
-                    <a href="{{ url('/daily-attendance') }}" class="sidebar-nav-item {{ in_array($page, ['list', 'edit']) ? 'active' : '' }}">
+                    <a href="{{ route('attendance.index') }}" class="sidebar-nav-item {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
                         <img src="{{ asset('images/daily-attendance-icon.png') }}" alt="Daily Attendance Icon">
                         Daily Attendance
                     </a>
-                    <a href="{{ url('/sheet-report') }}" class="sidebar-nav-item">
+                    <a href="{{ route('reports.sheet') }}" class="sidebar-nav-item {{ request()->routeIs('reports.sheet') ? 'active' : '' }}">
                         <img src="{{ asset('images/sheet-report-icon.png') }}" alt="Sheet Report Icon">
                         Sheet Report
                     </a>
@@ -559,190 +507,188 @@
             </div>
 
             <div class="sidebar-footer">
-                <a href="#" class="logout-link">
+                <a href="{{ route('logout') }}" class="logout-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <img src="{{ asset('images/logout-box-icon.png') }}" alt="Logout Icon">
                     Keluar
                 </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                    @csrf
+                </form>
             </div>
         </aside>
 
         <main class="main-content">
             <header class="top-header">
                 <div>
-                    <h1 class="top-header-title">Dashboard Admin</h1>
-                    <p class="top-header-subtitle">Halo, Selamat Datang Prabo</p>
+                    <h1 class="top-header-title">Absensi Harian</h1>
+                    <p class="top-header-subtitle">
+                        Halo, {{ $user?->name ?? 'Administrator' }} &middot;
+                        <span>{{ now()->translatedFormat('d F Y') }}</span>
+                    </p>
                 </div>
                 <div class="profile-info">
-                    <div class="avatar">AP</div>
-                    <span class="profile-name">Akbar Prabo</span>
+                    <div class="avatar">{{ $userInitials }}</div>
+                    <span class="profile-name">{{ $user?->name ?? 'Administrator' }}</span>
                 </div>
             </header>
 
-            <section class="content-wrapper {{ $page === 'edit' ? 'attendance-edit' : '' }}">
-                @if($page === 'edit')
-                    <div class="content-header">
-                        <h2 class="content-title">Edit Absensi</h2>
-                        <a href="{{ url('/daily-attendance') }}" class="edit-button">Kembali</a>
+            <section class="content-wrapper">
+                @if (session('status'))
+                    <div class="status-banner">
+                        {{ session('status') }}
                     </div>
+                @endif
 
-                    <form>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="employee-name">Name</label>
-                                <select id="employee-name" name="employee-name">
-                                    <option selected>Fefe Fifi Fufu Fafa</option>
-                                    <option>Rio Hu</option>
-                                    <option>Pepet Siebor</option>
-                                    <option>Mie Ayam Gedang</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="attendance-date">Tanggal</label>
-                                <input type="text" id="attendance-date" value="30 September 2025">
-                            </div>
-                            <div class="form-group">
-                                <label for="clock-in">Clock in</label>
-                                <input type="time" id="clock-in" value="09:46">
-                            </div>
-                            <div class="form-group">
-                                <label for="clock-out">Clock out</label>
-                                <input type="time" id="clock-out" value="16:19">
-                            </div>
-                            <div class="form-group">
-                                <label for="shift">Shift</label>
-                                <select id="shift" name="shift">
-                                    <option selected>Shift-1</option>
-                                    <option>Shift-2</option>
-                                    <option>Shift-3</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Status</label>
-                                <div class="status-toggle">
-                                    <label class="status-option">
-                                        <input type="radio" name="status" value="hadir" checked>
-                                        <span class="status-indicator"></span>
-                                        <span class="status-label">Hadir</span>
-                                    </label>
-                                    <label class="status-option">
-                                        <input type="radio" name="status" value="izin">
-                                        <span class="status-indicator"></span>
-                                        <span class="status-label">Izin</span>
-                                    </label>
-                                </div>
+                @if ($page === 'list')
+                    <form method="GET" class="filter-bar">
+                        <div class="filter-group">
+                            <label for="date">Tanggal</label>
+                            <div class="filter-input">
+                                <input type="date" id="date" name="date" value="{{ $attendanceDate->format('Y-m-d') }}">
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="description">Deskripsi</label>
-                            <textarea id="description" placeholder="Deskripsi izin..."></textarea>
+                        <div class="filter-group">
+                            <label for="status">Status</label>
+                            <div class="filter-input">
+                                <select id="status" name="status">
+                                    <option value="">Semua</option>
+                                    @foreach ($statusOptions as $value => $label)
+                                        <option value="{{ $value }}" {{ ($filters['status'] ?? '') === $value ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-
-                        <div class="button-row">
-                            <a href="{{ url('/daily-attendance') }}" class="btn btn-cancel">Batal</a>
-                            <button type="submit" class="btn btn-submit">Simpan Perubahan</button>
+                        <div class="filter-group">
+                            <label for="search">Pencarian</label>
+                            <div class="filter-input">
+                                <input type="search" id="search" name="search" placeholder="Nama atau kode pegawai" value="{{ $filters['search'] ?? '' }}">
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-secondary">Terapkan</button>
                         </div>
                     </form>
-                @else
-                    <div class="content-header">
-                        <h2 class="content-title">Kehadiran</h2>
-                        <a href="{{ url('/daily-attendance/edit') }}" class="edit-button">Edit</a>
+
+                    <div class="summary-grid">
+                        <div class="summary-card">
+                            <span class="summary-label">Total Pegawai</span>
+                            <span class="summary-value">{{ $summary['total_employees'] }}</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Hadir</span>
+                            <span class="summary-value">{{ $summary['present'] }}</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Terlambat</span>
+                            <span class="summary-value">{{ $summary['late'] }}</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Izin</span>
+                            <span class="summary-value">{{ $summary['leave'] }}</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Sakit</span>
+                            <span class="summary-value">{{ $summary['sick'] }}</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Alpa</span>
+                            <span class="summary-value">{{ $summary['absent'] }}</span>
+                        </div>
                     </div>
 
-                    <table class="attendance-table">
+                    <table>
                         <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Nama</th>
+                                <th>Departemen</th>
                                 <th>Status</th>
-                                <th>Waktu</th>
-                                <th>Tanggal</th>
+                                <th>Check-In</th>
                                 <th>Keterangan</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Fefe Fifi Fufu Fafa</td>
-                                <td><span class="status-badge status-present">Hadir</span></td>
-                                <td>09:54</td>
-                                <td>30 September 2025</td>
-                                <td>Tepat waktu</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Rio Hu</td>
-                                <td><span class="status-badge status-present">Hadir</span></td>
-                                <td>09:54</td>
-                                <td>30 September 2025</td>
-                                <td>Tepat waktu</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Pepet Siebor</td>
-                                <td><span class="status-badge status-late">Telat</span></td>
-                                <td>09:54</td>
-                                <td>30 September 2025</td>
-                                <td>Telat</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Mie Ayam Gedang</td>
-                                <td><span class="status-badge status-present">Hadir</span></td>
-                                <td>09:54</td>
-                                <td>30 September 2025</td>
-                                <td>Tepat waktu</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>Fefe Fifi Fufu Fafa</td>
-                                <td><span class="status-badge status-present">Hadir</span></td>
-                                <td>09:54</td>
-                                <td>30 September 2025</td>
-                                <td>Tepat waktu</td>
-                            </tr>
-                            <tr>
-                                <td>6</td>
-                                <td>Pepet Siebor</td>
-                                <td><span class="status-badge status-late">Telat</span></td>
-                                <td>09:54</td>
-                                <td>30 September 2025</td>
-                                <td>Telat</td>
-                            </tr>
-                            <tr>
-                                <td>7</td>
-                                <td>Mie Ayam Gedangan</td>
-                                <td><span class="status-badge status-present">Hadir</span></td>
-                                <td>09:54</td>
-                                <td>30 September 2025</td>
-                                <td>Tepat waktu</td>
-                            </tr>
-                            <tr>
-                                <td>8</td>
-                                <td>Fefe Fifi Fufu Fafa</td>
-                                <td><span class="status-badge status-present">Hadir</span></td>
-                                <td>09:54</td>
-                                <td>30 September 2025</td>
-                                <td>Tepat waktu</td>
-                            </tr>
-                            <tr>
-                                <td>9</td>
-                                <td>Rio Hu</td>
-                                <td><span class="status-badge status-absent">Izin</span></td>
-                                <td class="empty-time">--:--</td>
-                                <td>30 September 2025</td>
-                                <td>Tidak hadir</td>
-                            </tr>
-                            <tr>
-                                <td>10</td>
-                                <td>Hasan Susanto</td>
-                                <td><span class="status-badge status-absent">Izin</span></td>
-                                <td class="empty-time">--:--</td>
-                                <td>30 September 2025</td>
-                                <td>Tidak hadir</td>
-                            </tr>
+                            @forelse ($records as $record)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>
+                                        {{ $record->employee->full_name }}
+                                        <div style="font-size: 12px; color: var(--text-muted);">
+                                            {{ $record->employee->employee_code }}
+                                        </div>
+                                    </td>
+                                    <td>{{ $record->employee->department->name ?? '—' }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ $record->status }}">
+                                            {{ $record->status_label }}
+                                        </span>
+                                    </td>
+                                    <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
+                                    <td>{{ $record->notes ?? '—' }}</td>
+                                    <td>
+                                        <a class="btn btn-secondary" href="{{ route('attendance.edit', $record) }}">Edit</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                                        Belum ada data absensi pada tanggal ini.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
+                @else
+                    <div class="form-header">
+                        <div>
+                            <h2 class="form-title">Edit Absensi Pegawai</h2>
+                            <p class="form-subtitle">
+                                {{ $record->employee->full_name }} &middot;
+                                {{ $attendanceDate->translatedFormat('d F Y') }}
+                            </p>
+                        </div>
+                        <a href="{{ route('attendance.index', ['date' => $attendanceDate->format('Y-m-d')]) }}" class="btn btn-secondary">Kembali</a>
+                    </div>
+
+                    <form method="POST" action="{{ route('attendance.update', $record) }}">
+                        @csrf
+                        @method('PUT')
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="status">Status Kehadiran</label>
+                                <select id="status" name="status" class="form-control" required>
+                                    @foreach ($statusOptions as $value => $label)
+                                        <option value="{{ $value }}" {{ old('status', $record->status) === $value ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="check_in_time">Jam Masuk</label>
+                                <input id="check_in_time" name="check_in_time" type="time" class="form-control" value="{{ old('check_in_time', optional($record->check_in_time)->format('H:i')) }}">
+                                <p class="helper-text">
+                                    Jadwal: {{ optional($record->employee->schedule)->start_time?->format('H:i') ?? '08:00' }}
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <label for="check_out_time">Jam Pulang</label>
+                                <input id="check_out_time" name="check_out_time" type="time" class="form-control" value="{{ old('check_out_time', optional($record->check_out_time)->format('H:i')) }}">
+                            </div>
+                            <div class="form-group form-row-span">
+                                <label for="notes">Keterangan</label>
+                                <textarea id="notes" name="notes" class="form-control">{{ old('notes', $record->notes) }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <a href="{{ route('attendance.index', ['date' => $attendanceDate->format('Y-m-d')]) }}" class="btn btn-secondary">Batal</a>
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        </div>
+                    </form>
                 @endif
             </section>
         </main>
