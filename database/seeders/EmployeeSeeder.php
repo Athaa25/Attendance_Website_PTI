@@ -25,7 +25,7 @@ class EmployeeSeeder extends Seeder
             [
                 'user' => [
                     'name' => 'Akbar Prabo',
-                    'email' => 'akbar.prabo@rmdi.id',
+                    'email' => 'akbar.prabo@rmdoo.id',
                     'username' => 'akbarprabo',
                     'role' => 'admin',
                     'password' => 'password',
@@ -35,7 +35,7 @@ class EmployeeSeeder extends Seeder
                     'full_name' => 'Akbar Prabo',
                     'gender' => 'male',
                     'phone' => '0812-3456-7890',
-                    'work_email' => 'akbar.prabo@rmdi.id',
+                    'work_email' => 'akbar.prabo@rmdoo.id',
                     'national_id' => '3571720201010101',
                     'place_of_birth' => 'Malang',
                     'date_of_birth' => '1990-04-21',
@@ -51,7 +51,7 @@ class EmployeeSeeder extends Seeder
             [
                 'user' => [
                     'name' => 'Fefe Fifi Fufu Fafa',
-                    'email' => 'fefe.fafa@rmdi.id',
+                    'email' => 'fefe.fafa@rmdoo.id',
                     'username' => 'fefe.fafa',
                     'role' => 'employee',
                     'password' => 'password',
@@ -61,7 +61,7 @@ class EmployeeSeeder extends Seeder
                     'full_name' => 'Fefe Fifi Fufu Fafa',
                     'gender' => 'female',
                     'phone' => '0813-5566-7788',
-                    'work_email' => 'fefe.fafa@rmdi.id',
+                    'work_email' => 'fefe.fafa@rmdoo.id',
                     'national_id' => '3571720202020202',
                     'place_of_birth' => 'Surabaya',
                     'date_of_birth' => '1996-09-12',
@@ -77,7 +77,7 @@ class EmployeeSeeder extends Seeder
             [
                 'user' => [
                     'name' => 'Rio Hu',
-                    'email' => 'rio.hu@rmdi.id',
+                    'email' => 'rio.hu@rmdoo.id',
                     'username' => 'rio.hu',
                     'role' => 'employee',
                     'password' => 'password',
@@ -87,7 +87,7 @@ class EmployeeSeeder extends Seeder
                     'full_name' => 'Rio Hu',
                     'gender' => 'male',
                     'phone' => '0814-9988-7766',
-                    'work_email' => 'rio.hu@rmdi.id',
+                    'work_email' => 'rio.hu@rmdoo.id',
                     'national_id' => '3571720203030303',
                     'place_of_birth' => 'Gresik',
                     'date_of_birth' => '1995-05-04',
@@ -103,7 +103,7 @@ class EmployeeSeeder extends Seeder
             [
                 'user' => [
                     'name' => 'Pepet Siebor',
-                    'email' => 'pepet.siebor@rmdi.id',
+                    'email' => 'pepet.siebor@rmdoo.id',
                     'username' => 'pepet.siebor',
                     'role' => 'employee',
                     'password' => 'password',
@@ -113,7 +113,7 @@ class EmployeeSeeder extends Seeder
                     'full_name' => 'Pepet Siebor',
                     'gender' => 'male',
                     'phone' => '0815-4455-2211',
-                    'work_email' => 'pepet.siebor@rmdi.id',
+                    'work_email' => 'pepet.siebor@rmdoo.id',
                     'national_id' => '3571720204040404',
                     'place_of_birth' => 'Sidoarjo',
                     'date_of_birth' => '1992-03-17',
@@ -129,7 +129,7 @@ class EmployeeSeeder extends Seeder
             [
                 'user' => [
                     'name' => 'Mie Ayam Gedangan',
-                    'email' => 'mie.gedangan@rmdi.id',
+                    'email' => 'mie.gedangan@rmdoo.id',
                     'username' => 'mie.gedangan',
                     'role' => 'employee',
                     'password' => 'password',
@@ -139,7 +139,7 @@ class EmployeeSeeder extends Seeder
                     'full_name' => 'Mie Ayam Gedangan',
                     'gender' => 'female',
                     'phone' => '0816-4455-6677',
-                    'work_email' => 'mie.gedangan@rmdi.id',
+                    'work_email' => 'mie.gedangan@rmdoo.id',
                     'national_id' => '3571720205050505',
                     'place_of_birth' => 'Kediri',
                     'date_of_birth' => '1998-11-24',
@@ -155,7 +155,7 @@ class EmployeeSeeder extends Seeder
             [
                 'user' => [
                     'name' => 'Hasan Susanto',
-                    'email' => 'hasan.susanto@rmdi.id',
+                    'email' => 'hasan.susanto@rmdoo.id',
                     'username' => 'hasan.susanto',
                     'role' => 'employee',
                     'password' => 'password',
@@ -165,7 +165,7 @@ class EmployeeSeeder extends Seeder
                     'full_name' => 'Hasan Susanto',
                     'gender' => 'male',
                     'phone' => '0817-8899-5544',
-                    'work_email' => 'hasan.susanto@rmdi.id',
+                    'work_email' => 'hasan.susanto@rmdoo.id',
                     'national_id' => '3571720206060606',
                     'place_of_birth' => 'Lamongan',
                     'date_of_birth' => '1994-12-09',
@@ -181,7 +181,7 @@ class EmployeeSeeder extends Seeder
             [
                 'user' => [
                     'name' => 'Kim Kim Kim',
-                    'email' => 'kim.kim@rmdi.id',
+                    'email' => 'kim.kim@rmdoo.id',
                     'username' => 'kim.kim',
                     'role' => 'hr',
                     'password' => 'password',
@@ -191,7 +191,7 @@ class EmployeeSeeder extends Seeder
                     'full_name' => 'Kim Kim Kim',
                     'gender' => 'male',
                     'phone' => '0818-2211-3344',
-                    'work_email' => 'kim.kim@rmdi.id',
+                    'work_email' => 'kim.kim@rmdoo.id',
                     'national_id' => '3571720207070707',
                     'place_of_birth' => 'Wonosobo',
                     'date_of_birth' => '1991-01-03',

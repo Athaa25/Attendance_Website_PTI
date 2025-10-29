@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Masuk | RMDI</title>
+        <title>Masuk | RMDOO</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -18,7 +18,7 @@
             <section class="relative overflow-hidden rounded-[32px] bg-white p-10 shadow-[0_24px_50px_rgba(0,0,0,0.08)] border border-gray-200">
                 <div class="relative z-10">
                     <div class="flex flex-col items-center gap-6 text-center">
-                        <img src="{{ asset('images/RMDI_logo.png') }}" alt="RMDI" class="h-16 object-contain" loading="lazy" />
+                        <img src="{{ asset('images/RMDOO_logo.png') }}" alt="RMDOO" class="h-16 object-contain" loading="lazy" />
                         <div class="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-[#123a5d] text-white shadow-md">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-9 w-9">
                                 <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.76-3.58-5-8-5Z" />

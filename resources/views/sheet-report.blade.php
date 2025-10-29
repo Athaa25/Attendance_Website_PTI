@@ -447,7 +447,7 @@
     <div class="dashboard-layout">
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <img src="{{ asset('images/RMDI_logo.png') }}" alt="RMDI Logo" width="120" height="60">
+                <img src="{{ asset('images/RMDOO_logo.png') }}" alt="RMDOO Logo" width="120" height="60">
             </div>
             <div class="sidebar-nav">
                 <div class="sidebar-nav-group">

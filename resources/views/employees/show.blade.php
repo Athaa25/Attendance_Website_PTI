@@ -338,7 +338,7 @@
     <div class="dashboard-layout">
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <img src="{{ asset('images/RMDI_logo.png') }}" alt="RMDI Logo" width="120" height="60">
+                <img src="{{ asset('images/RMDOO_logo.png') }}" alt="RMDOO Logo" width="120" height="60">
             </div>
             <div class="sidebar-nav">
                 <div class="sidebar-nav-group">
@@ -429,7 +429,7 @@
                         <div class="detail-label">Username</div>
                         <div class="detail-value">{{ $employee->user->username }}</div>
 
-                        <div class="detail-label">Peran Sistem</div>
+                        <div class="detail-label">Role Sistem</div>
                         <div class="detail-value">{{ ucfirst($employee->user->role) }}</div>
                     </div>
 

@@ -348,7 +348,7 @@
     <div class="dashboard-layout">
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <img src="{{ asset('images/RMDI_logo.png') }}" alt="RMDI Logo" width="120" height="60">
+                <img src="{{ asset('images/RMDOO_logo.png') }}" alt="RMDOO Logo" width="120" height="60">
             </div>
             <div class="sidebar-nav">
                 <div class="sidebar-nav-group">
@@ -459,7 +459,7 @@
                             <input id="username" name="username" type="text" class="form-control" value="{{ old('username', $employee->user->username) }}" required>
                         </div>
                         <div class="form-group">
-                            <label for="role">Peran Sistem</label>
+                            <label for="role">Role Sistem</label>
                             <select id="role" name="role" class="form-control" required>
                                 @foreach ($roleOptions as $value => $label)
                                     <option value="{{ $value }}" {{ old('role', $employee->user->role) === $value ? 'selected' : '' }}>
