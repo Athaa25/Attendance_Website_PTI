@@ -17,14 +17,22 @@ class AttendanceController extends Controller
     {
         Carbon::setLocale(config('app.locale'));
 
-        $date = $request->date('date', now()->toDateString());
+        $dateInput = $request->input('date');
+        $date = $dateInput && Carbon::hasFormat($dateInput, 'Y-m-d')
+            ? Carbon::createFromFormat('Y-m-d', $dateInput)->toDateString()
+            : now()->toDateString();
+
+        $statusOptions = AttendanceRecord::statusLabels();
         $status = $request->string('status')->toString();
+        if ($status !== '' && ! array_key_exists($status, $statusOptions)) {
+            $status = '';
+        }
         $search = $request->string('search')->toString();
 
         $query = AttendanceRecord::with(['employee.department', 'employee.schedule', 'employee.user'])
             ->whereDate('attendance_date', $date);
 
-        if (in_array($status, [AttendanceRecord::STATUS_PRESENT, AttendanceRecord::STATUS_LEAVE], true)) {
+        if ($status !== '') {
             $query->where('status', $status);
         }
 
@@ -37,25 +45,35 @@ class AttendanceController extends Controller
 
         $records = $query->get()->sortBy(fn ($record) => $record->employee->full_name);
 
-        $summary = [
-            'present' => $records->where('status', AttendanceRecord::STATUS_PRESENT)->count(),
-            'leave' => $records->where('status', AttendanceRecord::STATUS_LEAVE)->count(),
-            'total_employees' => Employee::count(),
+        $statusSummaryMap = [
+            'present' => AttendanceRecord::STATUS_PRESENT,
+            'late' => AttendanceRecord::STATUS_LATE,
+            'leave' => AttendanceRecord::STATUS_LEAVE,
+            'sick' => AttendanceRecord::STATUS_SICK,
+            'absent' => AttendanceRecord::STATUS_ABSENT,
         ];
 
+        $statusCounts = $records
+            ->groupBy('status')
+            ->map->count();
+
+        $summary = ['total_employees' => Employee::count()];
+
+        foreach ($statusSummaryMap as $summaryKey => $statusValue) {
+            $summary[$summaryKey] = $statusCounts->get($statusValue, 0);
+        }
+
         return view('attendance', [
+            'page' => 'list',
             'viewMode' => 'list',
-            'attendanceDate' => Carbon::parse($date),
+            'attendanceDate' => Carbon::createFromFormat('Y-m-d', $date),
             'records' => $records,
             'summary' => $summary,
             'filters' => [
                 'status' => $status,
                 'search' => $search,
             ],
-            'statusOptions' => [
-                AttendanceRecord::STATUS_PRESENT => AttendanceRecord::statusLabels()[AttendanceRecord::STATUS_PRESENT],
-                AttendanceRecord::STATUS_LEAVE => AttendanceRecord::statusLabels()[AttendanceRecord::STATUS_LEAVE],
-            ],
+            'statusOptions' => $statusOptions,
             'leaveReasonOptions' => AttendanceRecord::leaveReasonOptions(),
         ]);
     }
@@ -82,7 +100,13 @@ class AttendanceController extends Controller
     {
         $attendanceRecord->load(['employee.department', 'employee.schedule', 'employee.user']);
 
-        return view('attendance', $this->formPayload($attendanceRecord));
+        return view('attendance', array_merge(
+            $this->formPayload($attendanceRecord),
+            [
+                'page' => 'form',
+                'attendanceDate' => $attendanceRecord->attendance_date ?? Carbon::now(),
+            ]
+        ));
     }
 
     public function update(UpdateAttendanceRequest $request, AttendanceRecord $attendanceRecord)
@@ -111,10 +135,7 @@ class AttendanceController extends Controller
             'record' => $record?->loadMissing(['employee.department', 'employee.schedule']),
             'employees' => $employees,
             'leaveReasonOptions' => AttendanceRecord::leaveReasonOptions(),
-            'statusOptions' => [
-                AttendanceRecord::STATUS_PRESENT => AttendanceRecord::statusLabels()[AttendanceRecord::STATUS_PRESENT],
-                AttendanceRecord::STATUS_LEAVE => AttendanceRecord::statusLabels()[AttendanceRecord::STATUS_LEAVE],
-            ],
+            'statusOptions' => AttendanceRecord::statusLabels(),
         ];
     }
 
