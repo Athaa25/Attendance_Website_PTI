@@ -567,6 +567,56 @@
         .legend-badge.sick { background-color: #0ea5e9; }
         .legend-badge.absent { background-color: #ef4444; }
 
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: #fff;
+            }
+
+            body * {
+                visibility: hidden !important;
+            }
+
+            .report-printable,
+            .report-printable * {
+                visibility: visible !important;
+            }
+
+            .report-printable {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                padding: 24px;
+                box-sizing: border-box;
+            }
+
+            .report-printable .table-scroll {
+                overflow: visible;
+                max-height: none;
+            }
+
+            .report-printable table {
+                min-width: 0 !important;
+                width: 100%;
+            }
+
+            .report-printable .summary-wrapper {
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .report-printable .legend {
+                page-break-inside: avoid;
+            }
+
+            .report-printable table,
+            .report-printable th,
+            .report-printable td {
+                border-color: #d1d5db !important;
+            }
+        }
+
         @media (max-width: 1200px) {
             .dashboard-layout {
                 flex-direction: column;
@@ -696,7 +746,7 @@
                         <h2 class="report-title">Rekapan</h2>
                         <p class="report-subtitle">Pantau kehadiran karyawan berdasarkan rentang tanggal dan nama yang dipilih.</p>
                     </div>
-                    <button type="button" class="btn btn-primary report-export" onclick="window.print()">
+                    <button type="button" class="btn btn-primary report-export" id="export-pdf-button">
                         <img src="{{ asset('images/file-download-icon.png') }}" alt="Download" class="btn-icon">
                         Export PDF
                     </button>
@@ -765,45 +815,88 @@
                 </form>
 
                 @if ($viewMode === 'summary')
-                    <div class="summary-wrapper">
-                        <div class="legend">
-                            <span><span class="legend-badge present">H</span> Hadir</span>
-                            <span><span class="legend-badge late">T</span> Terlambat</span>
-                            <span><span class="legend-badge leave">I</span> Izin</span>
-                            <span><span class="legend-badge sick">S</span> Sakit</span>
-                            <span><span class="legend-badge absent">A</span> Alpa</span>
-                        </div>
+                    <div class="report-printable">
+                        <div class="summary-wrapper">
+                            <div class="legend">
+                                <span><span class="legend-badge present">H</span> Hadir</span>
+                                <span><span class="legend-badge late">T</span> Terlambat</span>
+                                <span><span class="legend-badge leave">I</span> Izin</span>
+                                <span><span class="legend-badge sick">S</span> Sakit</span>
+                                <span><span class="legend-badge absent">A</span> Alpa</span>
+                            </div>
 
+                            <div class="table-scroll">
+                                <table class="matrix-table">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama</th>
+                                            @foreach ($dateRange as $date)
+                                                <th>{{ $date->format('j') }}</th>
+                                            @endforeach
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($summaryMatrix as $row)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>
+                                                    <div class="employee-cell">
+                                                        <span class="employee-name">{{ $row['employee']->full_name }}</span>
+                                                        <span class="employee-department">{{ $row['employee']->department->name ?? '—' }}</span>
+                                                    </div>
+                                                </td>
+                                                @foreach ($dateRange as $date)
+                                                    @php($key = $date->format('Y-m-d'))
+                                                    @php($symbol = $row['days'][$key] ?? '')
+                                                    <td class="matrix-cell">{{ $symbol }}</td>
+                                                @endforeach
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="{{ count($dateRange) + 2 }}" class="empty-state">
+                                                    Tidak ada data absensi pada rentang tanggal ini.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="report-printable">
                         <div class="table-scroll">
-                            <table class="matrix-table">
+                            <table class="detail-table">
                                 <thead>
                                     <tr>
                                         <th>No</th>
                                         <th>Nama</th>
-                                        @foreach ($dateRange as $date)
-                                            <th>{{ $date->format('j') }}</th>
-                                        @endforeach
+                                        <th>Departemen</th>
+                                        <th>Tanggal</th>
+                                        <th>Check-In</th>
+                                        <th>Check-Out</th>
+                                        <th>Keterangan</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse ($summaryMatrix as $row)
+                                    @forelse ($records as $record)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $record->employee->full_name }}</td>
+                                            <td>{{ $record->employee->department->name ?? '—' }}</td>
+                                            <td>{{ $record->attendance_date->translatedFormat('d F Y') }}</td>
+                                            <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
+                                            <td>{{ optional($record->check_out_time)->format('H:i') ?? '--:--' }}</td>
+                                            <td>{{ $record->notes ?? '—' }}</td>
                                             <td>
-                                                <div class="employee-cell">
-                                                    <span class="employee-name">{{ $row['employee']->full_name }}</span>
-                                                    <span class="employee-department">{{ $row['employee']->department->name ?? '—' }}</span>
-                                                </div>
+                                                <span class="status-badge status-{{ $record->status }}">{{ $statusLabels[$record->status] ?? $record->status_label }}</span>
                                             </td>
-                                            @foreach ($dateRange as $date)
-                                                @php($key = $date->format('Y-m-d'))
-                                                @php($symbol = $row['days'][$key] ?? '')
-                                                <td class="matrix-cell">{{ $symbol }}</td>
-                                            @endforeach
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="{{ count($dateRange) + 2 }}" class="empty-state">
+                                            <td colspan="8" class="empty-state">
                                                 Tidak ada data absensi pada rentang tanggal ini.
                                             </td>
                                         </tr>
@@ -812,45 +905,6 @@
                             </table>
                         </div>
                     </div>
-                @else
-                    <div class="table-scroll">
-                        <table class="detail-table">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama</th>
-                                    <th>Departemen</th>
-                                    <th>Tanggal</th>
-                                    <th>Check-In</th>
-                                    <th>Check-Out</th>
-                                    <th>Keterangan</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($records as $record)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $record->employee->full_name }}</td>
-                                        <td>{{ $record->employee->department->name ?? '—' }}</td>
-                                        <td>{{ $record->attendance_date->translatedFormat('d F Y') }}</td>
-                                        <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
-                                        <td>{{ optional($record->check_out_time)->format('H:i') ?? '--:--' }}</td>
-                                        <td>{{ $record->notes ?? '—' }}</td>
-                                        <td>
-                                            <span class="status-badge status-{{ $record->status }}">{{ $statusLabels[$record->status] ?? $record->status_label }}</span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="empty-state">
-                                            Tidak ada data absensi pada rentang tanggal ini.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
                 @endif
             </section>
         </main>
@@ -858,6 +912,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const exportButton = document.getElementById('export-pdf-button');
+
+            if (exportButton) {
+                exportButton.addEventListener('click', function () {
+                    window.print();
+                });
+            }
+
             const form = document.getElementById('report-filter-form');
             const viewInput = document.getElementById('view-mode');
             const viewButtons = document.querySelectorAll('[data-view-option]');
