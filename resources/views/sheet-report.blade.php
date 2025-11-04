@@ -177,61 +177,92 @@
             gap: 24px;
         }
 
-        .tab-bar {
-            display: inline-flex;
-            background-color: var(--highlight);
-            border-radius: 16px;
-            padding: 4px;
-            gap: 4px;
-            align-self: flex-start;
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
         }
 
-        .tab {
-            padding: 8px 18px;
-            border-radius: 12px;
-            font-weight: 600;
+        .report-title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .report-title {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--blue-primary);
+        }
+
+        .report-subtitle {
+            margin: 0;
             font-size: 14px;
             color: var(--text-muted);
         }
 
-        .tab.active {
-            background-color: var(--card-background);
-            color: var(--blue-primary);
-            box-shadow: 0 8px 20px rgba(17, 43, 105, 0.15);
+        .report-export {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .filter-bar {
+        .btn-icon {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+        }
+
+        .report-filter-form {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 20px;
             align-items: flex-end;
+            padding: 24px;
+            background-color: var(--highlight);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
         }
 
-        .filter-group {
+        .filter-field {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
+            min-width: 180px;
         }
 
-        .filter-group label {
+        .filter-field--wide {
+            min-width: 220px;
+        }
+
+        .filter-field--view {
+            min-width: 200px;
+        }
+
+        .filter-label {
             font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             color: var(--text-muted);
+            font-weight: 600;
         }
 
-        .filter-input {
+        .filter-control {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 14px;
+            padding: 12px 16px;
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            background-color: var(--highlight);
+            border-radius: 14px;
+            background-color: #fff;
+            min-height: 48px;
         }
 
-        .filter-input input,
-        .filter-input select {
+        .filter-control select,
+        .filter-control input {
             border: none;
             background: transparent;
             font-family: inherit;
@@ -240,15 +271,59 @@
             width: 100%;
         }
 
-        .filter-input input:focus,
-        .filter-input select:focus {
+        .filter-control select:focus,
+        .filter-control input:focus {
             outline: none;
         }
 
-        .filter-actions {
+        .view-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 4px;
+        }
+
+        .view-option {
+            border: none;
+            background: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .view-option svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .view-option.active {
+            background-color: var(--card-background);
+            color: var(--blue-primary);
+            box-shadow: 0 8px 20px rgba(17, 43, 105, 0.15);
+        }
+
+        .view-option:not(.active):hover {
+            color: var(--blue-primary);
+        }
+
+        .report-filter-actions {
             margin-left: auto;
             display: flex;
-            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-filter {
+            padding: 12px 28px;
         }
 
         .btn {
@@ -277,6 +352,20 @@
         .btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 10px 24px rgba(17, 43, 105, 0.2);
+        }
+
+        .employee-cell {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .employee-name {
+            font-weight: 600;
+        }
+
+        .employee-department {
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
         table {
@@ -325,6 +414,29 @@
             border: none;
         }
 
+        .matrix-table th,
+        .matrix-table td {
+            text-align: center;
+        }
+
+        .matrix-table th:first-child,
+        .matrix-table th:nth-child(2),
+        .matrix-table td:first-child,
+        .matrix-table td:nth-child(2) {
+            text-align: left;
+        }
+
+        .matrix-cell {
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -365,6 +477,7 @@
             gap: 16px;
             font-size: 13px;
             color: var(--text-muted);
+            flex-wrap: wrap;
         }
 
         .legend span {
@@ -417,21 +530,22 @@
                 padding-left: 24px;
             }
 
-            .filter-actions {
-                width: 100%;
-                justify-content: flex-end;
+            .report-filter-form {
+                flex-direction: column;
+                align-items: stretch;
             }
 
-            .tab-bar {
+            .report-filter-actions {
+                margin-left: 0;
                 width: 100%;
-                justify-content: space-between;
+                display: flex;
+                justify-content: flex-end;
             }
         }
     </style>
 </head>
 <body>
     @php
-        $type = $activeType ?? 'harian';
         $user = auth()->user();
         $userInitials = \Illuminate\Support\Str::of($user?->name ?? '')
             ->trim()
@@ -514,153 +628,80 @@
             </header>
 
             <section class="content-wrapper">
-                <div class="tab-bar">
-                    <a href="{{ route('reports.sheet', ['type' => 'harian']) }}" class="tab {{ $type === 'harian' ? 'active' : '' }}">Harian</a>
-                    <a href="{{ route('reports.sheet', ['type' => 'mingguan']) }}" class="tab {{ $type === 'mingguan' ? 'active' : '' }}">Mingguan</a>
-                    <a href="{{ route('reports.sheet', ['type' => 'bulanan']) }}" class="tab {{ $type === 'bulanan' ? 'active' : '' }}">Bulanan</a>
-                    <a href="{{ route('reports.sheet', ['type' => 'custom']) }}" class="tab {{ $type === 'custom' ? 'active' : '' }}">Custom</a>
+                <div class="report-header">
+                    <div class="report-title-block">
+                        <h2 class="report-title">Rekapan</h2>
+                        <p class="report-subtitle">Pantau kehadiran karyawan berdasarkan rentang tanggal dan nama yang dipilih.</p>
+                    </div>
+                    <button type="button" class="btn btn-primary report-export" onclick="window.print()">
+                        <img src="{{ asset('images/file-download-icon.png') }}" alt="Download" class="btn-icon">
+                        Export PDF
+                    </button>
                 </div>
 
-                @if ($type === 'harian')
-                    <form method="GET" class="filter-bar">
-                        <input type="hidden" name="type" value="harian">
-                        <div class="filter-group">
-                            <label for="date">Tanggal</label>
-                            <div class="filter-input">
-                                <input type="date" id="date" name="date" value="{{ optional($period['date'] ?? null)->format('Y-m-d') ?? now()->format('Y-m-d') }}">
-                            </div>
-                        </div>
-                        <div class="filter-actions">
-                            <button type="submit" class="btn btn-secondary">Terapkan</button>
-                        </div>
-                    </form>
+                <form method="GET" class="report-filter-form" id="report-filter-form">
+                    @if (request()->has('type'))
+                        <input type="hidden" name="type" value="{{ request('type') }}">
+                    @endif
+                    <input type="hidden" name="view" id="view-mode" value="{{ $viewMode }}">
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama</th>
-                                <th>Departemen</th>
-                                <th>Status</th>
-                                <th>Check-In</th>
-                                <th>Check-Out</th>
-                                <th>Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($dailyRecords as $record)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $record->employee->full_name }}</td>
-                                    <td>{{ $record->employee->department->name ?? '—' }}</td>
-                                    <td>
-                                        <span class="status-badge status-{{ $record->status }}">{{ $record->status_label }}</span>
-                                    </td>
-                                    <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
-                                    <td>{{ optional($record->check_out_time)->format('H:i') ?? '--:--' }}</td>
-                                    <td>{{ $record->notes ?? '—' }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                        Tidak ada data absensi untuk tanggal ini.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                @elseif ($type === 'mingguan')
-                    <form method="GET" class="filter-bar">
-                        <input type="hidden" name="type" value="mingguan">
-                        <div class="filter-group">
-                            <label for="start">Mulai</label>
-                            <div class="filter-input">
-                                <input type="date" id="start" name="start" value="{{ optional($period['start'] ?? null)->format('Y-m-d') ?? now()->startOfWeek()->format('Y-m-d') }}">
-                            </div>
+                    <div class="filter-field filter-field--wide">
+                        <span class="filter-label">Nama</span>
+                        <div class="filter-control">
+                            <select name="employee_id" id="employee_id">
+                                <option value="all" {{ $selectedEmployeeId === 'all' ? 'selected' : '' }}>Semua</option>
+                                @foreach ($employees as $employee)
+                                    <option value="{{ $employee->id }}" {{ (int) $selectedEmployeeId === $employee->id ? 'selected' : '' }}>
+                                        {{ $employee->full_name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div class="filter-group">
-                            <label for="end">Selesai</label>
-                            <div class="filter-input">
-                                <input type="date" id="end" name="end" value="{{ optional($period['end'] ?? null)->format('Y-m-d') ?? now()->endOfWeek()->format('Y-m-d') }}">
-                            </div>
-                        </div>
-                        <div class="filter-actions">
-                            <button type="submit" class="btn btn-secondary">Terapkan</button>
-                        </div>
-                    </form>
+                    </div>
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama</th>
-                                <th>Departemen</th>
-                                <th>Jumlah Presensi</th>
-                                <th>Hadir</th>
-                                <th>Izin/Sakit</th>
-                                <th>Alpa</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($weeklySummary as $summary)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $summary['employee']->full_name }}</td>
-                                    <td>{{ $summary['employee']->department->name ?? '—' }}</td>
-                                    <td>{{ $summary['total'] }}</td>
-                                    <td>{{ $summary['attended'] }}</td>
-                                    <td>{{ $summary['leave'] }}</td>
-                                    <td>{{ $summary['absent'] }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                        Tidak ada data mingguan untuk rentang ini.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                @elseif ($type === 'bulanan')
-                    @php
-                        $month = $period['month'] ?? now()->month;
-                        $year = $period['year'] ?? now()->year;
-                        $start = $period['start'] ?? now()->startOfMonth();
-                        $end = $period['end'] ?? now()->endOfMonth();
-                        $daysInMonth = $start->daysInMonth ?? now()->daysInMonth;
-                        $monthsOptions = [
-                            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
-                            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
-                            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
-                        ];
-                    @endphp
-                    <form method="GET" class="filter-bar">
-                        <input type="hidden" name="type" value="bulanan">
-                        <div class="filter-group">
-                            <label for="month">Bulan</label>
-                            <div class="filter-input">
-                                <select id="month" name="month">
-                                    @foreach ($monthsOptions as $number => $label)
-                                        <option value="{{ $number }}" {{ (int) $month === $number ? 'selected' : '' }}>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                    <div class="filter-field">
+                        <span class="filter-label">Mulai</span>
+                        <div class="filter-control">
+                            <input type="date" name="start" id="start" value="{{ $startDate->format('Y-m-d') }}">
                         </div>
-                        <div class="filter-group">
-                            <label for="year">Tahun</label>
-                            <div class="filter-input">
-                                <select id="year" name="year">
-                                    @for ($y = now()->year - 2; $y <= now()->year + 2; $y++)
-                                        <option value="{{ $y }}" {{ (int) $year === $y ? 'selected' : '' }}>{{ $y }}</option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </div>
-                        <div class="filter-actions">
-                            <button type="submit" class="btn btn-secondary">Terapkan</button>
-                        </div>
-                    </form>
+                    </div>
 
+                    <div class="filter-field">
+                        <span class="filter-label">Selesai</span>
+                        <div class="filter-control">
+                            <input type="date" name="end" id="end" value="{{ $endDate->format('Y-m-d') }}">
+                        </div>
+                    </div>
+
+                    <div class="filter-field filter-field--view">
+                        <span class="filter-label">View</span>
+                        <div class="view-toggle" role="group" aria-label="Pilih tampilan laporan">
+                            <button type="button" class="view-option {{ $viewMode === 'detail' ? 'active' : '' }}" data-view-option="detail">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="5" width="18" height="3" rx="1.5" fill="currentColor" />
+                                    <rect x="3" y="10.5" width="18" height="3" rx="1.5" fill="currentColor" opacity="0.6" />
+                                    <rect x="3" y="16" width="18" height="3" rx="1.5" fill="currentColor" opacity="0.4" />
+                                </svg>
+                                <span>Detail</span>
+                            </button>
+                            <button type="button" class="view-option {{ $viewMode === 'summary' ? 'active' : '' }}" data-view-option="summary">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="4" y="4" width="6" height="6" rx="1.5" fill="currentColor" />
+                                    <rect x="14" y="4" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.7" />
+                                    <rect x="4" y="14" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.7" />
+                                    <rect x="14" y="14" width="6" height="6" rx="1.5" fill="currentColor" />
+                                </svg>
+                                <span>Ringkas</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-filter-actions">
+                        <button type="submit" class="btn btn-primary btn-filter">Filter</button>
+                    </div>
+                </form>
+
+                @if ($viewMode === 'summary')
                     <div class="legend">
                         <span><span class="legend-badge present">H</span> Hadir</span>
                         <span><span class="legend-badge late">T</span> Terlambat</span>
@@ -670,32 +711,36 @@
                     </div>
 
                     <div class="table-scroll">
-                        <table>
+                        <table class="matrix-table">
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th>Nama</th>
-                                    @for ($day = 1; $day <= $daysInMonth; $day++)
-                                        <th>{{ $day }}</th>
-                                    @endfor
+                                    @foreach ($dateRange as $date)
+                                        <th>{{ $date->format('j') }}</th>
+                                    @endforeach
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($monthlyMatrix as $row)
+                                @forelse ($summaryMatrix as $row)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $row['employee']->full_name }}</td>
-                                        @for ($day = 1; $day <= $daysInMonth; $day++)
-                                            @php($symbol = $row['days'][$day] ?? '')
-                                            <td style="text-align: center; font-weight: 600;">
-                                                {{ $symbol }}
-                                            </td>
-                                        @endfor
+                                        <td>
+                                            <div class="employee-cell">
+                                                <span class="employee-name">{{ $row['employee']->full_name }}</span>
+                                                <span class="employee-department">{{ $row['employee']->department->name ?? '—' }}</span>
+                                            </div>
+                                        </td>
+                                        @foreach ($dateRange as $date)
+                                            @php($key = $date->format('Y-m-d'))
+                                            @php($symbol = $row['days'][$key] ?? '')
+                                            <td class="matrix-cell">{{ $symbol }}</td>
+                                        @endforeach
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="{{ $daysInMonth + 2 }}" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                            Tidak ada data bulanan untuk periode ini.
+                                        <td colspan="{{ count($dateRange) + 2 }}" class="empty-state">
+                                            Tidak ada data absensi pada rentang tanggal ini.
                                         </td>
                                     </tr>
                                 @endforelse
@@ -703,84 +748,77 @@
                         </table>
                     </div>
                 @else
-                    <form method="GET" class="filter-bar">
-                        <input type="hidden" name="type" value="custom">
-                        <div class="filter-group">
-                            <label for="employee_id">Pegawai</label>
-                            <div class="filter-input">
-                                <select id="employee_id" name="employee_id">
-                                    @foreach ($employees as $employee)
-                                        <option value="{{ $employee->id }}" {{ optional($selectedEmployee)->id === $employee->id ? 'selected' : '' }}>
-                                            {{ $employee->full_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="filter-group">
-                            <label for="start">Mulai</label>
-                            <div class="filter-input">
-                                <input type="date" id="start" name="start" value="{{ optional($period['start'] ?? null)->format('Y-m-d') ?? now()->subMonth()->format('Y-m-d') }}">
-                            </div>
-                        </div>
-                        <div class="filter-group">
-                            <label for="end">Selesai</label>
-                            <div class="filter-input">
-                                <input type="date" id="end" name="end" value="{{ optional($period['end'] ?? null)->format('Y-m-d') ?? now()->format('Y-m-d') }}">
-                            </div>
-                        </div>
-                        <div class="filter-actions">
-                            <button type="submit" class="btn btn-secondary">Terapkan</button>
-                        </div>
-                    </form>
-
-                    @if ($selectedEmployee)
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h2 style="margin: 0; font-size: 20px;">{{ $selectedEmployee->full_name }}</h2>
-                                <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 14px;">
-                                    {{ $selectedEmployee->position->name ?? 'Jabatan belum diatur' }} &middot;
-                                    {{ $selectedEmployee->department->name ?? 'Departemen belum diatur' }}
-                                </p>
-                            </div>
-                        </div>
-                    @endif
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Status</th>
-                                <th>Check-In</th>
-                                <th>Check-Out</th>
-                                <th>Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($customRecords as $record)
+                    <div class="table-scroll">
+                        <table class="detail-table">
+                            <thead>
                                 <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $record->attendance_date->translatedFormat('d F Y') }}</td>
-                                    <td>
-                                        <span class="status-badge status-{{ $record->status }}">{{ $record->status_label }}</span>
-                                    </td>
-                                    <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
-                                    <td>{{ optional($record->check_out_time)->format('H:i') ?? '--:--' }}</td>
-                                    <td>{{ $record->notes ?? '—' }}</td>
+                                    <th>No</th>
+                                    <th>Nama</th>
+                                    <th>Departemen</th>
+                                    <th>Tanggal</th>
+                                    <th>Check-In</th>
+                                    <th>Check-Out</th>
+                                    <th>Keterangan</th>
+                                    <th>Status</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                        Tidak ada data pada rentang tanggal yang dipilih.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse ($records as $record)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $record->employee->full_name }}</td>
+                                        <td>{{ $record->employee->department->name ?? '—' }}</td>
+                                        <td>{{ $record->attendance_date->translatedFormat('d F Y') }}</td>
+                                        <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
+                                        <td>{{ optional($record->check_out_time)->format('H:i') ?? '--:--' }}</td>
+                                        <td>{{ $record->notes ?? '—' }}</td>
+                                        <td>
+                                            <span class="status-badge status-{{ $record->status }}">{{ $statusLabels[$record->status] ?? $record->status_label }}</span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="empty-state">
+                                            Tidak ada data absensi pada rentang tanggal ini.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 @endif
             </section>
         </main>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('report-filter-form');
+            const viewInput = document.getElementById('view-mode');
+            const viewButtons = document.querySelectorAll('[data-view-option]');
+
+            if (!form || !viewInput || !viewButtons.length) {
+                return;
+            }
+
+            viewButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const targetView = button.getAttribute('data-view-option');
+
+                    if (!targetView) {
+                        return;
+                    }
+
+                    viewInput.value = targetView;
+
+                    viewButtons.forEach(function (btn) {
+                        btn.classList.toggle('active', btn === button);
+                    });
+
+                    form.submit();
+                });
+            });
+        });
+    </script>
 </body>
 </html>
