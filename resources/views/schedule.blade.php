@@ -297,6 +297,11 @@
             color: var(--blue-primary);
         }
 
+        .icon-button img {
+            width: 16px;
+            height: 16px;
+        }
+
         .icon-button.edit {
             background-color: rgba(17, 43, 105, 0.1);
         }
@@ -510,18 +515,10 @@
                                         <td>
                                             <div class="actions" style="justify-content: flex-end;">
                                                 <button class="icon-button edit" type="button" title="Edit">
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M4 21H9L20.5 9.5C20.8978 9.10218 21.1213 8.56227 21.1213 7.9975C21.1213 7.43273 20.8978 6.89282 20.5 6.495L17.505 3.5C17.1072 3.10223 16.5673 2.87872 16.0025 2.87872C15.4377 2.87872 14.8978 3.10223 14.5 3.5L3 15V20C3 20.2652 3.10536 20.5196 3.29289 20.7071C3.48043 20.8946 3.73478 21 4 21Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </svg>
+                                                    <img src="{{ asset('images/edit-icon.png') }}" alt="Edit schedule">
                                                 </button>
                                                 <button class="icon-button delete delete-btn" type="button" title="Delete">
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M4 7H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M10 11V17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M14 11V17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M5 7L6 19C6 19.5304 6.21071 20.0391 6.58579 20.4142C6.96086 20.7893 7.46957 21 8 21H16C16.5304 21 17.0391 20.7893 17.4142 20.4142C17.7893 20.0391 18 19.5304 18 19L19 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M9 7V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </svg>
+                                                    <img src="{{ asset('images/delete-icon.png') }}" alt="Delete schedule">
                                                 </button>
                                             </div>
                                         </td>
