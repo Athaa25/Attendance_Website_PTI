@@ -294,6 +294,18 @@
             flex-direction: column;
         }
 
+        .chart-card--link {
+            color: inherit;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .chart-card--link:hover,
+        .chart-card--link:focus-visible {
+            box-shadow: 0 8px 24px rgba(17, 43, 105, 0.18);
+            transform: translateY(-2px);
+        }
+
         .chart-title {
             font-size: 16px;
             font-weight: 600;
@@ -523,7 +535,7 @@
                         </div>
                     </div>
 
-                    <div class="chart-card">
+                    <a class="chart-card chart-card--link" href="{{ route('reports.sheet', ['type' => 'bulanan']) }}">
                         <h3 class="chart-title">Kehadiran Bulanan</h3>
                         <p class="chart-subtitle">Jumlah kehadiran selama 5 bulan terakhir</p>
                         <div class="chart-bars">
@@ -538,7 +550,7 @@
                                 <p style="font-size: 13px; color: var(--text-muted);">Belum ada data absensi</p>
                             @endforelse
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="attendance-section">
