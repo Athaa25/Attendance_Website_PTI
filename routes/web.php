@@ -36,4 +36,5 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/sheet-report', [ReportController::class, 'index'])->name('reports.sheet');
     Route::view('/schedule', 'schedule')->name('schedule.index');
+    Route::view('/schedule/edit', 'schedule-edit')->name('schedule.edit');
 });
