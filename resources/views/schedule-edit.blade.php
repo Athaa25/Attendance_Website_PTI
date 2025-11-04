@@ -216,6 +216,10 @@
             gap: 10px;
         }
 
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
         label {
             font-weight: 600;
             color: var(--text-dark);
@@ -293,6 +297,12 @@
             box-shadow: 0 14px 30px rgba(185, 28, 28, 0.25);
         }
 
+        .error-message {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: -6px;
+        }
+
         @media (max-width: 1200px) {
             .dashboard-layout {
                 flex-direction: column;
@@ -348,6 +358,10 @@
             .form-actions {
                 flex-direction: column-reverse;
                 align-items: stretch;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
             }
         }
     </style>
@@ -443,29 +457,44 @@
                     </div>
                 </div>
 
-                <form action="#" method="POST">
+                <form action="{{ route('schedule.update', $schedule) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="shift_id">Id Shift <span class="required">*</span></label>
-                            <input type="text" id="shift_id" name="shift_id" placeholder="01" value="01">
+                            <label for="code">Id Shift <span class="required">*</span></label>
+                            <input type="text" id="code" name="code" placeholder="SHIFT-1" value="{{ old('code', $schedule->code) }}">
+                            @error('code')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="shift_name">Shift Name <span class="required">*</span></label>
-                            <input type="text" id="shift_name" name="shift_name" placeholder="Pagi" value="Pagi">
+                            <label for="name">Shift Name <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" placeholder="Shift Pagi" value="{{ old('name', $schedule->name) }}">
+                            @error('name')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="check_in">Check in <span class="required">*</span></label>
-                            <input type="time" id="check_in" name="check_in" value="07:00">
+                            <label for="start_time">Check in <span class="required">*</span></label>
+                            <input type="time" id="start_time" name="start_time" value="{{ old('start_time', optional($schedule->start_time)->format('H:i')) }}">
+                            @error('start_time')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="check_out">Check out <span class="required">*</span></label>
-                            <input type="time" id="check_out" name="check_out" value="15:00">
+                            <label for="end_time">Check out <span class="required">*</span></label>
+                            <input type="time" id="end_time" name="end_time" value="{{ old('end_time', optional($schedule->end_time)->format('H:i')) }}">
+                            @error('end_time')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
                         </div>
-                        <div class="form-group">
-                            <label for="shift_date">Tanggal <span class="required">*</span></label>
-                            <input type="date" id="shift_date" name="shift_date" value="2025-10-30">
+                        <div class="form-group full-width">
+                            <label for="description">Deskripsi</label>
+                            <textarea id="description" name="description" placeholder="Tambahkan catatan shift jika diperlukan">{{ old('description', $schedule->description) }}</textarea>
+                            @error('description')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 

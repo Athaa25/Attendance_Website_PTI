@@ -210,6 +210,18 @@
             gap: 16px;
         }
 
+        .alert {
+            padding: 16px 24px;
+            border-radius: 20px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: rgba(17, 43, 105, 0.08);
+            color: var(--blue-primary);
+        }
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -307,6 +319,13 @@
             background-color: rgba(17, 43, 105, 0.1);
         }
 
+        .empty-state {
+            padding: 40px 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
         .icon-button.delete {
             background-color: rgba(239, 68, 68, 0.12);
             color: var(--danger);
@@ -398,19 +417,6 @@
         if ($userInitials === '') {
             $userInitials = 'AD';
         }
-
-        $schedules = [
-            ['id' => '01', 'name' => 'Pagi', 'check_in' => '08.00', 'check_out' => '16.00'],
-            ['id' => '02', 'name' => 'Siang', 'check_in' => '12.00', 'check_out' => '20.00'],
-            ['id' => '03', 'name' => 'Malam', 'check_in' => '20.00', 'check_out' => '04.00'],
-            ['id' => '04', 'name' => 'Pagi', 'check_in' => '08.00', 'check_out' => '16.00'],
-            ['id' => '05', 'name' => 'Siang', 'check_in' => '12.00', 'check_out' => '20.00'],
-            ['id' => '06', 'name' => 'Malam', 'check_in' => '20.00', 'check_out' => '04.00'],
-            ['id' => '07', 'name' => 'Pagi', 'check_in' => '08.00', 'check_out' => '16.00'],
-            ['id' => '08', 'name' => 'Siang', 'check_in' => '12.00', 'check_out' => '20.00'],
-            ['id' => '09', 'name' => 'Malam', 'check_in' => '20.00', 'check_out' => '04.00'],
-            ['id' => '10', 'name' => 'Pagi', 'check_in' => '08.00', 'check_out' => '16.00'],
-        ];
     @endphp
     <div class="dashboard-layout">
         <aside class="sidebar">
@@ -482,6 +488,13 @@
             </header>
 
             <section class="content-wrapper">
+                @if (session('status'))
+                    <div class="alert">
+                        <img src="{{ asset('images/schedule-icon.png') }}" alt="Info" width="20" height="20">
+                        <span>{{ session('status') }}</span>
+                    </div>
+                @endif
+
                 <div class="schedule-card">
                     <div class="schedule-header">
                         <div>
@@ -507,24 +520,34 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($schedules as $schedule)
+                                @forelse ($schedules as $schedule)
                                     <tr>
-                                        <td class="shift-id">{{ $schedule['id'] }}</td>
-                                        <td>{{ $schedule['name'] }}</td>
-                                        <td>{{ $schedule['check_in'] }}</td>
-                                        <td>{{ $schedule['check_out'] }}</td>
+                                        <td class="shift-id">{{ $schedule->code }}</td>
+                                        <td>{{ $schedule->name }}</td>
+                                        <td>{{ optional($schedule->start_time)->format('H.i') }}</td>
+                                        <td>{{ optional($schedule->end_time)->format('H.i') }}</td>
                                         <td>
                                             <div class="actions" style="justify-content: flex-end;">
-                                                <a class="icon-button edit" href="{{ route('schedule.edit') }}" title="Edit">
+                                                <a class="icon-button edit" href="{{ route('schedule.edit', $schedule) }}" title="Edit">
                                                     <img src="{{ asset('images/edit-icon.png') }}" alt="Edit schedule">
                                                 </a>
-                                                <button class="icon-button delete delete-btn" type="button" title="Delete">
-                                                    <img src="{{ asset('images/delete-icon.png') }}" alt="Delete schedule">
-                                                </button>
+                                                <form action="{{ route('schedule.destroy', $schedule) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data shift ini?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="icon-button delete" type="submit" title="Delete">
+                                                        <img src="{{ asset('images/delete-icon.png') }}" alt="Delete schedule">
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="empty-state">Belum ada data shift yang tersedia.</div>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -532,16 +555,5 @@
             </section>
         </main>
     </div>
-
-    <script>
-        document.querySelectorAll('.delete-btn').forEach((button) => {
-            button.addEventListener('click', () => {
-                const confirmed = window.confirm('Apakah Anda yakin ingin menghapus data shift ini?');
-                if (confirmed) {
-                    alert('Data shift telah dihapus (simulasi).');
-                }
-            });
-        });
-    </script>
 </body>
 </html>
