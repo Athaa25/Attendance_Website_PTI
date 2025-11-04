@@ -35,4 +35,5 @@ Route::middleware('auth')->group(function () {
     Route::put('/daily-attendance/{attendanceRecord}', [AttendanceController::class, 'update'])->name('attendance.update');
 
     Route::get('/sheet-report', [ReportController::class, 'index'])->name('reports.sheet');
+    Route::view('/schedule', 'schedule')->name('schedule.index');
 });
