@@ -29,6 +29,44 @@ class DepartmentController extends Controller
         ]);
     }
 
+    public function create(): View
+    {
+        return view('departments-add');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'department_name' => ['required', 'string', 'max:255'],
+            'position_name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $departmentName = Str::of($validated['department_name'])->squish()->toString();
+        $positionName = Str::of($validated['position_name'])->squish()->toString();
+
+        DB::transaction(function () use ($departmentName, $positionName) {
+            $department = Department::query()
+                ->whereRaw('LOWER(name) = ?', [Str::lower($departmentName)])
+                ->first();
+
+            if (! $department) {
+                $department = Department::create([
+                    'code' => $this->generateDepartmentCode($departmentName),
+                    'name' => $departmentName,
+                ]);
+            }
+
+            Position::create([
+                'department_id' => $department->id,
+                'name' => $positionName,
+            ]);
+        });
+
+        return redirect()
+            ->route('departments.index')
+            ->with('success', 'Departemen & jabatan baru berhasil ditambahkan.');
+    }
+
     public function edit(Position $position): View
     {
         $position->load('department');
