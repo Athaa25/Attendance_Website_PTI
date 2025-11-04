@@ -518,9 +518,9 @@
                                 <span class="metric-description">Periode {{ $startOfMonthLabel }} - {{ $endOfMonthLabel }}</span>
                             </a>
                             <a class="metric-card metric-card--link" href="{{ route('manage-users.index') }}">
-                                <span class="metric-title">Jumlah Keterlambatan</span>
-                                <p class="metric-value">{{ number_format($metrics['late_count']) }}</p>
-                                <span class="metric-description">Termasuk hadir terlambat</span>
+                                <span class="metric-title">Staff &amp; Karyawan</span>
+                                <p class="metric-value">{{ number_format($metrics['employee_count']) }}</p>
+                                <span class="metric-description">Total karyawan yang terdaftar</span>
                             </a>
                             <a class="metric-card metric-card--link" href="{{ route('attendance.index') }}">
                                 <span class="metric-title">Tingkat Kehadiran</span>
