@@ -455,6 +455,10 @@
                         <img src="{{ asset('images/manage-user-icon.png') }}" alt="Manage User Icon">
                         Manage User
                     </a>
+                    <a href="{{ route('departments.index') }}" class="sidebar-nav-item {{ request()->routeIs('departments.*') ? 'active' : '' }}">
+                        <img src="{{ asset('images/user-setting-icon.png') }}" alt="Departments Icon">
+                        Departemen
+                    </a>
                 </div>
 
                 <div class="sidebar-nav-group">
