@@ -432,10 +432,6 @@
                         <img src="{{ asset('images/manage-user-icon.png') }}" alt="Manage User Icon">
                         Manage User
                     </a>
-                    <a href="#" class="sidebar-nav-item">
-                        <img src="{{ asset('images/user-setting-icon.png') }}" alt="User Setting Icon">
-                        User Setting
-                    </a>
                 </div>
 
                 <div class="sidebar-nav-group">
