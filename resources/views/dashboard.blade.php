@@ -515,11 +515,11 @@
                                 <p class="metric-value">{{ number_format($metrics['attendance_rate'], 1) }}%</p>
                                 <span class="metric-description">Dari seluruh catatan absensi</span>
                             </a>
-                            <div class="metric-card">
+                            <a class="metric-card metric-card--link" href="{{ route('reports.sheet') }}">
                                 <span class="metric-title">Pegawai Aktif</span>
                                 <p class="metric-value">{{ number_format($metrics['employee_count']) }}</p>
                                 <span class="metric-description">Terdaftar dalam sistem</span>
-                            </div>
+                            </a>
                         </div>
                     </div>
 
