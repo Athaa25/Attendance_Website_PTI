@@ -16,14 +16,14 @@ class ScheduleController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('schedule', [
+        return view('schedule.index', [
             'schedules' => $schedules,
         ]);
     }
 
     public function create(): View
     {
-        return view('schedule-add');
+        return view('schedule.create');
     }
 
     public function store(Request $request): RedirectResponse
@@ -45,7 +45,7 @@ class ScheduleController extends Controller
 
     public function edit(Schedule $schedule): View
     {
-        return view('schedule-edit', [
+        return view('schedule.edit', [
             'schedule' => $schedule,
         ]);
     }

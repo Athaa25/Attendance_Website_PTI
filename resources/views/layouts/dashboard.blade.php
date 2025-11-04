@@ -353,6 +353,362 @@
             font-weight: 600;
         }
 
+        .status-banner {
+            padding: 14px 20px;
+            border-radius: 14px;
+            background-color: rgba(17, 43, 105, 0.08);
+            color: var(--blue-primary);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .filter-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--highlight);
+        }
+
+        .filter-input input,
+        .filter-input select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--highlight);
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--blue-primary);
+            color: #FFFFFF;
+            box-shadow: 0 8px 20px rgba(17, 43, 105, 0.18);
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus-visible {
+            background-color: #0d2254;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: rgba(17, 43, 105, 0.08);
+            color: var(--blue-primary);
+        }
+
+        .btn-secondary:hover,
+        .btn-secondary:focus-visible {
+            background-color: rgba(17, 43, 105, 0.12);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-card {
+            background-color: var(--highlight);
+            border-radius: 20px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .form-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .form-title {
+            font-size: 22px;
+            margin: 0;
+            color: var(--blue-primary);
+        }
+
+        .form-subtitle {
+            margin-top: 6px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        .form-row-span {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-control {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--highlight);
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .form-control:focus {
+            outline: 2px solid rgba(17, 43, 105, 0.25);
+            background-color: #fff;
+        }
+
+        textarea.form-control {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #991b1b;
+            border-radius: 16px;
+            padding: 18px 20px;
+        }
+
+        .alert-list {
+            margin: 12px 0 0;
+            padding-left: 18px;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .inline-form {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        .required-indicator {
+            color: var(--danger);
+        }
+
+        .schedule-header,
+        .table-header,
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .schedule-title,
+        .detail-title {
+            margin: 0;
+            font-size: 22px;
+            color: var(--blue-primary);
+        }
+
+        .schedule-subtitle {
+            margin-top: 6px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .schedule-actions,
+        .detail-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: rgba(17, 43, 105, 0.08);
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .icon-button img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .icon-button.edit {
+            background-color: rgba(59, 130, 246, 0.12);
+        }
+
+        .icon-button.delete {
+            background-color: rgba(239, 68, 68, 0.12);
+        }
+
+        .icon-button:hover,
+        .icon-button:focus-visible {
+            transform: translateY(-1px);
+        }
+
+        .empty-state {
+            padding: 28px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .detail-card {
+            background-color: var(--highlight);
+            border-radius: 20px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            color: var(--text-dark);
+        }
+
+        .detail-actions {
+            margin-top: 24px;
+            justify-content: flex-end;
+        }
+
+        .status-present {
+            background-color: rgba(34, 197, 94, 0.18);
+            color: #15803d;
+        }
+
+        .status-late {
+            background-color: rgba(234, 179, 8, 0.18);
+            color: #b45309;
+        }
+
+        .status-leave,
+        .status-sick {
+            background-color: rgba(59, 130, 246, 0.18);
+            color: #1d4ed8;
+        }
+
+        .status-absent {
+            background-color: rgba(239, 68, 68, 0.18);
+            color: #b91c1c;
+        }
+
         .attendance-section {
             display: flex;
             flex-direction: column;
@@ -415,8 +771,16 @@
             .analysis-section {
                 grid-template-columns: 1fr;
             }
+
+            .filter-actions,
+            .form-actions,
+            .detail-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
         }
     </style>
+    @stack('styles')
 </head>
 <body>
     @php
@@ -431,6 +795,11 @@
         if ($userInitials === '') {
             $userInitials = 'AD';
         }
+
+        $pageTitle = trim($__env->yieldContent('page-title'));
+        $pageTitle = $pageTitle !== '' ? $pageTitle : null;
+        $pageSubtitle = trim($__env->yieldContent('page-subtitle'));
+        $pageSubtitle = $pageSubtitle !== '' ? $pageSubtitle : null;
     @endphp
 
     <div class="dashboard-layout">
@@ -441,10 +810,14 @@
                 'user' => $user,
                 'userInitials' => $userInitials,
                 'now' => $now ?? now(),
+                'title' => $pageTitle,
+                'subtitle' => $pageSubtitle,
             ])
 
             @yield('content')
         </main>
     </div>
+
+    @stack('scripts')
 </body>
 </html>

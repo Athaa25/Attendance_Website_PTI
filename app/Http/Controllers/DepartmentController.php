@@ -24,14 +24,14 @@ class DepartmentController extends Controller
             })
             ->values();
 
-        return view('departments', [
+        return view('departments.index', [
             'positions' => $positions,
         ]);
     }
 
     public function create(): View
     {
-        return view('departments-add');
+        return view('departments.create');
     }
 
     public function store(Request $request): RedirectResponse
@@ -71,7 +71,7 @@ class DepartmentController extends Controller
     {
         $position->load('department');
 
-        return view('departments-edit', [
+        return view('departments.edit', [
             'position' => $position,
         ]);
     }
