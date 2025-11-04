@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -43,7 +44,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/daily-attendance/{attendanceRecord}', [AttendanceController::class, 'update'])->name('attendance.update');
 
     Route::get('/sheet-report', [ReportController::class, 'index'])->name('reports.sheet');
-    Route::view('/schedule', 'schedule')->name('schedule.index');
-    Route::view('/schedule/add', 'schedule-add')->name('schedule.create');
-    Route::view('/schedule/edit', 'schedule-edit')->name('schedule.edit');
+
+    Route::resource('schedule', ScheduleController::class)->except(['show']);
 });
