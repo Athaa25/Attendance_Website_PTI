@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule</title>
+    <title>Edit Shift</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -15,8 +15,7 @@
             --card-background: #FFFFFF;
             --border-color: #E5E7EB;
             --highlight: #F3F4F6;
-            --danger: #EF4444;
-            --warning: #F59E0B;
+            --danger: #B91C1C;
         }
 
         * {
@@ -179,34 +178,78 @@
             gap: 24px;
         }
 
-        .schedule-card {
+        .form-header {
             display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .schedule-header {
-            display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
             gap: 16px;
         }
 
-        .schedule-title {
+        .form-title {
             margin: 0;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
             color: var(--blue-primary);
         }
 
-        .schedule-subtitle {
-            margin: 6px 0 0;
+        .form-subtitle {
+            margin: 8px 0 0;
+            font-size: 15px;
             color: var(--text-muted);
-            font-size: 14px;
         }
 
-        .schedule-actions {
+        form {
             display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px 32px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 14px 18px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background-color: var(--highlight);
+            font-family: inherit;
+            font-size: 15px;
+            color: var(--text-dark);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--blue-primary);
+            box-shadow: 0 0 0 4px rgba(17, 43, 105, 0.12);
+            background-color: #fff;
+        }
+
+        .required {
+            color: var(--danger);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
             gap: 16px;
         }
 
@@ -215,12 +258,13 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 10px 20px;
+            padding: 12px 32px;
             border-radius: 999px;
             border: none;
             cursor: pointer;
             font-weight: 600;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
         }
 
         .btn:focus {
@@ -238,92 +282,15 @@
             box-shadow: 0 14px 30px rgba(17, 43, 105, 0.2);
         }
 
-        .table-wrapper {
-            overflow-x: auto;
-            border-radius: 24px;
-            border: 1px solid var(--border-color);
+        .btn-danger {
+            background-color: var(--danger);
+            color: #FFFFFF;
+            box-shadow: 0 10px 25px rgba(185, 28, 28, 0.18);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 720px;
-        }
-
-        thead {
-            background-color: rgba(17, 43, 105, 0.04);
-        }
-
-        th {
-            text-align: left;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-muted);
-            padding: 16px 24px;
-            letter-spacing: 0.01em;
-        }
-
-        td {
-            padding: 18px 24px;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        tbody tr:hover {
-            background-color: rgba(17, 43, 105, 0.04);
-        }
-
-        .actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .icon-button {
-            width: 36px;
-            height: 36px;
-            border-radius: 12px;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            background-color: rgba(17, 43, 105, 0.08);
-            color: var(--blue-primary);
-            text-decoration: none;
-        }
-
-        .icon-button img {
-            width: 16px;
-            height: 16px;
-        }
-
-        .icon-button.edit {
-            background-color: rgba(17, 43, 105, 0.1);
-        }
-
-        .icon-button.delete {
-            background-color: rgba(239, 68, 68, 0.12);
-            color: var(--danger);
-        }
-
-        .icon-button:hover {
+        .btn-danger:hover {
             transform: translateY(-1px);
-            box-shadow: 0 8px 18px rgba(17, 43, 105, 0.15);
-        }
-
-        .icon-button.delete:hover {
-            box-shadow: 0 8px 18px rgba(239, 68, 68, 0.15);
-        }
-
-        .shift-id {
-            color: var(--blue-primary);
-            font-weight: 600;
+            box-shadow: 0 14px 30px rgba(185, 28, 28, 0.25);
         }
 
         @media (max-width: 1200px) {
@@ -374,13 +341,13 @@
                 justify-content: space-between;
             }
 
-            .schedule-header {
-                flex-direction: column;
-                align-items: flex-start;
+            .form-grid {
+                grid-template-columns: 1fr;
             }
 
-            table {
-                min-width: 100%;
+            .form-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
             }
         }
     </style>
@@ -398,19 +365,6 @@
         if ($userInitials === '') {
             $userInitials = 'AD';
         }
-
-        $schedules = [
-            ['id' => '01', 'name' => 'Pagi', 'check_in' => '08.00', 'check_out' => '16.00'],
-            ['id' => '02', 'name' => 'Siang', 'check_in' => '12.00', 'check_out' => '20.00'],
-            ['id' => '03', 'name' => 'Malam', 'check_in' => '20.00', 'check_out' => '04.00'],
-            ['id' => '04', 'name' => 'Pagi', 'check_in' => '08.00', 'check_out' => '16.00'],
-            ['id' => '05', 'name' => 'Siang', 'check_in' => '12.00', 'check_out' => '20.00'],
-            ['id' => '06', 'name' => 'Malam', 'check_in' => '20.00', 'check_out' => '04.00'],
-            ['id' => '07', 'name' => 'Pagi', 'check_in' => '08.00', 'check_out' => '16.00'],
-            ['id' => '08', 'name' => 'Siang', 'check_in' => '12.00', 'check_out' => '20.00'],
-            ['id' => '09', 'name' => 'Malam', 'check_in' => '20.00', 'check_out' => '04.00'],
-            ['id' => '10', 'name' => 'Pagi', 'check_in' => '08.00', 'check_out' => '16.00'],
-        ];
     @endphp
     <div class="dashboard-layout">
         <aside class="sidebar">
@@ -469,7 +423,7 @@
         <main class="main-content">
             <header class="top-header">
                 <div>
-                    <h1 class="top-header-title">Schedule</h1>
+                    <h1 class="top-header-title">Edit Shift Pegawai</h1>
                     <p class="top-header-subtitle">
                         Halo, {{ $user?->name ?? 'Administrator' }} &middot;
                         <span>{{ now()->translatedFormat('d F Y') }}</span>
@@ -482,66 +436,46 @@
             </header>
 
             <section class="content-wrapper">
-                <div class="schedule-card">
-                    <div class="schedule-header">
-                        <div>
-                            <h2 class="schedule-title">Daftar Shift</h2>
-                            <p class="schedule-subtitle">Jam masuk dan keluar setiap shift</p>
+                <div class="form-header">
+                    <div>
+                        <h2 class="form-title">Edit Shift Pegawai</h2>
+                        <p class="form-subtitle">Perbarui informasi shift sesuai kebutuhan operasional.</p>
+                    </div>
+                </div>
+
+                <form action="#" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="shift_id">Id Shift <span class="required">*</span></label>
+                            <input type="text" id="shift_id" name="shift_id" placeholder="01" value="01">
                         </div>
-                        <div class="schedule-actions">
-                            <button class="btn btn-primary" type="button">
-                                Add
-                            </button>
+                        <div class="form-group">
+                            <label for="shift_name">Shift Name <span class="required">*</span></label>
+                            <input type="text" id="shift_name" name="shift_name" placeholder="Pagi" value="Pagi">
+                        </div>
+                        <div class="form-group">
+                            <label for="check_in">Check in <span class="required">*</span></label>
+                            <input type="time" id="check_in" name="check_in" value="07:00">
+                        </div>
+                        <div class="form-group">
+                            <label for="check_out">Check out <span class="required">*</span></label>
+                            <input type="time" id="check_out" name="check_out" value="15:00">
+                        </div>
+                        <div class="form-group">
+                            <label for="shift_date">Tanggal <span class="required">*</span></label>
+                            <input type="date" id="shift_date" name="shift_date" value="2025-10-30">
                         </div>
                     </div>
 
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Id Shift</th>
-                                    <th>Shift Name</th>
-                                    <th>Check in</th>
-                                    <th>Check out</th>
-                                    <th style="text-align: right;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($schedules as $schedule)
-                                    <tr>
-                                        <td class="shift-id">{{ $schedule['id'] }}</td>
-                                        <td>{{ $schedule['name'] }}</td>
-                                        <td>{{ $schedule['check_in'] }}</td>
-                                        <td>{{ $schedule['check_out'] }}</td>
-                                        <td>
-                                            <div class="actions" style="justify-content: flex-end;">
-                                                <a class="icon-button edit" href="{{ route('schedule.edit') }}" title="Edit">
-                                                    <img src="{{ asset('images/edit-icon.png') }}" alt="Edit schedule">
-                                                </a>
-                                                <button class="icon-button delete delete-btn" type="button" title="Delete">
-                                                    <img src="{{ asset('images/delete-icon.png') }}" alt="Delete schedule">
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="form-actions">
+                        <a href="{{ route('schedule.index') }}" class="btn btn-danger">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Edit</button>
                     </div>
-                </div>
+                </form>
             </section>
         </main>
     </div>
-
-    <script>
-        document.querySelectorAll('.delete-btn').forEach((button) => {
-            button.addEventListener('click', () => {
-                const confirmed = window.confirm('Apakah Anda yakin ingin menghapus data shift ini?');
-                if (confirmed) {
-                    alert('Data shift telah dihapus (simulasi).');
-                }
-            });
-        });
-    </script>
 </body>
 </html>
