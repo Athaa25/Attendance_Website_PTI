@@ -505,11 +505,11 @@
                                 <p class="metric-value">{{ number_format($metrics['total_absence']) }}</p>
                                 <span class="metric-description">Periode {{ $startOfMonthLabel }} - {{ $endOfMonthLabel }}</span>
                             </a>
-                            <div class="metric-card">
+                            <a class="metric-card metric-card--link" href="{{ route('manage-users.index') }}">
                                 <span class="metric-title">Jumlah Keterlambatan</span>
                                 <p class="metric-value">{{ number_format($metrics['late_count']) }}</p>
                                 <span class="metric-description">Termasuk hadir terlambat</span>
-                            </div>
+                            </a>
                             <div class="metric-card">
                                 <span class="metric-title">Tingkat Kehadiran</span>
                                 <p class="metric-value">{{ number_format($metrics['attendance_rate'], 1) }}%</p>
