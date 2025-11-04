@@ -280,8 +280,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background-color: #fff;
-            border: 1px solid var(--border-color);
+            background-color: rgba(17, 43, 105, 0.08);
             border-radius: 14px;
             padding: 4px;
         }
@@ -301,13 +300,17 @@
             transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
         }
 
+        .view-option:focus {
+            outline: none;
+        }
+
         .view-option svg {
             width: 18px;
             height: 18px;
         }
 
         .view-option.active {
-            background-color: var(--card-background);
+            background-color: #fff;
             color: var(--blue-primary);
             box-shadow: 0 8px 20px rgba(17, 43, 105, 0.15);
         }
@@ -371,9 +374,6 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
         }
 
         thead {
@@ -391,7 +391,6 @@
 
         td {
             padding: 16px;
-            border-top: 1px solid var(--border-color);
             font-size: 14px;
             vertical-align: middle;
         }
@@ -400,34 +399,98 @@
             background-color: rgba(17, 43, 105, 0.02);
         }
 
+        .summary-wrapper {
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-background);
+            padding: 20px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         .table-scroll {
             width: 100%;
             overflow-x: auto;
-            border-radius: 24px;
-            background-color: var(--card-background);
-            padding: 12px;
-            border: 1px solid var(--border-color);
         }
 
         .table-scroll table {
             min-width: 900px;
-            border: none;
         }
 
-        .matrix-table th,
-        .matrix-table td {
+        .matrix-table {
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            background-color: #fff;
+            table-layout: fixed;
+        }
+
+        .matrix-table thead th {
             text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--blue-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px;
         }
 
-        .matrix-table th:first-child,
-        .matrix-table th:nth-child(2),
-        .matrix-table td:first-child,
-        .matrix-table td:nth-child(2) {
+        .matrix-table thead th:first-child,
+        .matrix-table thead th:nth-child(2) {
             text-align: left;
         }
 
-        .matrix-cell {
+        .matrix-table thead th:nth-child(n + 3) {
+            min-width: 44px;
+        }
+
+        .matrix-table tbody td,
+        .matrix-table tbody th {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+
+        .matrix-table tbody td:first-child {
+            text-align: center;
             font-weight: 600;
+            width: 48px;
+        }
+
+        .matrix-table tbody td:nth-child(2) {
+            text-align: left;
+            min-width: 180px;
+        }
+
+        .matrix-table tbody td.matrix-cell {
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            min-width: 44px;
+        }
+
+        .matrix-table tbody tr:nth-child(even) td {
+            background-color: transparent;
+        }
+
+        .matrix-table tbody tr:hover td {
+            background-color: rgba(17, 43, 105, 0.05);
+        }
+
+        .detail-table {
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            background-color: #fff;
+        }
+
+        .detail-table thead th {
+            background-color: rgba(17, 43, 105, 0.05);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-table tbody td {
+            border-top: 1px solid var(--border-color);
         }
 
         .empty-state {
@@ -702,50 +765,52 @@
                 </form>
 
                 @if ($viewMode === 'summary')
-                    <div class="legend">
-                        <span><span class="legend-badge present">H</span> Hadir</span>
-                        <span><span class="legend-badge late">T</span> Terlambat</span>
-                        <span><span class="legend-badge leave">I</span> Izin</span>
-                        <span><span class="legend-badge sick">S</span> Sakit</span>
-                        <span><span class="legend-badge absent">A</span> Alpa</span>
-                    </div>
+                    <div class="summary-wrapper">
+                        <div class="legend">
+                            <span><span class="legend-badge present">H</span> Hadir</span>
+                            <span><span class="legend-badge late">T</span> Terlambat</span>
+                            <span><span class="legend-badge leave">I</span> Izin</span>
+                            <span><span class="legend-badge sick">S</span> Sakit</span>
+                            <span><span class="legend-badge absent">A</span> Alpa</span>
+                        </div>
 
-                    <div class="table-scroll">
-                        <table class="matrix-table">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama</th>
-                                    @foreach ($dateRange as $date)
-                                        <th>{{ $date->format('j') }}</th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($summaryMatrix as $row)
+                        <div class="table-scroll">
+                            <table class="matrix-table">
+                                <thead>
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>
-                                            <div class="employee-cell">
-                                                <span class="employee-name">{{ $row['employee']->full_name }}</span>
-                                                <span class="employee-department">{{ $row['employee']->department->name ?? '—' }}</span>
-                                            </div>
-                                        </td>
+                                        <th>No</th>
+                                        <th>Nama</th>
                                         @foreach ($dateRange as $date)
-                                            @php($key = $date->format('Y-m-d'))
-                                            @php($symbol = $row['days'][$key] ?? '')
-                                            <td class="matrix-cell">{{ $symbol }}</td>
+                                            <th>{{ $date->format('j') }}</th>
                                         @endforeach
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="{{ count($dateRange) + 2 }}" class="empty-state">
-                                            Tidak ada data absensi pada rentang tanggal ini.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @forelse ($summaryMatrix as $row)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>
+                                                <div class="employee-cell">
+                                                    <span class="employee-name">{{ $row['employee']->full_name }}</span>
+                                                    <span class="employee-department">{{ $row['employee']->department->name ?? '—' }}</span>
+                                                </div>
+                                            </td>
+                                            @foreach ($dateRange as $date)
+                                                @php($key = $date->format('Y-m-d'))
+                                                @php($symbol = $row['days'][$key] ?? '')
+                                                <td class="matrix-cell">{{ $symbol }}</td>
+                                            @endforeach
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="{{ count($dateRange) + 2 }}" class="empty-state">
+                                                Tidak ada data absensi pada rentang tanggal ini.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 @else
                     <div class="table-scroll">
