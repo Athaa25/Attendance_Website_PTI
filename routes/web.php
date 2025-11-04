@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('destroy');
     });
 
+    Route::view('/departments', 'departments')->name('departments.index');
+
     Route::get('/daily-attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('/daily-attendance/{attendanceRecord}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
     Route::put('/daily-attendance/{attendanceRecord}', [AttendanceController::class, 'update'])->name('attendance.update');
