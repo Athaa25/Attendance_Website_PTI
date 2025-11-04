@@ -522,7 +522,7 @@
                                 <p class="metric-value">{{ number_format($metrics['late_count']) }}</p>
                                 <span class="metric-description">Termasuk hadir terlambat</span>
                             </a>
-                            <a class="metric-card metric-card--link" href="{{ route('manage-users.create') }}">
+                            <a class="metric-card metric-card--link" href="{{ route('attendance.index') }}">
                                 <span class="metric-title">Tingkat Kehadiran</span>
                                 <p class="metric-value">{{ number_format($metrics['attendance_rate'], 1) }}%</p>
                                 <span class="metric-description">Dari seluruh catatan absensi</span>
