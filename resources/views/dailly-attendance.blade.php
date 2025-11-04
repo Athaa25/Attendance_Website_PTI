@@ -487,10 +487,6 @@
                         <img src="{{ asset('images/user-setting-icon.png') }}" alt="Departments Icon">
                         Departemen
                     </a>
-                    <a href="#" class="sidebar-nav-item">
-                        <img src="{{ asset('images/user-setting-icon.png') }}" alt="User Setting Icon">
-                        User Setting
-                    </a>
                 </div>
 
                 <div class="sidebar-nav-group">
