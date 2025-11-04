@@ -523,9 +523,9 @@
                                 <span class="metric-description">Total karyawan yang terdaftar</span>
                             </a>
                             <a class="metric-card metric-card--link" href="{{ route('attendance.index') }}">
-                                <span class="metric-title">Tingkat Kehadiran</span>
-                                <p class="metric-value">{{ number_format($metrics['attendance_rate'], 1) }}%</p>
-                                <span class="metric-description">Dari seluruh catatan absensi</span>
+                                <span class="metric-title">Presensi Harian</span>
+                                <p class="metric-value">{{ number_format($metrics['daily_presence_count']) }}</p>
+                                <span class="metric-description">Total pegawai hadir hari ini</span>
                             </a>
                             <a class="metric-card metric-card--link" href="{{ route('reports.sheet') }}">
                                 <span class="metric-title">Pegawai Aktif</span>

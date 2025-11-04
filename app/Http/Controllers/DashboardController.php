@@ -39,6 +39,15 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $dailyPresenceCount = AttendanceRecord::query()
+            ->whereDate('attendance_date', $now->toDateString())
+            ->whereIn('status', [
+                AttendanceRecord::STATUS_PRESENT,
+                AttendanceRecord::STATUS_LATE,
+            ])
+            ->distinct('employee_id')
+            ->count('employee_id');
+
         $chartRecords = AttendanceRecord::where('attendance_date', '>=', $now->copy()->subMonths(4)->startOfMonth())
             ->get()
             ->groupBy(fn ($record) => Carbon::parse($record->attendance_date)->format('Y-m'));
@@ -65,6 +74,7 @@ class DashboardController extends Controller
                 'leave_count' => $leaveCount,
                 'sick_count' => $sickCount,
                 'absent_count' => $absentCount,
+                'daily_presence_count' => $dailyPresenceCount,
             ],
             'recentAttendances' => $recentAttendances,
             'monthlyChart' => $chartData,
