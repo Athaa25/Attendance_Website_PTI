@@ -222,6 +222,18 @@
             gap: 12px;
         }
 
+        .metric-card--link {
+            color: inherit;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metric-card--link:hover,
+        .metric-card--link:focus-visible {
+            box-shadow: 0 8px 24px rgba(17, 43, 105, 0.18);
+            transform: translateY(-2px);
+        }
+
         .metric-title {
             font-size: 14px;
             color: var(--text-muted);
@@ -488,11 +500,11 @@
                         </div>
 
                         <div class="metrics-grid">
-                            <div class="metric-card">
+                            <a class="metric-card metric-card--link" href="{{ route('reports.sheet', ['type' => 'bulanan']) }}">
                                 <span class="metric-title">Total Absensi Bulan Ini</span>
                                 <p class="metric-value">{{ number_format($metrics['total_absence']) }}</p>
                                 <span class="metric-description">Periode {{ $startOfMonthLabel }} - {{ $endOfMonthLabel }}</span>
-                            </div>
+                            </a>
                             <div class="metric-card">
                                 <span class="metric-title">Jumlah Keterlambatan</span>
                                 <p class="metric-value">{{ number_format($metrics['late_count']) }}</p>
