@@ -359,7 +359,7 @@
 
                 <div class="sidebar-nav-group">
                     <p class="sidebar-section-title">Attendance</p>
-                    <a href="#" class="sidebar-nav-item">
+                    <a href="{{ route('schedule.index') }}" class="sidebar-nav-item {{ request()->routeIs('schedule.index') ? 'active' : '' }}">
                         <img src="{{ asset('images/schedule-icon.png') }}" alt="Schedule Icon">
                         Schedule
                     </a>
