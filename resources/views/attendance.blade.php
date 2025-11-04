@@ -491,7 +491,7 @@
 
                 <div class="sidebar-nav-group">
                     <p class="sidebar-section-title">Attendance</p>
-                    <a href="#" class="sidebar-nav-item">
+                    <a href="{{ route('schedule.index') }}" class="sidebar-nav-item {{ request()->routeIs('schedule.index') ? 'active' : '' }}">
                         <img src="{{ asset('images/schedule-icon.png') }}" alt="Schedule Icon">
                         Schedule
                     </a>
@@ -620,14 +620,14 @@
                                             {{ $record->employee->employee_code }}
                                         </div>
                                     </td>
-                                    <td>{{ $record->employee->department->name ?? 'GÇö' }}</td>
+                                    <td>{{ $record->employee->department->name ?? 'GÃ‡Ã¶' }}</td>
                                     <td>
                                         <span class="status-badge status-{{ $record->status }}">
                                             {{ $record->status_label }}
                                         </span>
                                     </td>
                                     <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
-                                    <td>{{ $record->notes ?? 'GÇö' }}</td>
+                                    <td>{{ $record->notes ?? 'GÃ‡Ã¶' }}</td>
                                     <td>
                                         <a class="btn btn-secondary" href="{{ route('attendance.edit', $record) }}">Edit</a>
                                     </td>
