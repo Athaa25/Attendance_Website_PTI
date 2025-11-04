@@ -112,7 +112,7 @@ class ReportController extends Controller
             return false;
         })->values();
 
-        return view('sheet-report', [
+        return view('reports.sheet', [
             'employees' => $employees,
             'records' => $records,
             'summaryMatrix' => $summaryMatrix,

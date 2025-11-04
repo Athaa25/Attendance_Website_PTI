@@ -63,7 +63,7 @@ class AttendanceController extends Controller
             $summary[$summaryKey] = $statusCounts->get($statusValue, 0);
         }
 
-        return view('attendance', [
+        return view('attendance.index', [
             'page' => 'list',
             'viewMode' => 'list',
             'attendanceDate' => Carbon::createFromFormat('Y-m-d', $date),
@@ -80,7 +80,7 @@ class AttendanceController extends Controller
 
     public function create()
     {
-        return view('attendance', $this->formPayload());
+        return view('attendance.index', $this->formPayload());
     }
 
     public function store(StoreAttendanceRequest $request)
@@ -100,7 +100,7 @@ class AttendanceController extends Controller
     {
         $attendanceRecord->load(['employee.department', 'employee.schedule', 'employee.user']);
 
-        return view('attendance', array_merge(
+        return view('attendance.index', array_merge(
             $this->formPayload($attendanceRecord),
             [
                 'page' => 'form',
