@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Departemen &amp; Jabatan</title>
+    <title>Edit Departemen &amp; Jabatan</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -16,6 +16,7 @@
             --border-color: #E5E7EB;
             --highlight: #F3F4F6;
             --danger: #EF4444;
+            --cancel-button: #731515;
         }
 
         * {
@@ -171,59 +172,81 @@
         .content-wrapper {
             background-color: var(--card-background);
             border-radius: 32px;
-            padding: 32px;
+            padding: 40px;
             box-shadow: 0 10px 40px rgba(17, 43, 105, 0.05);
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 32px;
         }
 
-        .department-card {
+        .form-header {
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 8px;
         }
 
-        .department-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-        }
-
-        .department-title {
+        .form-header h2 {
             margin: 0;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
             color: var(--blue-primary);
         }
 
-        .department-subtitle {
-            margin: 6px 0 0;
-            color: var(--text-muted);
-            font-size: 14px;
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
         }
 
-        .department-actions {
+        .form-group {
             display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        input[type="text"] {
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 20px;
+            font-size: 15px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--blue-primary);
+            box-shadow: 0 0 0 4px rgba(17, 43, 105, 0.15);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
             gap: 16px;
         }
 
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 999px;
+            padding: 14px 32px;
+            border-radius: 16px;
             border: none;
-            cursor: pointer;
             font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .btn:focus {
             outline: none;
+        }
+
+        .btn-cancel {
+            background-color: var(--cancel-button);
+            color: #FFFFFF;
+            box-shadow: 0 12px 25px rgba(115, 21, 21, 0.25);
         }
 
         .btn-primary {
@@ -232,117 +255,17 @@
             box-shadow: 0 10px 25px rgba(17, 43, 105, 0.15);
         }
 
-        .btn-primary:hover {
+        .btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 14px 30px rgba(17, 43, 105, 0.2);
         }
 
-        .alert {
-            padding: 16px 20px;
-            border-radius: 16px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .alert-success {
-            background: rgba(34, 197, 94, 0.12);
-            color: #15803d;
-            border: 1px solid rgba(34, 197, 94, 0.25);
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            border-radius: 24px;
-            border: 1px solid var(--border-color);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 720px;
-        }
-
-        thead {
-            background-color: rgba(17, 43, 105, 0.04);
-        }
-
-        th {
-            text-align: left;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-muted);
-            padding: 16px 24px;
-            letter-spacing: 0.01em;
-        }
-
-        td {
-            padding: 18px 24px;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        tbody tr:hover {
-            background-color: rgba(17, 43, 105, 0.04);
-        }
-
-        .actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .inline-form {
-            display: inline-flex;
-        }
-
-        .icon-button {
-            width: 36px;
-            height: 36px;
-            border-radius: 12px;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            background-color: rgba(17, 43, 105, 0.08);
-            color: var(--blue-primary);
-            text-decoration: none;
-        }
-
-        .icon-button img {
-            width: 16px;
-            height: 16px;
-        }
-
-        .icon-button.edit {
-            background-color: rgba(17, 43, 105, 0.1);
-        }
-
-        .icon-button.delete {
-            background-color: rgba(239, 68, 68, 0.12);
+        .error-message {
             color: var(--danger);
+            font-size: 13px;
+            font-weight: 500;
         }
 
-        .icon-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 18px rgba(17, 43, 105, 0.15);
-        }
-
-        .icon-button.delete:hover {
-            box-shadow: 0 8px 18px rgba(239, 68, 68, 0.15);
-        }
-
-        .department-name {
-            color: var(--blue-primary);
-            font-weight: 600;
-        }
-
-        @media (max-width: 1200px) {
+        @media (max-width: 1024px) {
             .dashboard-layout {
                 flex-direction: column;
                 padding: 24px;
@@ -351,52 +274,29 @@
             .sidebar {
                 width: 100%;
                 flex-direction: row;
-                align-items: flex-start;
                 gap: 24px;
             }
 
             .sidebar-nav {
-                flex: 1;
                 flex-direction: row;
                 flex-wrap: wrap;
-            }
-
-            .sidebar-footer {
-                border-top: none;
-                border-left: 1px solid var(--border-color);
-                padding-top: 0;
-                padding-left: 24px;
+                flex: 1;
             }
         }
 
         @media (max-width: 768px) {
-            .dashboard-layout {
-                padding: 24px;
+            .form-grid {
+                grid-template-columns: 1fr;
             }
 
-            .top-header,
-            .content-wrapper {
-                padding: 24px;
+            .form-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
             }
 
-            .top-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-
-            .profile-info {
+            .btn {
                 width: 100%;
-                justify-content: space-between;
-            }
-
-            .department-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            table {
-                min-width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -415,6 +315,7 @@
             $userInitials = 'AD';
         }
     @endphp
+
     <div class="dashboard-layout">
         <aside class="sidebar">
             <div class="sidebar-logo">
@@ -435,7 +336,7 @@
                         <img src="{{ asset('images/manage-user-icon.png') }}" alt="Manage User Icon">
                         Manage User
                     </a>
-                    <a href="{{ route('departments.index') }}" class="sidebar-nav-item {{ request()->routeIs('departments.*') ? 'active' : '' }}">
+                    <a href="{{ route('departments.index') }}" class="sidebar-nav-item active">
                         <img src="{{ asset('images/user-setting-icon.png') }}" alt="Departments Icon">
                         Departemen
                     </a>
@@ -472,7 +373,7 @@
         <main class="main-content">
             <header class="top-header">
                 <div>
-                    <h1 class="top-header-title">Departemen &amp; Jabatan</h1>
+                    <h1 class="top-header-title">Edit Departemen &amp; Jabatan</h1>
                     <p class="top-header-subtitle">
                         Halo, {{ $user?->name ?? 'Administrator' }} &middot;
                         <span>{{ now()->translatedFormat('d F Y') }}</span>
@@ -485,65 +386,36 @@
             </header>
 
             <section class="content-wrapper">
-                <div class="department-card">
-                    <div class="department-header">
-                        <div>
-                            <h2 class="department-title">Departemen &amp; Jabatan</h2>
-                            <p class="department-subtitle">Kelola struktur organisasi perusahaan Anda</p>
-                        </div>
-                        <div class="department-actions">
-                            <a class="btn btn-primary" href="#">
-                                Add
-                            </a>
-                        </div>
-                    </div>
-
-                    @if (session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Departemen</th>
-                                    <th>Jabatan</th>
-                                    <th style="text-align: right;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($positions ?? [] as $item)
-                                    <tr>
-                                        <td class="department-name">{{ optional($item->department)->name ?? 'Tanpa Departemen' }}</td>
-                                        <td>{{ $item->name }}</td>
-                                        <td>
-                                            <div class="actions" style="justify-content: flex-end;">
-                                                <a class="icon-button edit" href="{{ route('departments.edit', $item) }}" title="Edit">
-                                                    <img src="{{ asset('images/edit-icon.png') }}" alt="Edit department">
-                                                </a>
-                                                <form class="inline-form" action="{{ route('departments.destroy', $item) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="icon-button delete" type="submit" title="Delete">
-                                                        <img src="{{ asset('images/delete-icon.png') }}" alt="Delete department">
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                            Belum ada data departemen dan jabatan yang tersedia.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="form-header">
+                    <h2>Edit Departemen &amp; Jabatan</h2>
+                    <p style="margin: 0; color: var(--text-muted);">Perbarui informasi departemen dan jabatan sesuai kebutuhan perusahaan.</p>
                 </div>
+
+                <form action="{{ route('departments.update', $position) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="department_name">Departemen Name</label>
+                            <input type="text" id="department_name" name="department_name" value="{{ old('department_name', optional($position->department)->name) }}" placeholder="Masukkan nama departemen" required>
+                            @error('department_name')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="position_name">Jabatan Name</label>
+                            <input type="text" id="position_name" name="position_name" value="{{ old('position_name', $position->name) }}" placeholder="Masukkan nama jabatan" required>
+                            @error('position_name')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ route('departments.index') }}" class="btn btn-cancel">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Edit</button>
+                    </div>
+                </form>
             </section>
         </main>
     </div>
