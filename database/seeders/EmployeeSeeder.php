@@ -24,18 +24,18 @@ class EmployeeSeeder extends Seeder
         $employees = [
             [
                 'user' => [
-                    'name' => 'Akbar Prabo',
-                    'email' => 'akbar.prabo@rmdoo.id',
-                    'username' => 'akbarprabo',
+                    'name' => 'Akbar Probo',
+                    'email' => 'akbar.probo@rmdoo.id',
+                    'username' => 'akbarprobo',
                     'role' => 'admin',
                     'password' => 'password',
                 ],
                 'employee' => [
                     'employee_code' => 'EMP-0001',
-                    'full_name' => 'Akbar Prabo',
+                    'full_name' => 'Akbar Probo',
                     'gender' => 'male',
                     'phone' => '0812-3456-7890',
-                    'work_email' => 'akbar.prabo@rmdoo.id',
+                    'work_email' => 'akbar.probo@rmdoo.id',
                     'national_id' => '3571720201010101',
                     'place_of_birth' => 'Malang',
                     'date_of_birth' => '1990-04-21',
