@@ -57,11 +57,10 @@
         }
 
         .sidebar-section-title {
-            font-size: 14px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.1em;
-            margin-bottom: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0 0 16px;
         }
 
         .sidebar-nav {
