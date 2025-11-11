@@ -39,16 +39,33 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        $chartRecords = AttendanceRecord::where('attendance_date', '>=', $now->copy()->subMonths(4)->startOfMonth())
-            ->get()
-            ->groupBy(fn ($record) => Carbon::parse($record->attendance_date)->format('Y-m'));
+        $dailyPresenceCount = AttendanceRecord::query()
+            ->whereDate('attendance_date', $now->toDateString())
+            ->whereIn('status', [
+                AttendanceRecord::STATUS_PRESENT,
+                AttendanceRecord::STATUS_LATE,
+            ])
+            ->distinct('employee_id')
+            ->count('employee_id');
 
-        $chartPeriod = CarbonPeriod::create($now->copy()->subMonths(4)->startOfMonth(), '1 month', $now->copy()->startOfMonth());
+        $chartStart = $now->copy()->subMonths(4)->startOfMonth();
+
+        $chartRecords = AttendanceRecord::query()
+            ->where('attendance_date', '>=', $chartStart)
+            ->whereIn('status', [
+                AttendanceRecord::STATUS_PRESENT,
+                AttendanceRecord::STATUS_LATE,
+            ])
+            ->selectRaw('DATE_FORMAT(attendance_date, "%Y-%m") as month_key, COUNT(*) as attendance_count')
+            ->groupBy('month_key')
+            ->pluck('attendance_count', 'month_key');
+
+        $chartPeriod = CarbonPeriod::create($chartStart, '1 month', $now->copy()->startOfMonth());
         $chartData = collect();
 
         foreach ($chartPeriod as $month) {
             $key = $month->format('Y-m');
-            $count = $chartRecords->has($key) ? $chartRecords[$key]->count() : 0;
+            $count = (int) $chartRecords->get($key, 0);
 
             $chartData->push([
                 'label' => $month->translatedFormat('M'),
@@ -65,6 +82,7 @@ class DashboardController extends Controller
                 'leave_count' => $leaveCount,
                 'sick_count' => $sickCount,
                 'absent_count' => $absentCount,
+                'daily_presence_count' => $dailyPresenceCount,
             ],
             'recentAttendances' => $recentAttendances,
             'monthlyChart' => $chartData,

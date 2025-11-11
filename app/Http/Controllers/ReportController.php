@@ -12,111 +12,116 @@ class ReportController extends Controller
     public function index(Request $request)
     {
         Carbon::setLocale(config('app.locale'));
-        $allowedTypes = ['harian', 'mingguan', 'bulanan', 'custom'];
-        $type = $request->query('type', 'harian');
-        $activeType = in_array($type, $allowedTypes, true) ? $type : 'harian';
 
         $employees = Employee::with('department')->orderBy('full_name')->get();
 
-        $dailyRecords = collect();
-        $weeklySummary = collect();
-        $monthlyMatrix = collect();
-        $customRecords = collect();
-        $selectedEmployee = null;
-        $period = [];
+        $allowedViewModes = ['detail', 'summary'];
+        $requestedView = $request->query('view');
+        $viewMode = in_array($requestedView, $allowedViewModes, true) ? $requestedView : null;
 
-        switch ($activeType) {
-            case 'mingguan':
-                $start = $this->parseDate($request->query('start'), now()->startOfWeek());
-                $end = $this->parseDate($request->query('end'), $start->copy()->endOfWeek());
-                $period = ['start' => $start, 'end' => $end];
+        $type = $request->query('type');
+        $defaultStart = now()->startOfMonth();
+        $defaultEnd = now();
 
-                $weeklyRecords = AttendanceRecord::with('employee.department')
-                    ->whereBetween('attendance_date', [$start->toDateString(), $end->toDateString()])
-                    ->get();
+        if ($type === 'harian') {
+            $defaultDate = $this->parseDate($request->query('date'), now());
+            $defaultStart = $defaultDate->copy();
+            $defaultEnd = $defaultDate->copy();
+        } elseif ($type === 'mingguan') {
+            $defaultStart = $this->parseDate($request->query('start'), now()->startOfWeek());
+            $defaultEnd = $defaultStart->copy()->endOfWeek();
+        } elseif ($type === 'bulanan') {
+            $month = (int) $request->query('month', now()->month);
+            $year = (int) $request->query('year', now()->year);
+            $defaultStart = Carbon::create($year, $month, 1)->startOfMonth();
+            $defaultEnd = $defaultStart->copy()->endOfMonth();
 
-                $weeklySummary = $weeklyRecords->groupBy('employee_id')->map(function ($items) {
-                    $employee = $items->first()->employee;
-                    $attended = $items->whereIn('status', [AttendanceRecord::STATUS_PRESENT, AttendanceRecord::STATUS_LATE])->count();
-                    $leave = $items->whereIn('status', [AttendanceRecord::STATUS_LEAVE, AttendanceRecord::STATUS_SICK])->count();
-                    $absent = $items->where('status', AttendanceRecord::STATUS_ABSENT)->count();
-
-                    return [
-                        'employee' => $employee,
-                        'total' => $items->count(),
-                        'attended' => $attended,
-                        'leave' => $leave,
-                        'absent' => $absent,
-                    ];
-                });
-                break;
-
-            case 'bulanan':
-                $month = (int) $request->query('month', now()->month);
-                $year = (int) $request->query('year', now()->year);
-                $periodStart = Carbon::create($year, $month, 1)->startOfMonth();
-                $periodEnd = $periodStart->copy()->endOfMonth();
-                $period = ['month' => $month, 'year' => $year, 'start' => $periodStart, 'end' => $periodEnd];
-
-                $monthlyRecords = AttendanceRecord::with('employee.department')
-                    ->whereBetween('attendance_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
-                    ->get()
-                    ->groupBy('employee_id');
-
-                $monthlyMatrix = $employees->map(function ($employee) use ($monthlyRecords, $periodStart, $periodEnd) {
-                    $days = [];
-                    $records = $monthlyRecords->get($employee->id, collect())->keyBy(fn ($item) => Carbon::parse($item->attendance_date)->format('Y-m-d'));
-
-                    for ($date = $periodStart->copy(); $date->lte($periodEnd); $date->addDay()) {
-                        $key = $date->format('Y-m-d');
-                        $record = $records->get($key);
-                        $days[$date->day] = $record ? $this->statusSymbol($record->status) : '';
-                    }
-
-                    return [
-                        'employee' => $employee,
-                        'days' => $days,
-                    ];
-                });
-                break;
-
-            case 'custom':
-                $selectedEmployeeId = (int) $request->query('employee_id');
-                $selectedEmployee = $employees->firstWhere('id', $selectedEmployeeId) ?? $employees->first();
-                $start = $this->parseDate($request->query('start'), now()->startOfMonth());
-                $end = $this->parseDate($request->query('end'), now());
-                $period = ['start' => $start, 'end' => $end];
-
-                if ($selectedEmployee) {
-                    $customRecords = AttendanceRecord::with('employee.department')
-                        ->where('employee_id', $selectedEmployee->id)
-                        ->whereBetween('attendance_date', [$start->toDateString(), $end->toDateString()])
-                        ->orderBy('attendance_date')
-                        ->get();
-                }
-                break;
-
-            case 'harian':
-            default:
-                $date = $this->parseDate($request->query('date'), now());
-                $period = ['date' => $date];
-
-                $dailyRecords = AttendanceRecord::with('employee.department', 'employee.schedule')
-                    ->whereDate('attendance_date', $date)
-                    ->orderBy('employee_id')
-                    ->get();
-                break;
+            if (! $viewMode) {
+                $viewMode = 'summary';
+            }
         }
 
-        return view('sheet-report', [
-            'activeType' => $activeType,
+        $start = $this->parseDate($request->query('start'), $defaultStart);
+        $end = $this->parseDate($request->query('end'), $defaultEnd);
+
+        if ($start->gt($end)) {
+            [$start, $end] = [$end->copy(), $start->copy()];
+        }
+
+        if (! $viewMode) {
+            $viewMode = 'detail';
+        }
+
+        $selectedEmployeeInput = $request->query('employee_id', 'all');
+        $selectedEmployeeId = $selectedEmployeeInput === 'all' || $selectedEmployeeInput === null || $selectedEmployeeInput === ''
+            ? 'all'
+            : (int) $selectedEmployeeInput;
+        $selectedEmployee = $selectedEmployeeId === 'all'
+            ? null
+            : $employees->firstWhere('id', $selectedEmployeeId);
+
+        $recordsQuery = AttendanceRecord::with('employee.department')
+            ->whereBetween('attendance_date', [$start->toDateString(), $end->toDateString()]);
+
+        if ($selectedEmployee) {
+            $recordsQuery->where('employee_id', $selectedEmployee->id);
+        }
+
+        $records = $recordsQuery
+            ->orderBy('attendance_date')
+            ->orderBy('employee_id')
+            ->get()
+            ->sortBy(fn ($record) => sprintf('%s-%s', $record->attendance_date->format('Ymd'), strtolower($record->employee->full_name)))
+            ->values();
+
+        $dateRange = [];
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+            $dateRange[] = $date->copy();
+        }
+
+        $recordsByEmployee = $records->groupBy('employee_id')->map(function ($items) {
+            return $items->keyBy(fn ($item) => $item->attendance_date->format('Y-m-d'));
+        });
+
+        $matrixEmployees = $selectedEmployee ? collect([$selectedEmployee]) : $employees;
+        $summaryMatrix = $matrixEmployees->map(function ($employee) use ($recordsByEmployee, $dateRange) {
+            $employeeRecords = $recordsByEmployee->get($employee->id, collect());
+            $days = [];
+
+            foreach ($dateRange as $date) {
+                $key = $date->format('Y-m-d');
+                $record = $employeeRecords->get($key);
+                $days[$key] = $record ? $this->statusSymbol($record->status) : '';
+            }
+
+            return [
+                'employee' => $employee,
+                'days' => $days,
+            ];
+        })->filter(function ($row) use ($selectedEmployeeId) {
+            if ($selectedEmployeeId !== 'all') {
+                return true;
+            }
+
+            foreach ($row['days'] as $value) {
+                if ($value !== '') {
+                    return true;
+                }
+            }
+
+            return false;
+        })->values();
+
+        return view('reports.sheet', [
             'employees' => $employees,
-            'dailyRecords' => $dailyRecords,
-            'weeklySummary' => $weeklySummary,
-            'monthlyMatrix' => $monthlyMatrix,
-            'customRecords' => $customRecords,
+            'records' => $records,
+            'summaryMatrix' => $summaryMatrix,
+            'dateRange' => $dateRange,
+            'viewMode' => $viewMode,
+            'selectedEmployeeId' => $selectedEmployeeId,
             'selectedEmployee' => $selectedEmployee,
-            'period' => $period,
+            'startDate' => $start,
+            'endDate' => $end,
             'statusLabels' => AttendanceRecord::statusLabels(),
         ]);
     }

@@ -3,8 +3,10 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,9 +32,18 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('destroy');
     });
 
+    Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
+    Route::get('/departments/create', [DepartmentController::class, 'create'])->name('departments.create');
+    Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+    Route::get('/departments/{position}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
+    Route::put('/departments/{position}', [DepartmentController::class, 'update'])->name('departments.update');
+    Route::delete('/departments/{position}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
+
     Route::get('/daily-attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('/daily-attendance/{attendanceRecord}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
     Route::put('/daily-attendance/{attendanceRecord}', [AttendanceController::class, 'update'])->name('attendance.update');
 
     Route::get('/sheet-report', [ReportController::class, 'index'])->name('reports.sheet');
+
+    Route::resource('schedule', ScheduleController::class)->except(['show']);
 });
