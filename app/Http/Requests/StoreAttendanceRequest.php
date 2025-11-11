@@ -3,11 +3,15 @@
 namespace App\Http\Requests;
 
 use App\Models\AttendanceRecord;
+use App\Models\AttendanceReason;
+use App\Models\AttendanceStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreAttendanceRequest extends FormRequest
 {
+    protected ?AttendanceStatus $statusDefinition = null;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -18,10 +22,13 @@ class StoreAttendanceRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $statusCode = $this->input('status');
+        $this->statusDefinition = AttendanceStatus::query()->where('code', $statusCode)->first();
+        $requiresReason = (bool) ($this->statusDefinition?->requires_reason);
+
         $this->merge([
-            'leave_reason' => $this->input('status') === AttendanceRecord::STATUS_LEAVE
-                ? $this->input('leave_reason')
-                : null,
+            'status' => $this->statusDefinition?->code ?? $statusCode,
+            'leave_reason' => $requiresReason ? $this->input('leave_reason') : null,
         ]);
     }
 
@@ -33,6 +40,8 @@ class StoreAttendanceRequest extends FormRequest
     public function rules(): array
     {
         $employeeId = $this->input('employee_id');
+        $statusCodes = $this->availableStatusCodes();
+        $reasonCodes = $this->availableReasonCodes();
 
         return [
             'employee_id' => ['required', 'exists:employees,id'],
@@ -42,14 +51,14 @@ class StoreAttendanceRequest extends FormRequest
                 Rule::unique('attendance_records', 'attendance_date')
                     ->where(fn ($query) => $query->where('employee_id', $employeeId)),
             ],
-            'status' => ['required', Rule::in([AttendanceRecord::STATUS_PRESENT, AttendanceRecord::STATUS_LEAVE])],
+            'status' => ['required', Rule::in($statusCodes)],
             'leave_reason' => [
-                Rule::requiredIf(fn () => $this->input('status') === AttendanceRecord::STATUS_LEAVE),
+                Rule::requiredIf(fn () => (bool) ($this->statusDefinition?->requires_reason)),
                 'nullable',
-                Rule::in(array_keys(AttendanceRecord::leaveReasonOptions())),
+                Rule::in($reasonCodes),
             ],
             'supporting_document' => [
-                Rule::requiredIf(fn () => $this->input('status') === AttendanceRecord::STATUS_LEAVE),
+                Rule::requiredIf(fn () => (bool) ($this->statusDefinition?->requires_reason)),
                 'nullable',
                 'file',
                 'mimes:pdf,jpg,jpeg,png',
@@ -59,5 +68,29 @@ class StoreAttendanceRequest extends FormRequest
             'check_out_time' => ['nullable', 'date_format:H:i'],
             'notes' => ['nullable', 'string', 'max:500'],
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function availableStatusCodes(): array
+    {
+        $codes = AttendanceStatus::query()->pluck('code')->all();
+
+        return ! empty($codes)
+            ? $codes
+            : array_keys(AttendanceRecord::statusLabels());
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function availableReasonCodes(): array
+    {
+        $codes = AttendanceReason::query()->pluck('code')->all();
+
+        return ! empty($codes)
+            ? $codes
+            : array_keys(AttendanceRecord::leaveReasonOptions());
     }
 }

@@ -33,16 +33,29 @@ class Employee extends Model
         'department_id',
         'position_id',
         'schedule_id',
+        'nik',
+        'nip',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'telepon',
+        'alamat',
+        'tanggal_mulai',
+        'order_date',
     ];
 
     protected $casts = [
         'date_of_birth' => 'date',
         'hire_date' => 'date',
         'salary' => 'decimal:2',
+        'tanggal_lahir' => 'date',
+        'tanggal_mulai' => 'date',
+        'order_date' => 'date',
+        'jenis_kelamin' => 'integer',
     ];
 
     protected $appends = [
         'employment_status_label',
+        'jenis_kelamin_label',
     ];
 
     public static function employmentStatusOptions(): array
@@ -81,8 +94,27 @@ class Employee extends Model
         return $this->hasMany(AttendanceRecord::class);
     }
 
+    public function photos()
+    {
+        return $this->hasMany(Photo::class);
+    }
+
+    public function presenceTimes()
+    {
+        return $this->hasMany(PresenceTime::class);
+    }
+
     public function getEmploymentStatusLabelAttribute(): string
     {
         return static::employmentStatusOptions()[$this->employment_status] ?? ucfirst($this->employment_status);
+    }
+
+    public function getJenisKelaminLabelAttribute(): ?string
+    {
+        return match ($this->jenis_kelamin) {
+            1 => 'Laki-laki',
+            0 => 'Perempuan',
+            default => null,
+        };
     }
 }

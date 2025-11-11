@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 
 class AttendanceRecord extends Model
 {
@@ -31,6 +32,10 @@ class AttendanceRecord extends Model
         'check_out_time',
         'late_minutes',
         'notes',
+        'status_id',
+        'reason_id',
+        'check_in_time_id',
+        'check_out_time_id',
     ];
 
     protected $casts = [
@@ -50,6 +55,26 @@ class AttendanceRecord extends Model
         return $this->belongsTo(Employee::class);
     }
 
+    public function statusDefinition()
+    {
+        return $this->belongsTo(AttendanceStatus::class, 'status_id');
+    }
+
+    public function reasonDefinition()
+    {
+        return $this->belongsTo(AttendanceReason::class, 'reason_id');
+    }
+
+    public function checkInTimeSlot()
+    {
+        return $this->belongsTo(PresenceTime::class, 'check_in_time_id');
+    }
+
+    public function checkOutTimeSlot()
+    {
+        return $this->belongsTo(PresenceTime::class, 'check_out_time_id');
+    }
+
     public function scopeForDate($query, $date)
     {
         return $query->whereDate('attendance_date', $date);
@@ -62,6 +87,14 @@ class AttendanceRecord extends Model
 
     public static function statusLabels(): array
     {
+        if (Schema::hasTable('attendance_statuses')) {
+            $labels = AttendanceStatus::query()->orderBy('id')->get()->pluck('label', 'code')->toArray();
+
+            if (! empty($labels)) {
+                return $labels;
+            }
+        }
+
         return [
             self::STATUS_PRESENT => 'Hadir',
             self::STATUS_LATE => 'Terlambat',
@@ -82,18 +115,16 @@ class AttendanceRecord extends Model
         ];
     }
 
-    public function getStatusLabelAttribute(): string
-    {
-        return static::statusLabels()[$this->status] ?? ucfirst($this->status);
-    }
-
-    public function getStatusBadgeClassAttribute(): string
-    {
-        return static::statusBadgeClasses()[$this->status] ?? 'status-unknown';
-    }
-
     public static function leaveReasonOptions(): array
     {
+        if (Schema::hasTable('attendance_reasons')) {
+            $labels = AttendanceReason::query()->orderBy('id')->get()->pluck('label', 'code')->toArray();
+
+            if (! empty($labels)) {
+                return $labels;
+            }
+        }
+
         return [
             self::LEAVE_REASON_FIELDWORK => 'Dinas diluar',
             self::LEAVE_REASON_SICK => 'Sakit',
@@ -103,6 +134,10 @@ class AttendanceRecord extends Model
 
     public function getLeaveReasonLabelAttribute(): ?string
     {
+        if ($this->reasonDefinition) {
+            return $this->reasonDefinition->label;
+        }
+
         if (! $this->leave_reason) {
             return null;
         }
@@ -121,5 +156,21 @@ class AttendanceRecord extends Model
         }
 
         return null;
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        if ($this->statusDefinition) {
+            return $this->statusDefinition->label;
+        }
+
+        return static::statusLabels()[$this->status] ?? ucfirst($this->status);
+    }
+
+    public function getStatusBadgeClassAttribute(): string
+    {
+        $code = $this->statusDefinition?->code ?? $this->status;
+
+        return static::statusBadgeClasses()[$code] ?? 'status-unknown';
     }
 }

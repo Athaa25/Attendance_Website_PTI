@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Position;
+use App\Models\Role;
 use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -20,6 +21,7 @@ class EmployeeSeeder extends Seeder
         $departments = Department::all()->keyBy('code');
         $positions = Position::all()->keyBy('name');
         $schedules = Schedule::all()->keyBy('code');
+        $roles = Role::all()->keyBy('slug');
 
         $employees = [
             [
@@ -211,11 +213,20 @@ class EmployeeSeeder extends Seeder
             $password = $userData['password'] ?? 'password';
             unset($userData['password']);
 
+            $roleSlug = $userData['role'] ?? 'employee';
+            unset($userData['role']);
+            $role = $roles[$roleSlug] ?? Role::firstOrCreate(
+                ['slug' => $roleSlug],
+                ['name' => ucfirst(str_replace('-', ' ', $roleSlug))]
+            );
+            $roles[$roleSlug] = $role;
+
             $user = User::updateOrCreate(
                 ['email' => $userData['email']],
                 array_merge($userData, [
                     'password' => Hash::make($password),
                     'email_verified_at' => now(),
+                    'role_id' => $role->id,
                 ])
             );
 
@@ -242,6 +253,14 @@ class EmployeeSeeder extends Seeder
                     'department_id' => $department?->id,
                     'position_id' => $position?->id,
                     'schedule_id' => $schedule?->id,
+                    'nik' => $employeeData['employee_code'],
+                    'nip' => $employeeData['national_id'],
+                    'telepon' => $employeeData['phone'],
+                    'alamat' => $employeeData['address'],
+                    'tanggal_lahir' => $employeeData['date_of_birth'],
+                    'tanggal_mulai' => $employeeData['hire_date'],
+                    'order_date' => $employeeData['hire_date'],
+                    'jenis_kelamin' => $employeeData['gender'] === 'male' ? 1 : ($employeeData['gender'] === 'female' ? 0 : null),
                 ]
             );
         }

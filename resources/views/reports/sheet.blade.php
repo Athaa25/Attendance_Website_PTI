@@ -33,6 +33,27 @@
             color: var(--text-muted);
         }
 
+        .report-period {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .report-print-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .report-print-meta strong {
+            color: var(--text-dark);
+        }
+
         .report-export {
             display: inline-flex;
             align-items: center;
@@ -376,6 +397,9 @@
             <div class="report-title-block">
                 <h2 class="report-title">Rekapan</h2>
                 <p class="report-subtitle">Pantau kehadiran karyawan berdasarkan rentang tanggal dan nama yang dipilih.</p>
+                <p class="report-period">
+                    Periode: {{ $startDate->translatedFormat('d F Y') }} &ndash; {{ $endDate->translatedFormat('d F Y') }}
+                </p>
             </div>
             <button type="button" class="btn btn-primary report-export" id="export-pdf-button">
                 <img src="{{ asset('images/file-download-icon.png') }}" alt="Download" class="btn-icon">
@@ -447,6 +471,10 @@
 
         @if ($viewMode === 'summary')
             <div class="report-printable">
+                <div class="report-print-meta">
+                    <span><strong>Periode:</strong> {{ $startDate->translatedFormat('d F Y') }} &ndash; {{ $endDate->translatedFormat('d F Y') }}</span>
+                    <span><strong>Nama:</strong> {{ $selectedEmployee?->full_name ?? 'Semua Karyawan' }}</span>
+                </div>
                 <div class="summary-wrapper">
                     <div class="legend">
                         <span><span class="legend-badge present">H</span> Hadir</span>
@@ -497,6 +525,10 @@
             </div>
         @else
             <div class="report-printable">
+                <div class="report-print-meta">
+                    <span><strong>Periode:</strong> {{ $startDate->translatedFormat('d F Y') }} &ndash; {{ $endDate->translatedFormat('d F Y') }}</span>
+                    <span><strong>Nama:</strong> {{ $selectedEmployee?->full_name ?? 'Semua Karyawan' }}</span>
+                </div>
                 <div class="table-scroll">
                     <table class="detail-table">
                         <thead>

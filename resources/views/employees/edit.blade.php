@@ -53,7 +53,7 @@
                     <label for="role">Role Sistem</label>
                     <select id="role" name="role" class="form-control" required>
                         @foreach ($roleOptions as $value => $label)
-                            <option value="{{ $value }}" {{ old('role', $employee->user->role) === $value ? 'selected' : '' }}>
+                            <option value="{{ $value }}" {{ old('role', $employee->user->role?->slug) === $value ? 'selected' : '' }}>
                                 {{ $label }}
                             </option>
                         @endforeach
@@ -69,32 +69,41 @@
                     <input id="password_confirmation" name="password_confirmation" type="password" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label for="phone">Nomor Telepon</label>
-                    <input id="phone" name="phone" type="text" class="form-control" value="{{ old('phone', $employee->phone) }}">
+                    <label for="telepon">Nomor Telepon</label>
+                    <input id="telepon" name="telepon" type="text" class="form-control" value="{{ old('telepon', $employee->telepon ?? $employee->phone) }}">
                 </div>
                 <div class="form-group">
-                    <label for="gender">Jenis Kelamin</label>
-                    <select id="gender" name="gender" class="form-control">
+                    <label for="jenis_kelamin">Jenis Kelamin</label>
+                    @php($selectedJenisKelamin = old('jenis_kelamin', $employee->jenis_kelamin ?? ($employee->gender === 'male' ? 1 : ($employee->gender === 'female' ? 0 : null))))
+                    <select id="jenis_kelamin" name="jenis_kelamin" class="form-control">
                         <option value="">Pilih</option>
-                        <option value="male" {{ old('gender', $employee->gender) === 'male' ? 'selected' : '' }}>Laki-laki</option>
-                        <option value="female" {{ old('gender', $employee->gender) === 'female' ? 'selected' : '' }}>Perempuan</option>
+                        <option value="1" {{ (string) $selectedJenisKelamin === '1' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="0" {{ (string) $selectedJenisKelamin === '0' ? 'selected' : '' }}>Perempuan</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="national_id">NIK</label>
-                    <input id="national_id" name="national_id" type="text" class="form-control" value="{{ old('national_id', $employee->national_id) }}">
+                    <label for="nik">NIK</label>
+                    <input id="nik" name="nik" type="text" class="form-control" value="{{ old('nik', $employee->nik ?? $employee->employee_code) }}">
+                </div>
+                <div class="form-group">
+                    <label for="nip">NIP</label>
+                    <input id="nip" name="nip" type="text" class="form-control" value="{{ old('nip', $employee->nip) }}">
                 </div>
                 <div class="form-group">
                     <label for="place_of_birth">Tempat Lahir</label>
                     <input id="place_of_birth" name="place_of_birth" type="text" class="form-control" value="{{ old('place_of_birth', $employee->place_of_birth) }}">
                 </div>
                 <div class="form-group">
-                    <label for="date_of_birth">Tanggal Lahir</label>
-                    <input id="date_of_birth" name="date_of_birth" type="date" class="form-control" value="{{ old('date_of_birth', optional($employee->date_of_birth)->format('Y-m-d')) }}">
+                    <label for="tanggal_lahir">Tanggal Lahir</label>
+                    <input id="tanggal_lahir" name="tanggal_lahir" type="date" class="form-control" value="{{ old('tanggal_lahir', optional($employee->tanggal_lahir ?? $employee->date_of_birth)->format('Y-m-d')) }}">
                 </div>
                 <div class="form-group">
-                    <label for="hire_date">Tanggal Masuk</label>
-                    <input id="hire_date" name="hire_date" type="date" class="form-control" value="{{ old('hire_date', optional($employee->hire_date)->format('Y-m-d')) }}">
+                    <label for="tanggal_mulai">Tanggal Mulai Kerja</label>
+                    <input id="tanggal_mulai" name="tanggal_mulai" type="date" class="form-control" value="{{ old('tanggal_mulai', optional($employee->tanggal_mulai ?? $employee->hire_date)->format('Y-m-d')) }}">
+                </div>
+                <div class="form-group">
+                    <label for="order_date">Order Date / TMT</label>
+                    <input id="order_date" name="order_date" type="date" class="form-control" value="{{ old('order_date', optional($employee->order_date ?? $employee->hire_date)->format('Y-m-d')) }}">
                 </div>
                 <div class="form-group">
                     <label for="employment_status">Status Kepegawaian</label>
@@ -144,8 +153,8 @@
                     </select>
                 </div>
                 <div class="form-group form-row-span">
-                    <label for="address">Alamat</label>
-                    <textarea id="address" name="address" class="form-control">{{ old('address', $employee->address) }}</textarea>
+                    <label for="alamat">Alamat</label>
+                    <textarea id="alamat" name="alamat" class="form-control">{{ old('alamat', $employee->alamat ?? $employee->address) }}</textarea>
                 </div>
             </div>
 

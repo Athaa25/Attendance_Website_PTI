@@ -22,16 +22,16 @@
                 <div class="detail-value">{{ $employee->user->email }}</div>
 
                 <div class="detail-label">Email Kantor</div>
-                <div class="detail-value">{{ $employee->work_email ?? '—' }}</div>
+                <div class="detail-value">{{ $employee->work_email ?? '-' }}</div>
 
                 <div class="detail-label">Nomor Telepon</div>
-                <div class="detail-value">{{ $employee->phone ?? '—' }}</div>
+                <div class="detail-value">{{ $employee->telepon ?? $employee->phone ?? '-' }}</div>
 
                 <div class="detail-label">Username</div>
                 <div class="detail-value">{{ $employee->user->username }}</div>
 
                 <div class="detail-label">Role Sistem</div>
-                <div class="detail-value">{{ ucfirst($employee->user->role) }}</div>
+                <div class="detail-value">{{ $employee->user->role?->name ?? 'Tidak ditetapkan' }}</div>
             </div>
 
             <div class="detail-card">
@@ -43,12 +43,15 @@
                     @if ($employee->schedule)
                         {{ $employee->schedule->name }} ({{ $employee->schedule->start_time->format('H:i') }} - {{ $employee->schedule->end_time->format('H:i') }})
                     @else
-                        —
+                        Tidak diatur
                     @endif
                 </div>
 
-                <div class="detail-label">Tanggal Masuk</div>
-                <div class="detail-value">{{ optional($employee->hire_date)->translatedFormat('d F Y') ?? '—' }}</div>
+                <div class="detail-label">Tanggal Mulai</div>
+                <div class="detail-value">{{ optional($employee->tanggal_mulai ?? $employee->hire_date)->translatedFormat('d F Y') ?? '-' }}</div>
+
+                <div class="detail-label">Order Date / TMT</div>
+                <div class="detail-value">{{ optional($employee->order_date ?? $employee->hire_date)->translatedFormat('d F Y') ?? '-' }}</div>
 
                 <div class="detail-label">Gaji Pokok</div>
                 <div class="detail-value">
@@ -58,30 +61,25 @@
 
             <div class="detail-card">
                 <div class="detail-label">NIK</div>
-                <div class="detail-value">{{ $employee->national_id ?? '—' }}</div>
+                <div class="detail-value">{{ $employee->nik ?? $employee->national_id ?? '-' }}</div>
+
+                <div class="detail-label">NIP</div>
+                <div class="detail-value">{{ $employee->nip ?? '-' }}</div>
 
                 <div class="detail-label">Tempat, Tanggal Lahir</div>
                 <div class="detail-value">
-                    @if ($employee->place_of_birth || $employee->date_of_birth)
-                        {{ $employee->place_of_birth ?? '' }}{{ $employee->place_of_birth && $employee->date_of_birth ? ', ' : '' }}{{ optional($employee->date_of_birth)->translatedFormat('d F Y') }}
+                    @if ($employee->place_of_birth || $employee->tanggal_lahir || $employee->date_of_birth)
+                        {{ $employee->place_of_birth ?? '' }}{{ $employee->place_of_birth && ($employee->tanggal_lahir || $employee->date_of_birth) ? ', ' : '' }}{{ optional($employee->tanggal_lahir ?? $employee->date_of_birth)->translatedFormat('d F Y') }}
                     @else
-                        —
+                        -
                     @endif
                 </div>
 
                 <div class="detail-label">Jenis Kelamin</div>
-                <div class="detail-value">
-                    @if ($employee->gender === 'male')
-                        Laki-laki
-                    @elseif ($employee->gender === 'female')
-                        Perempuan
-                    @else
-                        —
-                    @endif
-                </div>
+                <div class="detail-value">{{ $employee->jenis_kelamin_label ?? ($employee->gender === 'male' ? 'Laki-laki' : ($employee->gender === 'female' ? 'Perempuan' : '-')) }}</div>
 
                 <div class="detail-label">Alamat</div>
-                <div class="detail-value">{{ $employee->address ?? '—' }}</div>
+                <div class="detail-value">{{ $employee->alamat ?? $employee->address ?? '-' }}</div>
             </div>
         </div>
 

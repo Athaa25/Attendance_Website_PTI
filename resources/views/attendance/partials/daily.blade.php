@@ -108,12 +108,12 @@
                         </td>
                         <td>{{ $record->employee->department->name ?? '—' }}</td>
                         <td>
-                            <span class="status-badge status-{{ $record->status }}">
+                            <span class="status-badge status-{{ $record->statusDefinition?->code ?? $record->status }}">
                                 {{ $record->status_label }}
                             </span>
                         </td>
                         <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
-                        <td>{{ $record->notes ?? '—' }}</td>
+                        <td>{{ $record->notes ?? $record->leave_reason_label ?? '-' }}</td>
                         <td>
                             <a class="btn btn-secondary" href="{{ route('attendance.edit', $record) }}">Edit</a>
                         </td>
@@ -139,9 +139,11 @@
             <a href="{{ route('attendance.index', ['date' => $attendanceDate->format('Y-m-d')]) }}" class="btn btn-secondary">Kembali</a>
         </div>
 
-        <form method="POST" action="{{ route('attendance.update', $record) }}">
+        <form method="POST" action="{{ route('attendance.update', $record) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
+            <input type="hidden" name="employee_id" value="{{ $record->employee_id }}">
+            <input type="hidden" name="attendance_date" value="{{ $record->attendance_date->format('Y-m-d') }}">
             <div class="form-grid">
                 <div class="form-group">
                     <label for="status">Status Kehadiran</label>
@@ -176,6 +178,30 @@
                         value="{{ old('check_out_time', optional($record->check_out_time)->format('H:i')) }}"
                     >
                 </div>
+                @if ($viewMode === 'edit')
+                    <div class="form-inline-group">
+                        <div class="form-group js-leave-reason-field">
+                            <label for="leave_reason">Alasan</label>
+                            <select id="leave_reason" name="leave_reason" class="form-control">
+                                <option value="">Pilih alasan</option>
+                                @foreach ($leaveReasonOptions as $value => $label)
+                                    <option value="{{ $value }}" {{ old('leave_reason', $record->reasonDefinition->code ?? null) === $value ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group js-supporting-document-field">
+                            <label for="supporting_document">Dokumen Pendukung</label>
+                            <input id="supporting_document" name="supporting_document" type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                            @if ($record->supporting_document_url)
+                                <p class="helper-text">
+                                    <a href="{{ $record->supporting_document_url }}" target="_blank" rel="noopener">Lihat dokumen saat ini</a>
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                @endif
                 <div class="form-group form-row-span">
                     <label for="notes">Keterangan</label>
                     <textarea id="notes" name="notes" class="form-control">{{ old('notes', $record->notes) }}</textarea>
@@ -189,3 +215,45 @@
         </form>
     @endif
 </section>
+
+@if ($page !== 'list')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusSelect = document.getElementById('status');
+            const reasonGroup = document.querySelector('.js-leave-reason-field');
+            const docGroup = document.querySelector('.js-supporting-document-field');
+            const reasonSelect = document.getElementById('leave_reason');
+            const docInput = document.getElementById('supporting_document');
+            const PRESENT_STATUS = '{{ \App\Models\AttendanceRecord::STATUS_PRESENT }}';
+
+            const toggleAdditionalFields = () => {
+                if (!statusSelect || !reasonGroup || !docGroup) {
+                    return;
+                }
+
+                const isPresent = statusSelect.value === PRESENT_STATUS;
+                reasonGroup.style.display = isPresent ? 'none' : '';
+                docGroup.style.display = isPresent ? 'none' : '';
+
+                if (reasonSelect) {
+                    if (isPresent) {
+                        reasonSelect.removeAttribute('required');
+                    } else {
+                        reasonSelect.setAttribute('required', 'required');
+                    }
+                }
+
+                if (docInput) {
+                    if (isPresent) {
+                        docInput.removeAttribute('required');
+                    } else {
+                        docInput.setAttribute('required', 'required');
+                    }
+                }
+            };
+
+            toggleAdditionalFields();
+            statusSelect?.addEventListener('change', toggleAdditionalFields);
+        });
+    </script>
+@endif

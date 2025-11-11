@@ -65,32 +65,41 @@
                     <input id="password_confirmation" name="password_confirmation" type="password" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="phone">Nomor Telepon</label>
-                    <input id="phone" name="phone" type="text" class="form-control" value="{{ old('phone') }}">
+                    <label for="telepon">Nomor Telepon</label>
+                    <input id="telepon" name="telepon" type="text" class="form-control" value="{{ old('telepon') }}">
                 </div>
                 <div class="form-group">
-                    <label for="gender">Jenis Kelamin</label>
-                    <select id="gender" name="gender" class="form-control">
+                    <label for="jenis_kelamin">Jenis Kelamin</label>
+                    @php($selectedJenisKelamin = old('jenis_kelamin', old('gender') === 'male' ? 1 : (old('gender') === 'female' ? 0 : null)))
+                    <select id="jenis_kelamin" name="jenis_kelamin" class="form-control">
                         <option value="">Pilih</option>
-                        <option value="male" {{ old('gender') === 'male' ? 'selected' : '' }}>Laki-laki</option>
-                        <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Perempuan</option>
+                        <option value="1" {{ (string) $selectedJenisKelamin === '1' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="0" {{ (string) $selectedJenisKelamin === '0' ? 'selected' : '' }}>Perempuan</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="national_id">NIK</label>
-                    <input id="national_id" name="national_id" type="text" class="form-control" value="{{ old('national_id') }}">
+                    <label for="nik">NIK</label>
+                    <input id="nik" name="nik" type="text" class="form-control" value="{{ old('nik') }}">
+                </div>
+                <div class="form-group">
+                    <label for="nip">NIP</label>
+                    <input id="nip" name="nip" type="text" class="form-control" value="{{ old('nip') }}">
                 </div>
                 <div class="form-group">
                     <label for="place_of_birth">Tempat Lahir</label>
                     <input id="place_of_birth" name="place_of_birth" type="text" class="form-control" value="{{ old('place_of_birth') }}">
                 </div>
                 <div class="form-group">
-                    <label for="date_of_birth">Tanggal Lahir</label>
-                    <input id="date_of_birth" name="date_of_birth" type="date" class="form-control" value="{{ old('date_of_birth') }}">
+                    <label for="tanggal_lahir">Tanggal Lahir</label>
+                    <input id="tanggal_lahir" name="tanggal_lahir" type="date" class="form-control" value="{{ old('tanggal_lahir', old('date_of_birth')) }}">
                 </div>
                 <div class="form-group">
-                    <label for="hire_date">Tanggal Masuk</label>
-                    <input id="hire_date" name="hire_date" type="date" class="form-control" value="{{ old('hire_date') }}">
+                    <label for="tanggal_mulai">Tanggal Mulai Kerja</label>
+                    <input id="tanggal_mulai" name="tanggal_mulai" type="date" class="form-control" value="{{ old('tanggal_mulai', old('hire_date')) }}">
+                </div>
+                <div class="form-group">
+                    <label for="order_date">Order Date / TMT</label>
+                    <input id="order_date" name="order_date" type="date" class="form-control" value="{{ old('order_date', old('hire_date')) }}">
                 </div>
                 <div class="form-group">
                     <label for="employment_status">Status Kepegawaian</label>
@@ -140,8 +149,8 @@
                     </select>
                 </div>
                 <div class="form-group form-row-span">
-                    <label for="address">Alamat</label>
-                    <textarea id="address" name="address" class="form-control">{{ old('address') }}</textarea>
+                    <label for="alamat">Alamat</label>
+                    <textarea id="alamat" name="alamat" class="form-control">{{ old('alamat', old('address')) }}</textarea>
                 </div>
             </div>
 

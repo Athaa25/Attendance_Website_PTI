@@ -56,6 +56,13 @@
             margin-bottom: 40px;
         }
 
+        .sidebar-logo-img {
+            max-width: 160px;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
         .sidebar-section-title {
             font-size: 14px;
             text-transform: uppercase;
@@ -496,6 +503,13 @@
         }
 
         .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        .form-inline-group {
+            grid-column: 1 / -1;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 18px;

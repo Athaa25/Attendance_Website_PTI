@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Position;
+use App\Models\Role;
 use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,12 +17,6 @@ use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
-    private const ROLE_OPTIONS = [
-        'admin' => 'Administrator',
-        'hr' => 'HR',
-        'employee' => 'Karyawan',
-    ];
-
     public function index(Request $request)
     {
         $query = Employee::with(['department', 'position', 'schedule', 'user']);
@@ -51,7 +46,7 @@ class EmployeeController extends Controller
             'employees' => $employees,
             'departments' => Department::orderBy('name')->get(),
             'statusOptions' => Employee::employmentStatusOptions(),
-            'roleOptions' => self::ROLE_OPTIONS,
+            'roleOptions' => $this->roleOptions(),
             'filters' => [
                 'search' => $search,
                 'department_id' => $departmentId,
@@ -67,7 +62,7 @@ class EmployeeController extends Controller
             'positions' => Position::with('department')->orderBy('name')->get(),
             'schedules' => Schedule::orderBy('name')->get(),
             'statusOptions' => Employee::employmentStatusOptions(),
-            'roleOptions' => self::ROLE_OPTIONS,
+            'roleOptions' => $this->roleOptions(),
         ]);
     }
 
@@ -76,11 +71,13 @@ class EmployeeController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated) {
+            $role = Role::query()->where('slug', $validated['role'])->firstOrFail();
+
             $user = User::create([
                 'name' => $validated['full_name'],
                 'email' => $validated['email'],
                 'username' => $validated['username'],
-                'role' => $validated['role'],
+                'role_id' => $role->id,
                 'password' => Hash::make($validated['password']),
                 'email_verified_at' => now(),
             ]);
@@ -101,10 +98,28 @@ class EmployeeController extends Controller
                 'department_id',
                 'position_id',
                 'schedule_id',
+                'nik',
+                'nip',
+                'telepon',
+                'alamat',
+                'tanggal_lahir',
+                'tanggal_mulai',
+                'order_date',
+                'jenis_kelamin',
             ]);
 
             $employeeData['user_id'] = $user->id;
             $employeeData['work_email'] = $employeeData['work_email'] ?? $validated['email'];
+            $employeeData['telepon'] = $employeeData['telepon'] ?? $employeeData['phone'];
+            $employeeData['phone'] = $employeeData['phone'] ?? $employeeData['telepon'];
+            $employeeData['alamat'] = $employeeData['alamat'] ?? $employeeData['address'];
+            $employeeData['address'] = $employeeData['address'] ?? $employeeData['alamat'];
+            $employeeData['tanggal_lahir'] = $employeeData['tanggal_lahir'] ?? $employeeData['date_of_birth'];
+            $employeeData['date_of_birth'] = $employeeData['date_of_birth'] ?? $employeeData['tanggal_lahir'];
+            $employeeData['tanggal_mulai'] = $employeeData['tanggal_mulai'] ?? $employeeData['hire_date'];
+            $employeeData['hire_date'] = $employeeData['hire_date'] ?? $employeeData['tanggal_mulai'];
+            $employeeData['order_date'] = $employeeData['order_date'] ?? $employeeData['hire_date'];
+            $employeeData['gender'] = $employeeData['gender'] ?? $this->mapJenisKelaminToGender($employeeData['jenis_kelamin'] ?? null);
 
             Employee::create($employeeData);
         });
@@ -120,7 +135,7 @@ class EmployeeController extends Controller
         return view('employees.show', [
             'employee' => $employee,
             'statusOptions' => Employee::employmentStatusOptions(),
-            'roleOptions' => self::ROLE_OPTIONS,
+            'roleOptions' => $this->roleOptions(),
         ]);
     }
 
@@ -134,7 +149,7 @@ class EmployeeController extends Controller
             'positions' => Position::with('department')->orderBy('name')->get(),
             'schedules' => Schedule::orderBy('name')->get(),
             'statusOptions' => Employee::employmentStatusOptions(),
-            'roleOptions' => self::ROLE_OPTIONS,
+            'roleOptions' => $this->roleOptions(),
         ]);
     }
 
@@ -143,16 +158,17 @@ class EmployeeController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $employee) {
-            $userData = Arr::only($validated, ['email', 'username', 'role', 'full_name']);
+            $role = Role::query()->where('slug', $validated['role'])->firstOrFail();
+
+            $userData = Arr::only($validated, ['email', 'username', 'full_name']);
+            $userData['role_id'] = $role->id;
 
             if (! empty($validated['password'])) {
                 $userData['password'] = Hash::make($validated['password']);
             }
 
             $employee->user->update(array_merge(
-                [
-                    'name' => $validated['full_name'],
-                ],
+                ['name' => $validated['full_name']],
                 Arr::except($userData, ['full_name'])
             ));
 
@@ -172,7 +188,27 @@ class EmployeeController extends Controller
                 'department_id',
                 'position_id',
                 'schedule_id',
+                'nik',
+                'nip',
+                'telepon',
+                'alamat',
+                'tanggal_lahir',
+                'tanggal_mulai',
+                'order_date',
+                'jenis_kelamin',
             ]);
+
+            $employeeData['work_email'] = $employeeData['work_email'] ?? $validated['email'];
+            $employeeData['telepon'] = $employeeData['telepon'] ?? $employeeData['phone'] ?? $employee->telepon;
+            $employeeData['phone'] = $employeeData['phone'] ?? $employeeData['telepon'];
+            $employeeData['alamat'] = $employeeData['alamat'] ?? $employeeData['address'] ?? $employee->alamat;
+            $employeeData['address'] = $employeeData['address'] ?? $employeeData['alamat'];
+            $employeeData['tanggal_lahir'] = $employeeData['tanggal_lahir'] ?? $employeeData['date_of_birth'] ?? $employee->tanggal_lahir;
+            $employeeData['date_of_birth'] = $employeeData['date_of_birth'] ?? $employeeData['tanggal_lahir'];
+            $employeeData['tanggal_mulai'] = $employeeData['tanggal_mulai'] ?? $employeeData['hire_date'] ?? $employee->tanggal_mulai;
+            $employeeData['hire_date'] = $employeeData['hire_date'] ?? $employeeData['tanggal_mulai'];
+            $employeeData['order_date'] = $employeeData['order_date'] ?? $employeeData['hire_date'] ?? $employee->order_date;
+            $employeeData['gender'] = $employeeData['gender'] ?? $this->mapJenisKelaminToGender($employeeData['jenis_kelamin'] ?? null) ?? $employee->gender;
 
             $employee->update($employeeData);
         });
@@ -191,5 +227,23 @@ class EmployeeController extends Controller
 
         return redirect()->route('manage-users.index')
             ->with('status', 'Pegawai berhasil dihapus.');
+    }
+
+    private function roleOptions(): array
+    {
+        return Role::query()
+            ->orderBy('name')
+            ->get()
+            ->pluck('name', 'slug')
+            ->toArray();
+    }
+
+    private function mapJenisKelaminToGender(?int $value): ?string
+    {
+        return match ($value) {
+            1 => 'male',
+            0 => 'female',
+            default => null,
+        };
     }
 }

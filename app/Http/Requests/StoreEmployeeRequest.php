@@ -18,10 +18,22 @@ class StoreEmployeeRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $gender = $this->input('gender');
+        $jenisKelamin = $this->input('jenis_kelamin');
+
         $this->merge([
             'employee_code' => strtoupper($this->input('employee_code')),
             'username' => strtolower($this->input('username')),
             'work_email' => $this->input('work_email') ?: $this->input('email'),
+            'nik' => strtoupper($this->input('nik') ?: $this->input('employee_code')),
+            'national_id' => $this->input('national_id') ?: $this->input('nik') ?: $this->input('employee_code'),
+            'nip' => $this->input('nip') ?: $this->input('national_id'),
+            'telepon' => $this->input('telepon') ?: $this->input('phone'),
+            'alamat' => $this->input('alamat') ?: $this->input('address'),
+            'tanggal_mulai' => $this->input('tanggal_mulai') ?: $this->input('hire_date'),
+            'tanggal_lahir' => $this->input('tanggal_lahir') ?: $this->input('date_of_birth'),
+            'jenis_kelamin' => $jenisKelamin ?? $this->mapGenderToInteger($gender),
+            'order_date' => $this->input('order_date') ?: $this->input('hire_date'),
         ]);
     }
 
@@ -38,20 +50,37 @@ class StoreEmployeeRequest extends FormRequest
             'username' => ['required', 'string', 'max:100', 'unique:users,username'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'work_email' => ['nullable', 'email', 'max:255', 'unique:employees,work_email'],
-            'role' => ['required', Rule::in(['admin', 'hr', 'employee'])],
+            'role' => ['required', Rule::exists('roles', 'slug')],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'phone' => ['nullable', 'string', 'max:30'],
+            'telepon' => ['nullable', 'string', 'max:30'],
             'gender' => ['nullable', Rule::in(['male', 'female'])],
+            'jenis_kelamin' => ['nullable', 'integer', 'in:0,1'],
             'national_id' => ['nullable', 'string', 'max:32'],
+            'nik' => ['required', 'string', 'max:50', 'unique:employees,nik'],
+            'nip' => ['nullable', 'string', 'max:50', 'unique:employees,nip'],
             'place_of_birth' => ['nullable', 'string', 'max:120'],
+            'address' => ['nullable', 'string'],
+            'alamat' => ['nullable', 'string'],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
+            'tanggal_lahir' => ['nullable', 'date', 'before:today'],
             'hire_date' => ['nullable', 'date'],
+            'tanggal_mulai' => ['nullable', 'date'],
+            'order_date' => ['nullable', 'date'],
             'employment_status' => ['required', Rule::in(array_keys(Employee::employmentStatusOptions()))],
             'salary' => ['nullable', 'numeric', 'min:0'],
-            'address' => ['nullable', 'string'],
             'department_id' => ['required', 'exists:departments,id'],
             'position_id' => ['required', 'exists:positions,id'],
             'schedule_id' => ['required', 'exists:schedules,id'],
         ];
+    }
+
+    private function mapGenderToInteger(?string $gender): ?int
+    {
+        return match ($gender) {
+            'male' => 1,
+            'female' => 0,
+            default => null,
+        };
     }
 }

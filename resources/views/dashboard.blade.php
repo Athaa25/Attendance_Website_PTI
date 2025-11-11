@@ -7,6 +7,7 @@
         $maxChartValue = max(1, $monthlyChart->max('value') ?? 1);
         $startOfMonthLabel = $now->copy()->startOfMonth()->translatedFormat('d F');
         $endOfMonthLabel = $now->copy()->endOfMonth()->translatedFormat('d F Y');
+        $chartMaxHeight = 200;
     @endphp
 
     <section class="content-wrapper">
@@ -49,9 +50,13 @@
                 <p class="chart-subtitle">Jumlah kehadiran selama 5 bulan terakhir</p>
                 <div class="chart-bars">
                     @forelse ($monthlyChart as $item)
-                        @php($height = max(12, ($item['value'] / $maxChartValue) * 100))
+                        @php($barHeight = max(12, ($item['value'] / $maxChartValue) * $chartMaxHeight))
                         <div class="chart-bar-wrapper">
-                            <div class="chart-bar" style="height: {{ $height }}%;" title="{{ $item['label'] }} - {{ $item['value'] }} absensi"></div>
+                            <div
+                                class="chart-bar"
+                                style="height: {{ round($barHeight, 2) }}px;"
+                                title="{{ $item['label'] }} - {{ $item['value'] }} absensi"
+                            ></div>
                             <span class="chart-bar-value">{{ $item['value'] }}</span>
                             <span class="chart-bar-label">{{ $item['label'] }}</span>
                         </div>
