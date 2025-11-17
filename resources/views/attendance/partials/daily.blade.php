@@ -10,6 +10,7 @@
     'leave' => 0,
     'sick' => 0,
     'absent' => 0,
+    'other' => 0,
 ])
 
 <section class="content-wrapper">

@@ -49,6 +49,7 @@ class ReferenceDataSeeder extends Seeder
             ['code' => 'dinas_diluar', 'label' => 'Dinas di luar kantor', 'description' => 'Tugas dinas di luar kantor'],
             ['code' => 'sakit', 'label' => 'Sakit', 'description' => 'Tidak hadir karena sakit'],
             ['code' => 'alpa', 'label' => 'Tanpa keterangan', 'description' => 'Absen tanpa alasan jelas'],
+            ['code' => 'other', 'label' => 'Alasan Lainnya', 'description' => 'Alasan lain yang tidak terdaftar'],
         ];
 
         foreach ($reasons as $reason) {

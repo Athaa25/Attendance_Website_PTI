@@ -129,6 +129,7 @@ class AttendanceRecord extends Model
             self::LEAVE_REASON_FIELDWORK => 'Dinas diluar',
             self::LEAVE_REASON_SICK => 'Sakit',
             self::LEAVE_REASON_ABSENT => 'Alpa',
+            'other' => 'Alasan Lainnya',
         ];
     }
 

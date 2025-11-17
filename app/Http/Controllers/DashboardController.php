@@ -7,7 +7,6 @@ use App\Models\Employee;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -51,25 +50,16 @@ class DashboardController extends Controller
 
         $chartStart = $now->copy()->subMonths(4)->startOfMonth();
 
-        $driver = DB::connection()->getDriverName();
-        $monthExpression = match ($driver) {
-            'sqlite' => "strftime('%Y-%m', attendance_date)",
-            'pgsql' => "to_char(attendance_date, 'YYYY-MM')",
-            default => "DATE_FORMAT(attendance_date, '%Y-%m')",
-        };
-
-        $chartRecords = AttendanceRecord::query()
-            ->where('attendance_date', '>=', $chartStart)
-            ->selectRaw("{$monthExpression} as month_key, COUNT(*) as attendance_count")
-            ->groupBy('month_key')
-            ->pluck('attendance_count', 'month_key');
-
         $chartPeriod = CarbonPeriod::create($chartStart, '1 month', $now->copy()->startOfMonth());
         $chartData = collect();
 
         foreach ($chartPeriod as $month) {
-            $key = $month->format('Y-m');
-            $count = (int) $chartRecords->get($key, 0);
+            $monthStart = $month->copy()->startOfMonth();
+            $monthEnd = $month->copy()->endOfMonth();
+
+            $count = AttendanceRecord::query()
+                ->whereBetween('attendance_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+                ->count();
 
             $chartData->push([
                 'label' => $month->translatedFormat('M'),

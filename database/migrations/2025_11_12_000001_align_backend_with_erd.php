@@ -192,6 +192,7 @@ return new class extends Migration
             ['code' => 'dinas_diluar', 'label' => 'Dinas di luar kantor'],
             ['code' => 'sakit', 'label' => 'Sakit'],
             ['code' => 'alpa', 'label' => 'Tanpa keterangan'],
+            ['code' => 'other', 'label' => 'Alasan Lainnya'],
         ];
 
         if (DB::table('attendance_reasons')->count() === 0) {
