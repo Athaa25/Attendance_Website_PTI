@@ -82,7 +82,7 @@ Set `FASTAPI_URL=http://127.0.0.1:8001` supaya Laravel mengirim foto ke layanan 
 
 ```bash
 cd integrations/Backend-HadirIn/Cloudflared
-cloudflared.exe tunnel --url http://localhost:8001
+.\cloudflared.exe tunnel --url http://localhost:8001
 ```
 
 ---
