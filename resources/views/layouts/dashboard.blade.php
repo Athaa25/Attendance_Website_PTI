@@ -48,6 +48,10 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 10px 40px rgba(17, 43, 105, 0.08);
+            transition: width 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+            max-height: calc(100vh - 64px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
         }
 
         .sidebar-logo {
@@ -95,6 +99,36 @@
         .sidebar-nav-item img {
             width: 20px;
             height: 20px;
+        }
+
+        .sidebar-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            background-color: rgba(17, 43, 105, 0.08);
+            color: var(--blue-primary);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(17, 43, 105, 0.18);
+            border-radius: 999px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(17, 43, 105, 0.28);
         }
 
         .sidebar-nav-item.active,
@@ -150,6 +184,46 @@
             margin: 4px 0 0;
             color: var(--text-muted);
             font-size: 14px;
+        }
+
+        .top-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .sidebar-toggle {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 10px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background-color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .sidebar-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background-color: var(--blue-primary);
+            border-radius: 999px;
+        }
+
+        .sidebar-toggle:hover,
+        .sidebar-toggle:focus-visible {
+            background-color: rgba(17, 43, 105, 0.06);
+            box-shadow: 0 6px 16px rgba(17, 43, 105, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .topbar-logo {
+            display: none;
+            height: 36px;
+            width: auto;
+            object-fit: contain;
         }
 
         .profile-info {
@@ -622,7 +696,8 @@
         }
 
         .table-wrapper {
-            overflow-x: auto;
+            overflow: auto;
+            max-height: calc(100vh - 320px);
         }
 
         .actions {
@@ -757,6 +832,30 @@
             background-color: #FAFAFA;
         }
 
+        body.sidebar-collapsed .sidebar {
+            width: 0;
+            padding: 0;
+            margin: 0;
+            border: none;
+            box-shadow: none;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        body.sidebar-collapsed .sidebar-logo,
+        body.sidebar-collapsed .sidebar-nav,
+        body.sidebar-collapsed .sidebar-footer {
+            display: none;
+        }
+
+        body.sidebar-collapsed .dashboard-layout {
+            gap: 16px;
+        }
+
+        body.sidebar-collapsed .topbar-logo {
+            display: block;
+        }
+
         @media (max-width: 1200px) {
             .dashboard-layout {
                 flex-direction: column;
@@ -791,6 +890,82 @@
             .detail-actions {
                 flex-direction: column;
                 align-items: stretch;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-layout {
+                padding: 20px;
+                gap: 16px;
+            }
+
+            .sidebar {
+                padding: 16px;
+                gap: 16px;
+                flex-wrap: wrap;
+                border-radius: 24px;
+            }
+
+            .sidebar-logo {
+                width: 100%;
+                margin-bottom: 4px;
+            }
+
+            .sidebar-logo-img {
+                max-width: 120px;
+            }
+
+            .sidebar-nav {
+                width: 100%;
+                gap: 10px;
+                row-gap: 12px;
+            }
+
+            .sidebar-nav-group {
+                margin-bottom: 0;
+                display: contents;
+            }
+
+            .sidebar-section-title {
+                display: none;
+            }
+
+            .sidebar-nav-item {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 140px;
+                padding: 10px 12px;
+                gap: 10px;
+            }
+
+            .sidebar-footer {
+                width: 100%;
+                border-left: 0;
+                border-top: 1px solid var(--border-color);
+                padding-left: 0;
+                margin-top: 8px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .dashboard-layout {
+                padding: 16px;
+            }
+
+            .sidebar {
+                border-radius: 20px;
+                align-items: flex-start;
+            }
+
+            .sidebar-nav-item {
+                flex: 1 1 calc(50% - 8px);
+                padding: 8px 10px;
+                gap: 8px;
+                font-size: 13px;
+            }
+
+            .sidebar-nav-item img {
+                width: 18px;
+                height: 18px;
             }
         }
     </style>
@@ -831,6 +1006,30 @@
             @yield('content')
         </main>
     </div>
+
+    <script>
+        (() => {
+            const toggleButton = document.querySelector('[data-sidebar-toggle]');
+            const body = document.body;
+            const storageKey = 'dashboardSidebarCollapsed';
+
+            if (!toggleButton) return;
+
+            const applyState = (collapsed) => {
+                body.classList.toggle('sidebar-collapsed', collapsed);
+                toggleButton.setAttribute('aria-expanded', (!collapsed).toString());
+            };
+
+            const saved = localStorage.getItem(storageKey) === 'true';
+            applyState(saved);
+
+            toggleButton.addEventListener('click', () => {
+                const next = !body.classList.contains('sidebar-collapsed');
+                applyState(next);
+                localStorage.setItem(storageKey, next);
+            });
+        })();
+    </script>
 
     @stack('scripts')
 </body>

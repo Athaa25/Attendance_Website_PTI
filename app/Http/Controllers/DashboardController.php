@@ -33,12 +33,6 @@ class DashboardController extends Controller
 
         $employeeCount = Employee::count();
 
-        $recentAttendances = AttendanceRecord::with('employee')
-            ->orderByDesc('attendance_date')
-            ->orderBy('employee_id')
-            ->limit(5)
-            ->get();
-
         $dailyPresenceCount = AttendanceRecord::query()
             ->whereDate('attendance_date', $now->toDateString())
             ->whereIn('status', [
@@ -78,7 +72,6 @@ class DashboardController extends Controller
                 'absent_count' => $absentCount,
                 'daily_presence_count' => $dailyPresenceCount,
             ],
-            'recentAttendances' => $recentAttendances,
             'monthlyChart' => $chartData,
             'now' => $now,
             'statusLabels' => AttendanceRecord::statusLabels(),

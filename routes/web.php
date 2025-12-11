@@ -3,6 +3,7 @@
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
@@ -49,4 +50,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/sheet-report', [ReportController::class, 'index'])->name('reports.sheet');
 
     Route::resource('schedule', ScheduleController::class)->except(['show']);
+
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 });

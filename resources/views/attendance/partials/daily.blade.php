@@ -21,7 +21,7 @@
     @endif
 
     @if ($page === 'list')
-        <form method="GET" class="filter-bar">
+        <form method="GET" class="filter-bar" id="attendance-filter-form">
             <div class="filter-group">
                 <label for="date">Tanggal</label>
                 <div class="filter-input">
@@ -53,9 +53,6 @@
                     >
                 </div>
             </div>
-            <div class="filter-actions">
-                <button type="submit" class="btn btn-secondary">Terapkan</button>
-            </div>
         </form>
 
         <div class="summary-grid">
@@ -85,49 +82,51 @@
             </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama</th>
-                    <th>Departemen</th>
-                    <th>Status</th>
-                    <th>Check-In</th>
-                    <th>Keterangan</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($records as $record)
+        <div class="table-wrapper">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>
-                            {{ $record->employee->full_name }}
-                            <div style="font-size: 12px; color: var(--text-muted);">
-                                {{ $record->employee->employee_code }}
-                            </div>
-                        </td>
-                        <td>{{ $record->employee->department->name ?? '—' }}</td>
-                        <td>
-                            <span class="status-badge status-{{ $record->statusDefinition?->code ?? $record->status }}">
-                                {{ $record->status_label }}
-                            </span>
-                        </td>
-                        <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
-                        <td>{{ $record->notes ?? $record->leave_reason_label ?? '-' }}</td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ route('attendance.edit', $record) }}">Edit</a>
-                        </td>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Departemen</th>
+                        <th>Status</th>
+                        <th>Check-In</th>
+                        <th>Keterangan</th>
+                        <th>Aksi</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                            Belum ada data absensi pada tanggal ini.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse ($records as $record)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>
+                                {{ $record->employee->full_name }}
+                                <div style="font-size: 12px; color: var(--text-muted);">
+                                    {{ $record->employee->employee_code }}
+                                </div>
+                            </td>
+                            <td>{{ $record->employee->department->name ?? '-' }}</td>
+                            <td>
+                                <span class="status-badge status-{{ $record->statusDefinition?->code ?? $record->status }}">
+                                    {{ $record->status_label }}
+                                </span>
+                            </td>
+                            <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
+                            <td>{{ $record->notes ?? $record->leave_reason_label ?? '-' }}</td>
+                            <td>
+                                <a class="btn btn-secondary" href="{{ route('attendance.edit', $record) }}">Edit</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                                Belum ada data absensi pada tanggal ini.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     @else
         <div class="form-header">
             <div>
@@ -255,6 +254,32 @@
 
             toggleAdditionalFields();
             statusSelect?.addEventListener('change', toggleAdditionalFields);
+        });
+    </script>
+@else
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('attendance-filter-form');
+            const inputs = form?.querySelectorAll('input, select');
+
+            if (!form || !inputs) return;
+
+            const debounce = (fn, delay = 400) => {
+                let t;
+                return (...args) => {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn(...args), delay);
+                };
+            };
+
+            const submitForm = debounce(() => form.requestSubmit());
+
+            inputs.forEach((el) => {
+                el.addEventListener('change', submitForm);
+                if (el.type === 'search' || el.type === 'text') {
+                    el.addEventListener('input', submitForm);
+                }
+            });
         });
     </script>
 @endif

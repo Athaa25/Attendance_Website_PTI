@@ -10,6 +10,7 @@ use App\Models\Position;
 use App\Models\Role;
 use App\Models\Schedule;
 use App\Models\User;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -70,7 +71,7 @@ class EmployeeController extends Controller
     {
         $validated = $request->validated();
 
-        DB::transaction(function () use ($validated) {
+        $employee = DB::transaction(function () use ($validated) {
             $role = Role::query()->where('slug', $validated['role'])->firstOrFail();
 
             $user = User::create([
@@ -121,8 +122,14 @@ class EmployeeController extends Controller
             $employeeData['order_date'] = $employeeData['order_date'] ?? $employeeData['hire_date'];
             $employeeData['gender'] = $employeeData['gender'] ?? $this->mapJenisKelaminToGender($employeeData['jenis_kelamin'] ?? null);
 
-            Employee::create($employeeData);
+            return Employee::create($employeeData);
         });
+
+        ActivityLogger::log(
+            'create',
+            $employee,
+            "Pegawai {$employee->full_name} ditambahkan"
+        );
 
         return redirect()->route('manage-users.index')
             ->with('status', 'Pegawai berhasil ditambahkan.');
@@ -213,17 +220,30 @@ class EmployeeController extends Controller
             $employee->update($employeeData);
         });
 
+        ActivityLogger::log(
+            'update',
+            $employee,
+            "Data pegawai {$employee->full_name} diperbarui"
+        );
+
         return redirect()->route('manage-users.show', $employee)
             ->with('status', 'Data pegawai berhasil diperbarui.');
     }
 
     public function destroy(Employee $employee)
     {
+        $employeeName = $employee->full_name;
         DB::transaction(function () use ($employee) {
             $user = $employee->user;
             $employee->delete();
             $user?->delete();
         });
+
+        ActivityLogger::log(
+            'delete',
+            $employee,
+            "Pegawai {$employeeName} dihapus"
+        );
 
         return redirect()->route('manage-users.index')
             ->with('status', 'Pegawai berhasil dihapus.');

@@ -11,11 +11,14 @@
             border: 1px solid var(--border-color);
             overflow: hidden;
             background-color: var(--card-background);
+            max-height: calc(100vh - 360px);
+            overflow-y: auto;
         }
 
         .table-card table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 760px;
         }
 
         .table-card thead {

@@ -9,9 +9,15 @@
         .report-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            padding: 16px 0;
+            background: linear-gradient(180deg, #f5f5f5 0%, rgba(245,245,245,0.85) 100%);
+            backdrop-filter: blur(6px);
         }
 
         .report-title-block {
@@ -22,7 +28,7 @@
 
         .report-title {
             margin: 0;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 700;
             color: var(--blue-primary);
         }
@@ -36,7 +42,7 @@
         .report-period {
             margin: 0;
             font-size: 13px;
-            color: var(--text-dark);
+            color: var(--text-muted);
             font-weight: 500;
         }
 
@@ -57,35 +63,64 @@
         .report-export {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-icon {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             object-fit: contain;
         }
 
-        .report-filter-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            align-items: flex-end;
-            padding: 24px;
-            background-color: var(--highlight);
+        .filter-card {
+            background: #fff;
             border: 1px solid var(--border-color);
-            border-radius: 24px;
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(17, 43, 105, 0.08);
+            padding: 16px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .filter-card__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .filter-card__title {
+            margin: 0;
+            font-weight: 700;
+            color: var(--blue-primary);
+            font-size: 16px;
+        }
+
+        .filter-toggle {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--blue-primary);
+        }
+
+        .report-filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            align-items: end;
         }
 
         .filter-field {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            min-width: 180px;
-        }
-
-        .filter-field--wide {
-            min-width: 220px;
+            gap: 6px;
         }
 
         .filter-field--view {
@@ -94,8 +129,7 @@
 
         .filter-label {
             font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
             font-weight: 600;
         }
@@ -104,11 +138,11 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 12px 16px;
+            padding: 10px 12px;
             border: 1px solid var(--border-color);
-            border-radius: 14px;
+            border-radius: 12px;
             background-color: #fff;
-            min-height: 48px;
+            min-height: 44px;
         }
 
         .filter-control select,
@@ -131,7 +165,7 @@
             align-items: center;
             gap: 6px;
             background-color: rgba(17, 43, 105, 0.08);
-            border-radius: 14px;
+            border-radius: 12px;
             padding: 4px;
         }
 
@@ -141,8 +175,8 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 14px;
-            border-radius: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
             font-weight: 600;
             font-size: 13px;
             color: var(--text-muted);
@@ -155,8 +189,8 @@
         }
 
         .view-option svg {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
         }
 
         .view-option.active {
@@ -169,19 +203,20 @@
             color: var(--blue-primary);
         }
 
-        .report-filter-actions {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-        }
-
-        .btn-filter {
-            padding: 12px 28px;
+        .filter-badge {
+            display: inline-flex;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(17, 43, 105, 0.08);
+            color: var(--blue-primary);
+            font-weight: 600;
+            font-size: 12px;
         }
 
         .employee-cell {
             display: flex;
             flex-direction: column;
+            gap: 2px;
         }
 
         .employee-name {
@@ -205,7 +240,8 @@
 
         .table-scroll {
             width: 100%;
-            overflow-x: auto;
+            overflow: auto;
+            max-height: calc(100vh - 320px);
         }
 
         .table-scroll table {
@@ -276,15 +312,46 @@
             border-radius: 16px;
             overflow: hidden;
             background-color: #fff;
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
         .detail-table thead th {
-            background-color: rgba(17, 43, 105, 0.05);
+            background-color: rgba(17, 43, 105, 0.06);
             border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            padding: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
 
         .detail-table tbody td {
             border-top: 1px solid var(--border-color);
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .detail-table tr:nth-child(even) td {
+            background: rgba(17, 43, 105, 0.02);
+        }
+
+        .col-date {
+            width: 130px;
+            white-space: nowrap;
+        }
+
+        .col-time {
+            width: 90px;
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            border-radius: 999px;
+            padding: 6px 12px;
         }
 
         .legend {
@@ -377,26 +444,34 @@
 
         @media (max-width: 1200px) {
             .report-filter-form {
-                flex-direction: column;
-                align-items: stretch;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             }
 
-            .report-filter-actions {
-                margin-left: 0;
-                width: 100%;
-                display: flex;
-                justify-content: flex-end;
+            .filter-toggle {
+                display: inline-flex;
+            }
+
+            .filter-card[data-collapsed="true"] .report-filter-form {
+                display: none;
             }
         }
     </style>
 @endpush
 
 @section('content')
+    @php
+        $selectedSubjectLabel = $searchName !== ''
+            ? 'Nama mengandung "' . $searchName . '"'
+            : (($selectedDepartmentId ?? null) ? optional($departments->firstWhere('id', $selectedDepartmentId))->name : null);
+        $selectedSubjectLabel = $selectedSubjectLabel
+            ?? (($selectedPositionId ?? null) ? optional($positions->firstWhere('id', $selectedPositionId))->name : null)
+            ?? 'Semua Karyawan';
+    @endphp
     <section class="content-wrapper">
         <div class="report-header">
             <div class="report-title-block">
-                <h2 class="report-title">Rekapan</h2>
-                <p class="report-subtitle">Pantau kehadiran karyawan berdasarkan rentang tanggal dan nama yang dipilih.</p>
+                <h2 class="report-title">Rekapan Absensi</h2>
+                <p class="report-subtitle">Pantau kehadiran karyawan berdasarkan rentang tanggal dan filter pilihan.</p>
                 <p class="report-period">
                     Periode: {{ $startDate->translatedFormat('d F Y') }} &ndash; {{ $endDate->translatedFormat('d F Y') }}
                 </p>
@@ -407,73 +482,104 @@
             </button>
         </div>
 
-        <form method="GET" class="report-filter-form" id="report-filter-form">
-            @if (request()->has('type'))
-                <input type="hidden" name="type" value="{{ request('type') }}">
-            @endif
-            <input type="hidden" name="view" id="view-mode" value="{{ $viewMode }}">
+        <div class="filter-card" id="filter-card" data-collapsed="false">
+            <div class="filter-card__header">
+                <h3 class="filter-card__title">Filter</h3>
+                <span class="filter-badge">Filter aktif: {{ $selectedSubjectLabel }}</span>
+                <button type="button" class="filter-toggle" id="filter-toggle">Tampilkan/Sembunyikan</button>
+            </div>
 
-            <div class="filter-field filter-field--wide">
-                <span class="filter-label">Nama</span>
-                <div class="filter-control">
-                    <select name="employee_id" id="employee_id">
-                        <option value="all" {{ $selectedEmployeeId === 'all' ? 'selected' : '' }}>Semua</option>
-                        @foreach ($employees as $employee)
-                            <option value="{{ $employee->id }}" {{ (int) $selectedEmployeeId === $employee->id ? 'selected' : '' }}>
-                                {{ $employee->full_name }}
-                            </option>
-                        @endforeach
-                    </select>
+            <form method="GET" class="report-filter-form" id="report-filter-form">
+                @if (request()->has('type'))
+                    <input type="hidden" name="type" value="{{ request('type') }}">
+                @endif
+                <input type="hidden" name="view" id="view-mode" value="{{ $viewMode }}">
+
+                <div class="filter-field filter-field--wide">
+                    <span class="filter-label">Nama</span>
+                    <div class="filter-control">
+                        <input
+                            type="search"
+                            name="name"
+                            id="employee_name"
+                            placeholder="Ketik nama karyawan"
+                            value="{{ $searchName }}"
+                        >
+                    </div>
                 </div>
-            </div>
 
-            <div class="filter-field">
-                <span class="filter-label">Mulai</span>
-                <div class="filter-control">
-                    <input type="date" name="start" id="start" value="{{ $startDate->format('Y-m-d') }}">
+                <div class="filter-field filter-field--wide">
+                    <span class="filter-label">Departemen</span>
+                    <div class="filter-control">
+                        <select name="department_id" id="department_id">
+                            <option value="">Semua</option>
+                            @foreach ($departments as $department)
+                                <option value="{{ $department->id }}" {{ ($selectedDepartmentId ?? null) == $department->id ? 'selected' : '' }}>
+                                    {{ $department->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="filter-field">
-                <span class="filter-label">Selesai</span>
-                <div class="filter-control">
-                    <input type="date" name="end" id="end" value="{{ $endDate->format('Y-m-d') }}">
+                <div class="filter-field filter-field--wide">
+                    <span class="filter-label">Jabatan</span>
+                    <div class="filter-control">
+                        <select name="position_id" id="position_id">
+                            <option value="">Semua</option>
+                            @foreach ($positions as $position)
+                                <option value="{{ $position->id }}" {{ ($selectedPositionId ?? null) == $position->id ? 'selected' : '' }}>
+                                    {{ $position->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="filter-field filter-field--view">
-                <span class="filter-label">View</span>
-                <div class="view-toggle" role="group" aria-label="Pilih tampilan laporan">
-                    <button type="button" class="view-option {{ $viewMode === 'detail' ? 'active' : '' }}" data-view-option="detail">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="5" width="18" height="3" rx="1.5" fill="currentColor" />
-                            <rect x="3" y="10.5" width="18" height="3" rx="1.5" fill="currentColor" opacity="0.6" />
-                            <rect x="3" y="16" width="18" height="3" rx="1.5" fill="currentColor" opacity="0.4" />
-                        </svg>
-                        <span>Detail</span>
-                    </button>
-                    <button type="button" class="view-option {{ $viewMode === 'summary' ? 'active' : '' }}" data-view-option="summary">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="4" y="4" width="6" height="6" rx="1.5" fill="currentColor" />
-                            <rect x="14" y="4" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.7" />
-                            <rect x="4" y="14" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.7" />
-                            <rect x="14" y="14" width="6" height="6" rx="1.5" fill="currentColor" />
-                        </svg>
-                        <span>Ringkas</span>
-                    </button>
+                <div class="filter-field">
+                    <span class="filter-label">Mulai</span>
+                    <div class="filter-control">
+                        <input type="date" name="start" id="start" value="{{ $startDate->format('Y-m-d') }}">
+                    </div>
                 </div>
-            </div>
 
-            <div class="report-filter-actions">
-                <button type="submit" class="btn btn-primary btn-filter">Filter</button>
-            </div>
-        </form>
+                <div class="filter-field">
+                    <span class="filter-label">Selesai</span>
+                    <div class="filter-control">
+                        <input type="date" name="end" id="end" value="{{ $endDate->format('Y-m-d') }}">
+                    </div>
+                </div>
+
+                <div class="filter-field filter-field--view">
+                    <span class="filter-label">View</span>
+                    <div class="view-toggle" role="group" aria-label="Pilih tampilan laporan">
+                        <button type="button" class="view-option {{ $viewMode === 'detail' ? 'active' : '' }}" data-view-option="detail">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="5" width="18" height="3" rx="1.5" fill="currentColor" />
+                                <rect x="3" y="10.5" width="18" height="3" rx="1.5" fill="currentColor" opacity="0.6" />
+                                <rect x="3" y="16" width="18" height="3" rx="1.5" fill="currentColor" opacity="0.4" />
+                            </svg>
+                            <span>Detail</span>
+                        </button>
+                        <button type="button" class="view-option {{ $viewMode === 'summary' ? 'active' : '' }}" data-view-option="summary">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="4" y="4" width="6" height="6" rx="1.5" fill="currentColor" />
+                                <rect x="14" y="4" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.7" />
+                                <rect x="4" y="14" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.7" />
+                                <rect x="14" y="14" width="6" height="6" rx="1.5" fill="currentColor" />
+                            </svg>
+                            <span>Ringkas</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
         @if ($viewMode === 'summary')
             <div class="report-printable">
                 <div class="report-print-meta">
                     <span><strong>Periode:</strong> {{ $startDate->translatedFormat('d F Y') }} &ndash; {{ $endDate->translatedFormat('d F Y') }}</span>
-                    <span><strong>Nama:</strong> {{ $selectedEmployee?->full_name ?? 'Semua Karyawan' }}</span>
+                    <span><strong>Filter:</strong> {{ $selectedSubjectLabel }}</span>
                 </div>
                 <div class="summary-wrapper">
                     <div class="legend">
@@ -527,7 +633,7 @@
             <div class="report-printable">
                 <div class="report-print-meta">
                     <span><strong>Periode:</strong> {{ $startDate->translatedFormat('d F Y') }} &ndash; {{ $endDate->translatedFormat('d F Y') }}</span>
-                    <span><strong>Nama:</strong> {{ $selectedEmployee?->full_name ?? 'Semua Karyawan' }}</span>
+                    <span><strong>Filter:</strong> {{ $selectedSubjectLabel }}</span>
                 </div>
                 <div class="table-scroll">
                     <table class="detail-table">
@@ -586,6 +692,9 @@
             const form = document.getElementById('report-filter-form');
             const viewInput = document.getElementById('view-mode');
             const viewButtons = document.querySelectorAll('[data-view-option]');
+            const autoInputs = form ? form.querySelectorAll('input, select') : [];
+            const filterCard = document.getElementById('filter-card');
+            const filterToggle = document.getElementById('filter-toggle');
 
             if (!form || !viewInput || !viewButtons.length) {
                 return;
@@ -608,6 +717,31 @@
                     form.submit();
                 });
             });
+
+            const debounce = (fn, delay = 400) => {
+                let timer;
+                return (...args) => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => fn(...args), delay);
+                };
+            };
+
+            const submitForm = debounce(() => form.requestSubmit());
+
+            autoInputs.forEach((el) => {
+                if (el.id === 'view-mode') return;
+                el.addEventListener('change', submitForm);
+                if (el.type === 'search' || el.type === 'text') {
+                    el.addEventListener('input', submitForm);
+                }
+            });
+
+            if (filterToggle && filterCard) {
+                filterToggle.addEventListener('click', () => {
+                    const isCollapsed = filterCard.getAttribute('data-collapsed') === 'true';
+                    filterCard.setAttribute('data-collapsed', (!isCollapsed).toString());
+                });
+            }
         });
     </script>
 @endpush

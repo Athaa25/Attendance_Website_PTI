@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\AttendanceRecord;
 use App\Models\Employee;
+use App\Models\Department;
+use App\Models\Position;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -13,7 +15,16 @@ class ReportController extends Controller
     {
         Carbon::setLocale(config('app.locale'));
 
-        $employees = Employee::with('department')->orderBy('full_name')->get();
+        $selectedDepartmentId = $request->integer('department_id');
+        $selectedPositionId = $request->integer('position_id');
+        $searchName = trim((string) $request->query('name', ''));
+
+        $employees = Employee::with(['department', 'position'])
+            ->when($selectedDepartmentId, fn ($q) => $q->where('department_id', $selectedDepartmentId))
+            ->when($selectedPositionId, fn ($q) => $q->where('position_id', $selectedPositionId))
+            ->when($searchName !== '', fn ($q) => $q->where('full_name', 'like', '%' . $searchName . '%'))
+            ->orderBy('full_name')
+            ->get();
 
         $allowedViewModes = ['detail', 'summary'];
         $requestedView = $request->query('view');
@@ -52,20 +63,20 @@ class ReportController extends Controller
             $viewMode = 'detail';
         }
 
-        $selectedEmployeeInput = $request->query('employee_id', 'all');
-        $selectedEmployeeId = $selectedEmployeeInput === 'all' || $selectedEmployeeInput === null || $selectedEmployeeInput === ''
-            ? 'all'
-            : (int) $selectedEmployeeInput;
-        $selectedEmployee = $selectedEmployeeId === 'all'
-            ? null
-            : $employees->firstWhere('id', $selectedEmployeeId);
-
         $recordsQuery = AttendanceRecord::with('employee.department')
             ->whereBetween('attendance_date', [$start->toDateString(), $end->toDateString()]);
 
-        if ($selectedEmployee) {
-            $recordsQuery->where('employee_id', $selectedEmployee->id);
-        }
+        $recordsQuery->when($selectedDepartmentId, function ($q) use ($selectedDepartmentId) {
+            $q->whereHas('employee', fn ($builder) => $builder->where('department_id', $selectedDepartmentId));
+        });
+
+        $recordsQuery->when($selectedPositionId, function ($q) use ($selectedPositionId) {
+            $q->whereHas('employee', fn ($builder) => $builder->where('position_id', $selectedPositionId));
+        });
+
+        $recordsQuery->when($searchName !== '', function ($q) use ($searchName) {
+            $q->whereHas('employee', fn ($builder) => $builder->where('full_name', 'like', '%' . $searchName . '%'));
+        });
 
         $records = $recordsQuery
             ->orderBy('attendance_date')
@@ -83,8 +94,7 @@ class ReportController extends Controller
             return $items->keyBy(fn ($item) => $item->attendance_date->format('Y-m-d'));
         });
 
-        $matrixEmployees = $selectedEmployee ? collect([$selectedEmployee]) : $employees;
-        $summaryMatrix = $matrixEmployees->map(function ($employee) use ($recordsByEmployee, $dateRange) {
+        $summaryMatrix = $employees->map(function ($employee) use ($recordsByEmployee, $dateRange) {
             $employeeRecords = $recordsByEmployee->get($employee->id, collect());
             $days = [];
 
@@ -98,11 +108,7 @@ class ReportController extends Controller
                 'employee' => $employee,
                 'days' => $days,
             ];
-        })->filter(function ($row) use ($selectedEmployeeId) {
-            if ($selectedEmployeeId !== 'all') {
-                return true;
-            }
-
+        })->filter(function ($row) {
             foreach ($row['days'] as $value) {
                 if ($value !== '') {
                     return true;
@@ -114,12 +120,15 @@ class ReportController extends Controller
 
         return view('reports.sheet', [
             'employees' => $employees,
+            'departments' => Department::orderBy('name')->get(),
+            'positions' => Position::orderBy('name')->get(),
             'records' => $records,
             'summaryMatrix' => $summaryMatrix,
             'dateRange' => $dateRange,
             'viewMode' => $viewMode,
-            'selectedEmployeeId' => $selectedEmployeeId,
-            'selectedEmployee' => $selectedEmployee,
+            'searchName' => $searchName,
+            'selectedDepartmentId' => $selectedDepartmentId,
+            'selectedPositionId' => $selectedPositionId,
             'startDate' => $start,
             'endDate' => $end,
             'statusLabels' => AttendanceRecord::statusLabels(),

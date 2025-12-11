@@ -28,7 +28,7 @@
                         <span class="metric-description">Periode {{ $startOfMonthLabel }} - {{ $endOfMonthLabel }}</span>
                     </a>
                     <a class="metric-card metric-card--link" href="{{ route('manage-users.index') }}">
-                        <span class="metric-title">Staff &amp; Karyawan</span>
+                        <span class="metric-title">Staff & Karyawan</span>
                         <p class="metric-value">{{ number_format($metrics['employee_count']) }}</p>
                         <span class="metric-description">Total karyawan yang terdaftar</span>
                     </a>
@@ -67,45 +67,5 @@
             </a>
         </div>
 
-        <div class="attendance-section">
-            <div class="section-header">
-                <h2 class="section-title">Riwayat Absensi</h2>
-                <a href="{{ route('attendance.index') }}" class="primary-button">Lihat Detail</a>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Status</th>
-                        <th>Check-In</th>
-                        <th>Tanggal</th>
-                        <th>Keterangan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($recentAttendances as $record)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $record->employee->full_name }}</td>
-                            <td>
-                                <span class="status-badge {{ $record->status_badge_class }}">
-                                    {{ $record->status_label }}
-                                </span>
-                            </td>
-                            <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
-                            <td>{{ $record->attendance_date->translatedFormat('d M Y') }}</td>
-                            <td>{{ $record->notes ?? '-' }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                Belum ada data absensi terbaru.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
     </section>
 @endsection

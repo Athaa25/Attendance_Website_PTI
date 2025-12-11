@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Schedule;
+use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -36,7 +37,13 @@ class ScheduleController extends Controller
             'description' => ['nullable', 'string'],
         ]);
 
-        Schedule::create($validated);
+        $schedule = Schedule::create($validated);
+
+        ActivityLogger::log(
+            'create',
+            $schedule,
+            "Shift {$schedule->name} ({$schedule->code}) ditambahkan"
+        );
 
         return redirect()
             ->route('schedule.index')
@@ -62,6 +69,12 @@ class ScheduleController extends Controller
 
         $schedule->update($validated);
 
+        ActivityLogger::log(
+            'update',
+            $schedule,
+            "Shift {$schedule->name} ({$schedule->code}) diperbarui"
+        );
+
         return redirect()
             ->route('schedule.index')
             ->with('status', 'Data shift berhasil diperbarui.');
@@ -69,7 +82,15 @@ class ScheduleController extends Controller
 
     public function destroy(Schedule $schedule): RedirectResponse
     {
+        $scheduleName = $schedule->name;
+        $scheduleCode = $schedule->code;
         $schedule->delete();
+
+        ActivityLogger::log(
+            'delete',
+            $schedule,
+            "Shift {$scheduleName} ({$scheduleCode}) dihapus"
+        );
 
         return redirect()
             ->route('schedule.index')

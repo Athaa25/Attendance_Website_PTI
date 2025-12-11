@@ -7,7 +7,7 @@
 @section('content')
     <section class="content-wrapper">
         <div class="form-header">
-            <h2 class="form-title">Formulir Departemen &amp; Jabatan</h2>
+            <h2 class="form-title">Formulir Departemen & Jabatan</h2>
             <p class="form-subtitle">Masukkan informasi departemen dan jabatan baru pada perusahaan Anda.</p>
         </div>
 

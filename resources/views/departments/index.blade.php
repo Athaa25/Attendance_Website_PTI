@@ -41,6 +41,8 @@
             overflow-x: auto;
             border-radius: 24px;
             border: 1px solid var(--border-color);
+            max-height: calc(100vh - 360px);
+            overflow-y: auto;
         }
 
         .department-name {
@@ -88,7 +90,7 @@
         <div class="department-card">
             <div class="department-header">
                 <div>
-                    <h2 class="department-title">Departemen &amp; Jabatan</h2>
+                    <h2 class="department-title">Departemen & Jabatan</h2>
                     <p class="department-subtitle">Kelola struktur organisasi perusahaan Anda</p>
                 </div>
                 <div class="department-actions">

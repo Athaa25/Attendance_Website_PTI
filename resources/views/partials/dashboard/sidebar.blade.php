@@ -39,6 +39,14 @@
                 Sheet Report
             </a>
         </div>
+
+        <div class="sidebar-nav-group">
+            <p class="sidebar-section-title">Audit</p>
+            <a class="sidebar-nav-item {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}" href="{{ route('activity-logs.index') }}">
+                <span class="sidebar-icon">LG</span>
+                Activity Log
+            </a>
+        </div>
     </nav>
 
     <div class="sidebar-footer">

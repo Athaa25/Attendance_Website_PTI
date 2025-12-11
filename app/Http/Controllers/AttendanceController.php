@@ -16,6 +16,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use App\Services\ActivityLogger;
 
 class AttendanceController extends Controller
 {
@@ -106,6 +107,12 @@ class AttendanceController extends Controller
             return $this->fillAttendanceRecord($record, $data, $employee, $request->file('supporting_document'));
         });
 
+        ActivityLogger::log(
+            'create',
+            $attendanceRecord,
+            "Absensi {$employee->full_name} tanggal {$attendanceRecord->attendance_date->format('d M Y')} ditambahkan"
+        );
+
         return redirect()
             ->route('attendance.index', ['date' => $attendanceRecord->attendance_date->format('Y-m-d')])
             ->with('status', 'Absensi berhasil ditambahkan.');
@@ -137,6 +144,14 @@ class AttendanceController extends Controller
                 $request->file('supporting_document')
             );
         });
+
+        $attendanceRecord->refresh();
+
+        ActivityLogger::log(
+            'update',
+            $attendanceRecord,
+            "Absensi {$employee->full_name} tanggal {$attendanceRecord->attendance_date->format('d M Y')} diperbarui"
+        );
 
         return redirect()
             ->route('attendance.index', ['date' => $attendanceRecord->attendance_date->format('Y-m-d')])

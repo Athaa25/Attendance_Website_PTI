@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\Position;
+use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +45,7 @@ class DepartmentController extends Controller
         $departmentName = Str::of($validated['department_name'])->squish()->toString();
         $positionName = Str::of($validated['position_name'])->squish()->toString();
 
-        DB::transaction(function () use ($departmentName, $positionName) {
+        [$department, $position] = DB::transaction(function () use ($departmentName, $positionName) {
             $department = Department::query()
                 ->whereRaw('LOWER(name) = ?', [Str::lower($departmentName)])
                 ->first();
@@ -56,11 +57,19 @@ class DepartmentController extends Controller
                 ]);
             }
 
-            Position::create([
+            $position = Position::create([
                 'department_id' => $department->id,
                 'name' => $positionName,
             ]);
+
+            return [$department, $position];
         });
+
+        ActivityLogger::log(
+            'create',
+            $position,
+            "Jabatan {$positionName} pada departemen {$departmentName} ditambahkan"
+        );
 
         return redirect()
             ->route('departments.index')
@@ -106,6 +115,12 @@ class DepartmentController extends Controller
             $position->save();
         });
 
+        ActivityLogger::log(
+            'update',
+            $position,
+            "Jabatan {$positionName} pada departemen {$departmentName} diperbarui"
+        );
+
         return redirect()
             ->route('departments.index')
             ->with('success', 'Departemen & jabatan berhasil diperbarui.');
@@ -113,6 +128,9 @@ class DepartmentController extends Controller
 
     public function destroy(Position $position): RedirectResponse
     {
+        $positionName = $position->name;
+        $departmentName = $position->department?->name;
+
         DB::transaction(function () use ($position) {
             $department = $position->department;
 
@@ -122,6 +140,12 @@ class DepartmentController extends Controller
                 $department->delete();
             }
         });
+
+        ActivityLogger::log(
+            'delete',
+            $position,
+            "Jabatan {$positionName}" . ($departmentName ? " pada departemen {$departmentName}" : '') . ' dihapus'
+        );
 
         return redirect()
             ->route('departments.index')
