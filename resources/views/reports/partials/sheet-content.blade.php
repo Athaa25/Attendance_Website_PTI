@@ -42,7 +42,6 @@
                                     <td class="sticky-col name-col">
                                         <div class="employee-cell">
                                             <span class="employee-name">{{ $row['employee']->full_name }}</span>
-                                            <span class="employee-department">{{ $row['employee']->department->name ?? '-' }}</span>
                                         </div>
                                     </td>
                                     @foreach ($dateRange as $date)

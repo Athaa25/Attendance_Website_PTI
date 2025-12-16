@@ -164,25 +164,26 @@
         }
 
         .top-header {
-            background-color: var(--card-background);
+            background: linear-gradient(135deg, #12376b 0%, #0d2d58 100%);
             border-radius: 32px;
             padding: 24px 32px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 10px 40px rgba(17, 43, 105, 0.05);
+            box-shadow: 0 12px 36px rgba(13, 45, 88, 0.18);
+            color: #f8fafc;
         }
 
         .top-header-title {
             font-size: 24px;
-            color: var(--blue-primary);
+            color: #f8fafc;
             font-weight: 700;
             margin: 0;
         }
 
         .top-header-subtitle {
             margin: 4px 0 0;
-            color: var(--text-muted);
+            color: rgba(248, 250, 252, 0.82);
             font-size: 14px;
         }
 
@@ -192,38 +193,32 @@
             gap: 14px;
         }
 
-        .sidebar-toggle {
+        .topbar-logo {
             display: inline-flex;
-            flex-direction: column;
-            gap: 5px;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
             padding: 10px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-            background-color: #fff;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid rgba(17, 43, 105, 0.08);
+            box-shadow: 0 10px 24px rgba(13, 45, 88, 0.22);
             cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         }
 
-        .sidebar-toggle span {
-            display: block;
-            width: 20px;
-            height: 2px;
-            background-color: var(--blue-primary);
-            border-radius: 999px;
-        }
-
-        .sidebar-toggle:hover,
-        .sidebar-toggle:focus-visible {
-            background-color: rgba(17, 43, 105, 0.06);
-            box-shadow: 0 6px 16px rgba(17, 43, 105, 0.12);
+        .topbar-logo:hover,
+        .topbar-logo:focus-visible {
+            background: #ffffff;
+            box-shadow: 0 12px 28px rgba(13, 45, 88, 0.26);
             transform: translateY(-1px);
         }
 
-        .topbar-logo {
-            display: none;
-            height: 36px;
-            width: auto;
-            object-fit: contain;
+        .topbar-logo-img {
+            width: 26px;
+            height: auto;
+            display: block;
         }
 
         .profile-info {
@@ -246,6 +241,7 @@
 
         .profile-name {
             font-weight: 600;
+            color: #f8fafc;
         }
 
         .content-wrapper {
@@ -853,7 +849,7 @@
         }
 
         body.sidebar-collapsed .topbar-logo {
-            display: block;
+            display: inline-flex;
         }
 
         @media (max-width: 1200px) {

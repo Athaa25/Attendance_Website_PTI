@@ -16,7 +16,7 @@
             top: 0;
             z-index: 5;
             padding: 16px 0;
-            background: linear-gradient(180deg, #f5f5f5 0%, rgba(245,245,245,0.85) 100%);
+            background: linear-gradient(180deg, #f5f5f5 0%, rgba(245, 245, 245, 0.85) 100%);
             backdrop-filter: blur(6px);
         }
 
@@ -74,9 +74,9 @@
 
         .filter-card {
             background: #fff;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(17, 43, 105, 0.12);
             border-radius: 20px;
-            box-shadow: 0 12px 30px rgba(17, 43, 105, 0.08);
+            box-shadow: 0 12px 30px rgba(17, 43, 105, 0.12);
             padding: 16px 20px 20px;
             display: flex;
             flex-direction: column;
@@ -95,6 +95,8 @@
             font-weight: 700;
             color: var(--blue-primary);
             font-size: 16px;
+            border-left: 4px solid var(--blue-primary);
+            padding-left: 10px;
         }
 
         .filter-toggle {
@@ -305,12 +307,13 @@
 
         .summary-wrapper {
             border-radius: 24px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(17, 43, 105, 0.12);
             background-color: var(--card-background);
             padding: 20px 24px 24px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            box-shadow: 0 12px 30px rgba(17, 43, 105, 0.08);
         }
 
         .table-scroll {
@@ -386,10 +389,18 @@
 
         .matrix-table .sticky-col.name-col {
             left: 70px;
-            width: 220px;
-            min-width: 220px;
-            max-width: 260px;
+            width: 150px;
+            min-width: 140px;
+            max-width: 160px;
             z-index: 3;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .matrix-table .sticky-col.name-col .employee-cell,
+        .matrix-table .sticky-col.name-col .employee-name {
+            white-space: normal;
+            word-break: break-word;
         }
 
         .matrix-table tbody .sticky-col {
@@ -441,7 +452,7 @@
 
         .matrix-table tbody td:nth-child(2) {
             text-align: left;
-            min-width: 180px;
+            min-width: 140px;
         }
 
         .matrix-table tbody td.matrix-cell {
@@ -542,6 +553,11 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+        }
+
+        body,
+        .content-wrapper {
+            background-color: #f4f7fb;
         }
 
         @media print {
