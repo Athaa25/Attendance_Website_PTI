@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use App\Models\Position;
 use App\Services\ActivityLogger;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,55 @@ class DepartmentController extends Controller
 
         return view('departments.index', [
             'positions' => $positions,
+        ]);
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        $searchTerm = Str::of($request->query('q', ''))->squish()->toString();
+        $positionsQuery = Position::with('department');
+
+        if ($searchTerm !== '') {
+            $normalized = Str::lower($searchTerm);
+
+            $positionsQuery->where(function ($query) use ($normalized) {
+                $query->whereRaw('LOWER(name) LIKE ?', ["%{$normalized}%"])
+                    ->orWhereHas('department', function ($departmentQuery) use ($normalized) {
+                        $departmentQuery->whereRaw('LOWER(name) LIKE ?', ["%{$normalized}%"]);
+                    });
+            });
+        }
+
+        $positions = $positionsQuery
+            ->get()
+            ->sortBy(function (Position $position) {
+                $departmentName = Str::lower((string) ($position->department->name ?? ''));
+                $positionName = Str::lower((string) ($position->name ?? ''));
+
+                return $departmentName . '|' . $positionName;
+            })
+            ->values();
+
+        $suggestions = $positions
+            ->take(7)
+            ->map(function (Position $position) {
+                $departmentName = $position->department->name ?? 'Tanpa Departemen';
+
+                return [
+                    'id' => $position->id,
+                    'position' => $position->name,
+                    'department' => $position->department?->name,
+                    'label' => trim(($position->name ? $position->name . ' · ' : '') . $departmentName),
+                    'term' => $position->name ?: $departmentName,
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'html' => view('departments.partials.positions', [
+                'positions' => $positions,
+            ])->render(),
+            'suggestions' => $suggestions,
         ]);
     }
 

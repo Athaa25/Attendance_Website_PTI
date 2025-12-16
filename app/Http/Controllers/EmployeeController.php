@@ -11,6 +11,7 @@ use App\Models\Role;
 use App\Models\Schedule;
 use App\Models\User;
 use App\Services\ActivityLogger;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -53,6 +54,52 @@ class EmployeeController extends Controller
                 'department_id' => $departmentId,
                 'status' => $status,
             ],
+        ]);
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        $query = Employee::with(['department', 'position', 'schedule', 'user']);
+        $search = $request->string('search')->toString();
+        $departmentId = $request->integer('department_id');
+        $status = $request->string('status')->toString();
+
+        if ($search !== '') {
+            $query->where(function ($builder) use ($search) {
+                $builder->where('full_name', 'like', "%{$search}%")
+                    ->orWhere('employee_code', 'like', "%{$search}%")
+                    ->orWhereHas('user', fn ($userQuery) => $userQuery->where('email', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($departmentId) {
+            $query->where('department_id', $departmentId);
+        }
+
+        if ($status !== '') {
+            $query->where('employment_status', $status);
+        }
+
+        $employees = $query->orderBy('full_name')->paginate(10)->withQueryString();
+
+        $suggestions = $employees->getCollection()
+            ->take(7)
+            ->map(function (Employee $employee) {
+                return [
+                    'id' => $employee->id,
+                    'label' => $employee->full_name,
+                    'department' => $employee->department?->name,
+                    'position' => $employee->position?->name,
+                    'term' => $employee->full_name,
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'html' => view('employees.partials.table', [
+                'employees' => $employees,
+            ])->render(),
+            'suggestions' => $suggestions,
         ]);
     }
 
