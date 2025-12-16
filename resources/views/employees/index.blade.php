@@ -116,6 +116,85 @@
             pointer-events: none;
         }
 
+        .employee-search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .employee-search-input {
+            width: 100%;
+        }
+
+        .employee-search-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(17, 43, 105, 0.08);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blue-primary);
+            cursor: pointer;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 18px 48px rgba(17, 43, 105, 0.16);
+            padding: 8px 0;
+            max-height: 320px;
+            overflow-y: auto;
+            display: none;
+            z-index: 10;
+        }
+
+        .search-suggestions.open {
+            display: block;
+        }
+
+        .suggestion-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            text-align: left;
+            padding: 10px 14px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item:focus-visible {
+            background: rgba(17, 43, 105, 0.06);
+        }
+
+        .suggestion-title {
+            font-weight: 600;
+            color: var(--blue-primary);
+        }
+
+        .suggestion-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .suggestion-empty {
+            padding: 10px 14px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
         .status-active {
             background-color: rgba(34, 197, 94, 0.18);
             color: #15803d;
@@ -151,11 +230,22 @@
             </div>
         @endif
 
-        <form method="GET" class="filter-bar">
+        <form method="GET" class="filter-bar" data-employee-filter>
             <div class="filter-group">
                 <label for="search">Pencarian</label>
-                <div class="filter-input">
-                    <input type="search" id="search" name="search" placeholder="Nama atau kode pegawai" value="{{ $filters['search'] ?? '' }}">
+                <div class="filter-input employee-search-wrapper">
+                    <input
+                        type="search"
+                        id="search"
+                        name="search"
+                        class="employee-search-input"
+                        placeholder="Nama atau kode pegawai"
+                        autocomplete="off"
+                        value="{{ $filters['search'] ?? '' }}"
+                        data-employee-search
+                    >
+                    <button type="button" class="employee-search-clear" data-employee-clear aria-label="Hapus pencarian">&times;</button>
+                    <div class="search-suggestions" data-employee-suggestions></div>
                 </div>
             </div>
             <div class="filter-group">
@@ -190,70 +280,197 @@
                     <span>+</span> Tambah Pegawai
                 </a>
             </div>
-        </form>
+        
+</form>
 
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Departemen</th>
-                        <th>Jadwal</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($employees as $employee)
-                        <tr>
-                            <td>{{ ($employees->currentPage() - 1) * $employees->perPage() + $loop->iteration }}</td>
-                            <td>
-                                <a class="table-name-link" href="{{ route('manage-users.show', $employee) }}">
-                                    {{ $employee->full_name }}
-                                </a>
-                                <div style="font-size: 12px; color: var(--text-muted);">
-                                    {{ $employee->user->email }}
-                                </div>
-                            </td>
-                            <td>{{ $employee->department->name ?? '—' }}</td>
-                            <td>{{ $employee->schedule->name ?? '—' }}</td>
-                            <td>
-                                <span class="status-badge status-{{ $employee->employment_status }}">
-                                    {{ $employee->employment_status_label }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="table-actions">
-                                    <a class="action-link detail" href="{{ route('manage-users.show', $employee) }}">Detail</a>
-                                    <a class="action-link edit" href="{{ route('manage-users.edit', $employee) }}">Edit</a>
-                                    <form method="POST" action="{{ route('manage-users.destroy', $employee) }}" onsubmit="return confirm('Hapus pegawai ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="action-link delete">Hapus</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                Belum ada data pegawai yang sesuai filter.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-
-            @if ($employees->hasPages())
-                <div class="pagination">
-                    <span>Halaman {{ $employees->currentPage() }} dari {{ $employees->lastPage() }}</span>
-                    <div class="pagination-controls">
-                        <a class="pagination-button {{ $employees->onFirstPage() ? 'disabled' : '' }}" href="{{ $employees->previousPageUrl() ?? '#' }}">Sebelumnya</a>
-                        <a class="pagination-button {{ $employees->hasMorePages() ? '' : 'disabled' }}" href="{{ $employees->nextPageUrl() ?? '#' }}">Selanjutnya</a>
-                    </div>
-                </div>
-            @endif
+        <div data-employee-table>
+            @include('employees.partials.table', ['employees' => $employees])
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('[data-employee-filter]');
+            const searchInput = document.querySelector('[data-employee-search]');
+            const suggestionsBox = document.querySelector('[data-employee-suggestions]');
+            const clearButton = document.querySelector('[data-employee-clear]');
+            const tableContainer = document.querySelector('[data-employee-table]');
+
+            if (!form || !searchInput || !suggestionsBox || !tableContainer) return;
+
+            let debounceId = null;
+            let controller = null;
+            const defaultTableHtml = tableContainer.innerHTML;
+
+            const hideSuggestions = () => {
+                suggestionsBox.classList.remove('open');
+            };
+
+            const renderSuggestions = (items, term) => {
+                suggestionsBox.innerHTML = '';
+
+                if (!term) {
+                    suggestionsBox.dataset.hasContent = 'false';
+                    hideSuggestions();
+                    return;
+                }
+
+                if (!items || items.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'suggestion-empty';
+                    empty.textContent = `Tidak ada rekomendasi untuk "${term}".`;
+                    suggestionsBox.appendChild(empty);
+                    suggestionsBox.dataset.hasContent = 'true';
+                    suggestionsBox.classList.add('open');
+                    return;
+                }
+
+                items.forEach((item) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'suggestion-item';
+                    button.dataset.term = item.term || item.label || '';
+
+                    const title = document.createElement('span');
+                    title.className = 'suggestion-title';
+                    title.textContent = item.label || 'Tanpa Nama';
+
+                    const subtitle = document.createElement('span');
+                    subtitle.className = 'suggestion-subtitle';
+                    subtitle.textContent = item.department || item.position || 'Tanpa Departemen';
+
+                    button.appendChild(title);
+                    button.appendChild(subtitle);
+                    suggestionsBox.appendChild(button);
+                });
+
+                suggestionsBox.dataset.hasContent = 'true';
+                suggestionsBox.classList.add('open');
+            };
+
+            const buildSearchParams = (overrideUrl) => {
+                const formData = new FormData(form);
+                const url = new URL(overrideUrl || '{{ route('manage-users.search') }}', window.location.origin);
+                for (const [key, value] of formData.entries()) {
+                    url.searchParams.set(key, value.toString());
+                }
+                return url;
+            };
+
+            const fetchResults = (url) => {
+                if (controller) controller.abort();
+                controller = new AbortController();
+
+                fetch(url.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    signal: controller.signal,
+                })
+                    .then((response) => (response.ok ? response.json() : Promise.reject(response)))
+                    .then((payload) => {
+                        if (typeof payload?.html === 'string') {
+                            tableContainer.innerHTML = payload.html;
+                        }
+                        renderSuggestions(payload?.suggestions || [], searchInput.value.trim());
+                    })
+                    .catch((error) => {
+                        if (error.name === 'AbortError') return;
+                        console.error('Gagal memuat data pegawai', error);
+                    });
+            };
+
+            const handleSearchInput = () => {
+                clearTimeout(debounceId);
+                const term = searchInput.value.trim();
+
+                debounceId = setTimeout(() => {
+                    if (term === '') {
+                        renderSuggestions([], '');
+                        fetchResults(buildSearchParams());
+                        return;
+                    }
+
+                    fetchResults(buildSearchParams());
+                }, 220);
+            };
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const url = buildSearchParams();
+                fetchResults(url);
+                hideSuggestions();
+            });
+
+            ['change'].forEach((evt) => {
+                form.addEventListener(evt, (event) => {
+                    const target = event.target;
+                    if (target?.name && target.name !== 'search') {
+                        const url = buildSearchParams();
+                        fetchResults(url);
+                    }
+                });
+            });
+
+            searchInput.addEventListener('input', handleSearchInput);
+
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value.trim() !== '' && suggestionsBox.dataset.hasContent === 'true') {
+                    suggestionsBox.classList.add('open');
+                }
+            });
+
+            searchInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === 'Search') {
+                    event.preventDefault();
+                    const url = buildSearchParams();
+                    fetchResults(url);
+                    hideSuggestions();
+                }
+            });
+
+            searchInput.addEventListener('search', () => {
+                const url = buildSearchParams();
+                fetchResults(url);
+            });
+
+            suggestionsBox.addEventListener('click', (event) => {
+                const target = event.target.closest('.suggestion-item');
+                if (!target) return;
+
+                searchInput.value = target.dataset.term || target.textContent.trim();
+                const url = buildSearchParams();
+                fetchResults(url);
+                hideSuggestions();
+            });
+
+            clearButton?.addEventListener('click', () => {
+                searchInput.value = '';
+                renderSuggestions([], '');
+                fetchResults(buildSearchParams());
+                searchInput.focus();
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!suggestionsBox.contains(event.target) && !searchInput.contains(event.target)) {
+                    hideSuggestions();
+                }
+            });
+
+            tableContainer.addEventListener('click', (event) => {
+                const link = event.target.closest('[data-pagination-link]');
+                if (!link) return;
+
+                event.preventDefault();
+                const href = link.getAttribute('href');
+                if (!href || href === '#') return;
+                const url = new URL(href, window.location.origin);
+                const formData = new FormData(form);
+                formData.forEach((value, key) => url.searchParams.set(key, value.toString()));
+                fetchResults(url);
+            });
+        });
+    </script>
+@endpush

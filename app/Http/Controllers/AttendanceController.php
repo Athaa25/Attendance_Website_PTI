@@ -10,6 +10,7 @@ use App\Models\AttendanceStatus;
 use App\Models\Employee;
 use App\Models\PresenceTime;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -22,73 +23,34 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        Carbon::setLocale(config('app.locale'));
+        $payload = $this->listPayload($request);
 
-        $dateInput = $request->input('date');
-        $date = $dateInput && Carbon::hasFormat($dateInput, 'Y-m-d')
-            ? Carbon::createFromFormat('Y-m-d', $dateInput)->toDateString()
-            : now()->toDateString();
-
-        $statusCollection = $this->statusOptionsCollection();
-        $statusOptions = $statusCollection->pluck('label', 'code')->toArray();
-        $status = $request->string('status')->toString();
-        $selectedStatus = $statusCollection->firstWhere('code', $status);
-        if ($status !== '' && ! $selectedStatus) {
-            $status = '';
-        }
-        $search = $request->string('search')->toString();
-
-        $query = AttendanceRecord::with([
-            'employee.department',
-            'employee.schedule',
-            'employee.user',
-            'statusDefinition',
-            'reasonDefinition',
-            'checkInTimeSlot',
-            'checkOutTimeSlot',
-        ])
-            ->whereDate('attendance_date', $date);
-
-        if ($selectedStatus) {
-            $query->where('status_id', $selectedStatus->id);
-        }
-
-        if ($search !== '') {
-            $query->whereHas('employee', function ($builder) use ($search) {
-                $builder->where('full_name', 'like', "%{$search}%")
-                    ->orWhere('employee_code', 'like', "%{$search}%");
-            });
-        }
-
-        $records = $query->get()->sortBy(fn ($record) => $record->employee->full_name);
-
-        $statusCounts = $records
-            ->groupBy(fn ($record) => $record->statusDefinition?->code ?? $record->status)
-            ->map->count();
-
-        $summary = ['total_employees' => Employee::count()];
-        foreach ([
-            AttendanceRecord::STATUS_PRESENT,
-            AttendanceRecord::STATUS_LATE,
-            AttendanceRecord::STATUS_LEAVE,
-            AttendanceRecord::STATUS_SICK,
-            AttendanceRecord::STATUS_ABSENT,
-        ] as $statusCode) {
-            $summary[$statusCode] = $statusCounts->get($statusCode, 0);
-        }
-
-        return view('attendance.index', [
+        return view('attendance.index', array_merge($payload, [
             'page' => 'list',
             'viewMode' => 'list',
-            'attendanceDate' => Carbon::createFromFormat('Y-m-d', $date),
-            'records' => $records,
-            'summary' => $summary,
-            'filters' => [
-                'status' => $status,
-                'search' => $search,
-            ],
-            'statusOptions' => $statusOptions,
             'leaveReasonOptions' => $this->reasonOptionsCollection()->pluck('label', 'code')->toArray(),
+        ]));
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        $payload = $this->listPayload($request);
+
+        $suggestions = $payload['records']
+            ->take(7)
+            ->map(function (AttendanceRecord $record) {
+                return [
+                    'id' => $record->employee_id,
+                    'label' => $record->employee->full_name,
+                    'department' => $record->employee->department?->name,
+                    'term' => $record->employee->full_name,
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'html' => view('attendance.partials.list', $payload)->render(),
+            'suggestions' => $suggestions,
         ]);
     }
 
@@ -321,5 +283,74 @@ class AttendanceController extends Controller
     private function reasonOptionsCollection(): Collection
     {
         return AttendanceReason::query()->orderBy('id')->get();
+    }
+
+    private function listPayload(Request $request): array
+    {
+        Carbon::setLocale(config('app.locale'));
+
+        $dateInput = $request->input('date');
+        $date = $dateInput && Carbon::hasFormat($dateInput, 'Y-m-d')
+            ? Carbon::createFromFormat('Y-m-d', $dateInput)->toDateString()
+            : now()->toDateString();
+
+        $statusCollection = $this->statusOptionsCollection();
+        $statusOptions = $statusCollection->pluck('label', 'code')->toArray();
+        $status = $request->string('status')->toString();
+        $selectedStatus = $statusCollection->firstWhere('code', $status);
+        if ($status !== '' && ! $selectedStatus) {
+            $status = '';
+        }
+        $search = $request->string('search')->toString();
+
+        $query = AttendanceRecord::with([
+            'employee.department',
+            'employee.schedule',
+            'employee.user',
+            'statusDefinition',
+            'reasonDefinition',
+            'checkInTimeSlot',
+            'checkOutTimeSlot',
+        ])
+            ->whereDate('attendance_date', $date);
+
+        if ($selectedStatus) {
+            $query->where('status_id', $selectedStatus->id);
+        }
+
+        if ($search !== '') {
+            $query->whereHas('employee', function ($builder) use ($search) {
+                $builder->where('full_name', 'like', "%{$search}%")
+                    ->orWhere('employee_code', 'like', "%{$search}%");
+            });
+        }
+
+        $records = $query->get()->sortBy(fn ($record) => $record->employee->full_name);
+
+        $statusCounts = $records
+            ->groupBy(fn ($record) => $record->statusDefinition?->code ?? $record->status)
+            ->map->count();
+
+        $summary = ['total_employees' => Employee::count()];
+        foreach ([
+            AttendanceRecord::STATUS_PRESENT,
+            AttendanceRecord::STATUS_LATE,
+            AttendanceRecord::STATUS_LEAVE,
+            AttendanceRecord::STATUS_SICK,
+            AttendanceRecord::STATUS_ABSENT,
+        ] as $statusCode) {
+            $summary[$statusCode] = $statusCounts->get($statusCode, 0);
+        }
+
+        return [
+            'attendanceDate' => Carbon::createFromFormat('Y-m-d', $date),
+            'records' => $records,
+            'summary' => $summary,
+            'filters' => [
+                'status' => $status,
+                'search' => $search,
+            ],
+            'statusOptions' => $statusOptions,
+        ];
     }
 }

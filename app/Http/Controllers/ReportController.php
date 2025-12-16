@@ -7,11 +7,62 @@ use App\Models\Employee;
 use App\Models\Department;
 use App\Models\Position;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
     public function index(Request $request)
+    {
+        $data = $this->buildPayload($request);
+
+        return view('reports.sheet', $data);
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        $data = $this->buildPayload($request);
+
+        return response()->json([
+            'html' => view('reports.partials.sheet-content', $data)->render(),
+            'suggestions' => $data['employees']
+                ->take(7)
+                ->map(fn ($employee) => [
+                    'id' => $employee->id,
+                    'label' => $employee->full_name,
+                    'department' => $employee->department?->name,
+                    'term' => $employee->full_name,
+                ])
+                ->values(),
+        ]);
+    }
+
+    private function parseDate(?string $value, Carbon $default): Carbon
+    {
+        if (! $value) {
+            return $default->copy();
+        }
+
+        try {
+            return Carbon::parse($value);
+        } catch (\Throwable $e) {
+            return $default->copy();
+        }
+    }
+
+    private function statusSymbol(string $status): string
+    {
+        return match ($status) {
+            AttendanceRecord::STATUS_PRESENT => 'H',
+            AttendanceRecord::STATUS_LATE => 'T',
+            AttendanceRecord::STATUS_LEAVE => 'I',
+            AttendanceRecord::STATUS_SICK => 'S',
+            AttendanceRecord::STATUS_ABSENT => 'A',
+            default => '',
+        };
+    }
+
+    private function buildPayload(Request $request): array
     {
         Carbon::setLocale(config('app.locale'));
 
@@ -118,7 +169,14 @@ class ReportController extends Controller
             return false;
         })->values();
 
-        return view('reports.sheet', [
+        $selectedDepartmentName = optional($employees->firstWhere('department_id', $selectedDepartmentId))->department->name ?? null;
+        $selectedPositionName = optional($employees->firstWhere('position_id', $selectedPositionId))->position->name ?? null;
+
+        $selectedSubjectLabel = $searchName !== ''
+            ? 'Nama mengandung "' . $searchName . '"'
+            : ($selectedDepartmentName ?? $selectedPositionName ?? 'Semua Karyawan');
+
+        return [
             'employees' => $employees,
             'departments' => Department::orderBy('name')->get(),
             'positions' => Position::orderBy('name')->get(),
@@ -132,31 +190,7 @@ class ReportController extends Controller
             'startDate' => $start,
             'endDate' => $end,
             'statusLabels' => AttendanceRecord::statusLabels(),
-        ]);
-    }
-
-    private function parseDate(?string $value, Carbon $default): Carbon
-    {
-        if (! $value) {
-            return $default->copy();
-        }
-
-        try {
-            return Carbon::parse($value);
-        } catch (\Throwable $e) {
-            return $default->copy();
-        }
-    }
-
-    private function statusSymbol(string $status): string
-    {
-        return match ($status) {
-            AttendanceRecord::STATUS_PRESENT => 'H',
-            AttendanceRecord::STATUS_LATE => 'T',
-            AttendanceRecord::STATUS_LEAVE => 'I',
-            AttendanceRecord::STATUS_SICK => 'S',
-            AttendanceRecord::STATUS_ABSENT => 'A',
-            default => '',
-        };
+            'selectedSubjectLabel' => $selectedSubjectLabel,
+        ];
     }
 }

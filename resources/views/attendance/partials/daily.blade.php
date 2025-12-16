@@ -13,6 +13,85 @@
     'other' => 0,
 ])
 
+@push('styles')
+    <style>
+        .attendance-search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .attendance-search-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(17, 43, 105, 0.08);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blue-primary);
+            cursor: pointer;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 18px 48px rgba(17, 43, 105, 0.16);
+            padding: 8px 0;
+            max-height: 320px;
+            overflow-y: auto;
+            display: none;
+            z-index: 10;
+        }
+
+        .search-suggestions.open {
+            display: block;
+        }
+
+        .suggestion-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            text-align: left;
+            padding: 10px 14px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item:focus-visible {
+            background: rgba(17, 43, 105, 0.06);
+        }
+
+        .suggestion-title {
+            font-weight: 600;
+            color: var(--blue-primary);
+        }
+
+        .suggestion-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .suggestion-empty {
+            padding: 10px 14px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+    </style>
+@endpush
+
 <section class="content-wrapper">
     @if (session('status'))
         <div class="status-banner">
@@ -21,7 +100,7 @@
     @endif
 
     @if ($page === 'list')
-        <form method="GET" class="filter-bar" id="attendance-filter-form">
+        <form method="GET" class="filter-bar" id="attendance-filter-form" data-attendance-filter>
             <div class="filter-group">
                 <label for="date">Tanggal</label>
                 <div class="filter-input">
@@ -43,89 +122,27 @@
             </div>
             <div class="filter-group">
                 <label for="search">Pencarian</label>
-                <div class="filter-input">
+                <div class="filter-input attendance-search-wrapper">
                     <input
                         type="search"
                         id="search"
                         name="search"
                         placeholder="Nama atau kode pegawai"
                         value="{{ $filters['search'] ?? '' }}"
+                        autocomplete="off"
+                        data-attendance-search
                     >
+                    <button type="button" class="attendance-search-clear" data-attendance-clear aria-label="Hapus pencarian">&times;</button>
+                    <div class="search-suggestions" data-attendance-suggestions></div>
                 </div>
             </div>
         </form>
 
-        <div class="summary-grid">
-            <div class="summary-card">
-                <span class="summary-label">Total Pegawai</span>
-                <span class="summary-value">{{ $summary['total_employees'] }}</span>
-            </div>
-            <div class="summary-card">
-                <span class="summary-label">Hadir</span>
-                <span class="summary-value">{{ $summary['present'] }}</span>
-            </div>
-            <div class="summary-card">
-                <span class="summary-label">Terlambat</span>
-                <span class="summary-value">{{ $summary['late'] }}</span>
-            </div>
-            <div class="summary-card">
-                <span class="summary-label">Izin</span>
-                <span class="summary-value">{{ $summary['leave'] }}</span>
-            </div>
-            <div class="summary-card">
-                <span class="summary-label">Sakit</span>
-                <span class="summary-value">{{ $summary['sick'] }}</span>
-            </div>
-            <div class="summary-card">
-                <span class="summary-label">Alpa</span>
-                <span class="summary-value">{{ $summary['absent'] }}</span>
-            </div>
-        </div>
-
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Departemen</th>
-                        <th>Status</th>
-                        <th>Check-In</th>
-                        <th>Keterangan</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($records as $record)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>
-                                {{ $record->employee->full_name }}
-                                <div style="font-size: 12px; color: var(--text-muted);">
-                                    {{ $record->employee->employee_code }}
-                                </div>
-                            </td>
-                            <td>{{ $record->employee->department->name ?? '-' }}</td>
-                            <td>
-                                <span class="status-badge status-{{ $record->statusDefinition?->code ?? $record->status }}">
-                                    {{ $record->status_label }}
-                                </span>
-                            </td>
-                            <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
-                            <td>{{ $record->notes ?? $record->leave_reason_label ?? '-' }}</td>
-                            <td>
-                                <a class="btn btn-secondary" href="{{ route('attendance.edit', $record) }}">Edit</a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                Belum ada data absensi pada tanggal ini.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div data-attendance-results>
+            @include('attendance.partials.list', [
+                'records' => $records,
+                'summary' => $summary,
+            ])
         </div>
     @else
         <div class="form-header">
@@ -259,25 +276,153 @@
 @else
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('attendance-filter-form');
-            const inputs = form?.querySelectorAll('input, select');
+            const form = document.querySelector('[data-attendance-filter]');
+            const searchInput = document.querySelector('[data-attendance-search]');
+            const suggestionsBox = document.querySelector('[data-attendance-suggestions]');
+            const clearButton = document.querySelector('[data-attendance-clear]');
+            const resultsContainer = document.querySelector('[data-attendance-results]');
 
-            if (!form || !inputs) return;
+            if (!form || !resultsContainer) return;
 
-            const debounce = (fn, delay = 400) => {
-                let t;
-                return (...args) => {
-                    clearTimeout(t);
-                    t = setTimeout(() => fn(...args), delay);
-                };
+            let debounceId = null;
+            let controller = null;
+            const defaultHtml = resultsContainer.innerHTML;
+
+            const hideSuggestions = () => suggestionsBox?.classList.remove('open');
+
+            const renderSuggestions = (items, term) => {
+                if (!suggestionsBox) return;
+                suggestionsBox.innerHTML = '';
+
+                if (!term) {
+                    suggestionsBox.dataset.hasContent = 'false';
+                    hideSuggestions();
+                    return;
+                }
+
+                if (!items || items.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'suggestion-empty';
+                    empty.textContent = `Tidak ada rekomendasi untuk "${term}".`;
+                    suggestionsBox.appendChild(empty);
+                    suggestionsBox.dataset.hasContent = 'true';
+                    suggestionsBox.classList.add('open');
+                    return;
+                }
+
+                items.forEach((item) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'suggestion-item';
+                    button.dataset.term = item.term || item.label || '';
+
+                    const title = document.createElement('span');
+                    title.className = 'suggestion-title';
+                    title.textContent = item.label || 'Tanpa Nama';
+
+                    const subtitle = document.createElement('span');
+                    subtitle.className = 'suggestion-subtitle';
+                    subtitle.textContent = item.department || '';
+
+                    button.appendChild(title);
+                    button.appendChild(subtitle);
+                    suggestionsBox.appendChild(button);
+                });
+
+                suggestionsBox.dataset.hasContent = 'true';
+                suggestionsBox.classList.add('open');
             };
 
-            const submitForm = debounce(() => form.requestSubmit());
+            const buildUrl = () => {
+                const data = new FormData(form);
+                const url = new URL('{{ route('attendance.search') }}', window.location.origin);
+                data.forEach((value, key) => url.searchParams.set(key, value.toString()));
+                return url;
+            };
 
-            inputs.forEach((el) => {
-                el.addEventListener('change', submitForm);
-                if (el.type === 'search' || el.type === 'text') {
-                    el.addEventListener('input', submitForm);
+            const fetchResults = () => {
+                const url = buildUrl();
+
+                if (controller) controller.abort();
+                controller = new AbortController();
+
+                fetch(url.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    signal: controller.signal,
+                })
+                    .then((response) => (response.ok ? response.json() : Promise.reject(response)))
+                    .then((payload) => {
+                        if (typeof payload?.html === 'string') {
+                            resultsContainer.innerHTML = payload.html;
+                        }
+                        renderSuggestions(payload?.suggestions || [], searchInput?.value.trim() || '');
+                    })
+                    .catch((error) => {
+                        if (error.name === 'AbortError') return;
+                        console.error('Gagal memuat data absensi', error);
+                    });
+            };
+
+            const handleInput = () => {
+                clearTimeout(debounceId);
+                debounceId = setTimeout(() => {
+                    if (searchInput && searchInput.value.trim() === '') {
+                        renderSuggestions([], '');
+                        fetchResults();
+                        return;
+                    }
+                    fetchResults();
+                }, 220);
+            };
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                fetchResults();
+                hideSuggestions();
+            });
+
+            form.addEventListener('change', (event) => {
+                if (event.target?.name && event.target.name !== 'search') {
+                    fetchResults();
+                }
+            });
+
+            searchInput?.addEventListener('input', handleInput);
+            searchInput?.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === 'Search') {
+                    event.preventDefault();
+                    fetchResults();
+                    hideSuggestions();
+                }
+            });
+            searchInput?.addEventListener('focus', () => {
+                if (searchInput.value.trim() !== '' && suggestionsBox?.dataset.hasContent === 'true') {
+                    suggestionsBox.classList.add('open');
+                }
+            });
+            searchInput?.addEventListener('search', fetchResults);
+
+            suggestionsBox?.addEventListener('click', (event) => {
+                const target = event.target.closest('.suggestion-item');
+                if (!target || !searchInput) return;
+                searchInput.value = target.dataset.term || target.textContent.trim();
+                fetchResults();
+                hideSuggestions();
+            });
+
+            clearButton?.addEventListener('click', () => {
+                if (!searchInput) return;
+                searchInput.value = '';
+                renderSuggestions([], '');
+                fetchResults();
+                searchInput.focus();
+            });
+
+            document.addEventListener('click', (event) => {
+                if (suggestionsBox && !suggestionsBox.contains(event.target) && !searchInput?.contains(event.target)) {
+                    hideSuggestions();
                 }
             });
         });

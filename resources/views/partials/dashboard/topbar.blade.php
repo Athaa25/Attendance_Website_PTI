@@ -7,12 +7,9 @@
 
 <header class="top-header">
     <div class="top-header-left">
-        <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="true" data-sidebar-toggle>
-            <span></span>
-            <span></span>
-            <span></span>
+        <button class="topbar-logo" type="button" aria-label="Toggle sidebar" aria-expanded="true" data-sidebar-toggle>
+            <img src="{{ asset('images/RMDOO_logo.png') }}" alt="RMDOO Logo" class="topbar-logo-img">
         </button>
-        <img src="{{ asset('images/RMDOO_logo.png') }}" alt="RMDOO Logo" class="topbar-logo">
         <div>
             <h1 class="top-header-title">{{ $displayTitle }}</h1>
             <p class="top-header-subtitle">

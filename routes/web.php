@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('manage-users')->name('manage-users.')->group(function () {
         Route::get('/', [EmployeeController::class, 'index'])->name('index');
+        Route::get('/search', [EmployeeController::class, 'search'])->name('search');
         Route::get('/create', [EmployeeController::class, 'create'])->name('create');
         Route::post('/', [EmployeeController::class, 'store'])->name('store');
         Route::get('/{employee}', [EmployeeController::class, 'show'])->name('show');
@@ -38,15 +39,18 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
     Route::get('/departments/create', [DepartmentController::class, 'create'])->name('departments.create');
+    Route::get('/departments/search', [DepartmentController::class, 'search'])->name('departments.search');
     Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
     Route::get('/departments/{position}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
     Route::put('/departments/{position}', [DepartmentController::class, 'update'])->name('departments.update');
     Route::delete('/departments/{position}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
 
     Route::get('/daily-attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('/daily-attendance/search', [AttendanceController::class, 'search'])->name('attendance.search');
     Route::get('/daily-attendance/{attendanceRecord}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
     Route::put('/daily-attendance/{attendanceRecord}', [AttendanceController::class, 'update'])->name('attendance.update');
 
+    Route::get('/sheet-report/search', [ReportController::class, 'search'])->name('reports.sheet.search');
     Route::get('/sheet-report', [ReportController::class, 'index'])->name('reports.sheet');
 
     Route::resource('schedule', ScheduleController::class)->except(['show']);

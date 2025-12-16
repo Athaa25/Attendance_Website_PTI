@@ -16,7 +16,7 @@
             top: 0;
             z-index: 5;
             padding: 16px 0;
-            background: linear-gradient(180deg, #f5f5f5 0%, rgba(245,245,245,0.85) 100%);
+            background: linear-gradient(180deg, #f5f5f5 0%, rgba(245, 245, 245, 0.85) 100%);
             backdrop-filter: blur(6px);
         }
 
@@ -74,9 +74,9 @@
 
         .filter-card {
             background: #fff;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(17, 43, 105, 0.12);
             border-radius: 20px;
-            box-shadow: 0 12px 30px rgba(17, 43, 105, 0.08);
+            box-shadow: 0 12px 30px rgba(17, 43, 105, 0.12);
             padding: 16px 20px 20px;
             display: flex;
             flex-direction: column;
@@ -95,6 +95,8 @@
             font-weight: 700;
             color: var(--blue-primary);
             font-size: 16px;
+            border-left: 4px solid var(--blue-primary);
+            padding-left: 10px;
         }
 
         .filter-toggle {
@@ -158,6 +160,81 @@
         .filter-control select:focus,
         .filter-control input:focus {
             outline: none;
+        }
+
+        .report-search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .report-search-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(17, 43, 105, 0.08);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blue-primary);
+            cursor: pointer;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 18px 48px rgba(17, 43, 105, 0.16);
+            padding: 8px 0;
+            max-height: 320px;
+            overflow-y: auto;
+            display: none;
+            z-index: 10;
+        }
+
+        .search-suggestions.open {
+            display: block;
+        }
+
+        .suggestion-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            text-align: left;
+            padding: 10px 14px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item:focus-visible {
+            background: rgba(17, 43, 105, 0.06);
+        }
+
+        .suggestion-title {
+            font-weight: 600;
+            color: var(--blue-primary);
+        }
+
+        .suggestion-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .suggestion-empty {
+            padding: 10px 14px;
+            color: var(--text-muted);
+            font-size: 13px;
         }
 
         .view-toggle {
@@ -230,18 +307,63 @@
 
         .summary-wrapper {
             border-radius: 24px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(17, 43, 105, 0.12);
             background-color: var(--card-background);
             padding: 20px 24px 24px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            box-shadow: 0 12px 30px rgba(17, 43, 105, 0.08);
         }
 
         .table-scroll {
             width: 100%;
             overflow: auto;
             max-height: calc(100vh - 320px);
+        }
+
+        .matrix-vertical {
+            max-height: calc(100vh - 260px);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .matrix-horizontal {
+            display: block;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+        }
+
+        .matrix-horizontal.table-scroll {
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+        }
+
+        .matrix-vertical::-webkit-scrollbar,
+        .matrix-horizontal::-webkit-scrollbar {
+            height: 10px;
+            width: 10px;
+        }
+
+        .matrix-vertical::-webkit-scrollbar-thumb,
+        .matrix-horizontal::-webkit-scrollbar-thumb {
+            background: rgba(17, 43, 105, 0.25);
+            border-radius: 999px;
+        }
+
+        .matrix-vertical::-webkit-scrollbar-track,
+        .matrix-horizontal::-webkit-scrollbar-track {
+            background: rgba(17, 43, 105, 0.05);
+        }
+
+        .drag-scroll {
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .drag-scroll:active {
+            cursor: grabbing;
         }
 
         .table-scroll table {
@@ -254,6 +376,40 @@
             overflow: hidden;
             background-color: #fff;
             table-layout: fixed;
+            min-width: 1200px;
+        }
+
+        .matrix-table .sticky-col {
+            position: sticky;
+            left: 0;
+            z-index: 3;
+            background: #fff;
+            box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
+        }
+
+        .matrix-table .sticky-col.name-col {
+            left: 70px;
+            width: 150px;
+            min-width: 140px;
+            max-width: 160px;
+            z-index: 3;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .matrix-table .sticky-col.name-col .employee-cell,
+        .matrix-table .sticky-col.name-col .employee-name {
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .matrix-table tbody .sticky-col {
+            z-index: 2;
+            background: #fff;
+        }
+
+        .matrix-table tbody tr:nth-child(even) .sticky-col {
+            background: rgba(17, 43, 105, 0.02);
         }
 
         .matrix-table thead th {
@@ -266,12 +422,19 @@
         }
 
         .matrix-table thead th:first-child,
+        .matrix-table tbody td:first-child {
+            width: 70px;
+            min-width: 70px;
+            max-width: 80px;
+        }
+
+        .matrix-table thead th:first-child,
         .matrix-table thead th:nth-child(2) {
             text-align: left;
         }
 
         .matrix-table thead th:nth-child(n + 3) {
-            min-width: 44px;
+            min-width: 60px;
         }
 
         .matrix-table tbody td,
@@ -289,14 +452,14 @@
 
         .matrix-table tbody td:nth-child(2) {
             text-align: left;
-            min-width: 180px;
+            min-width: 140px;
         }
 
         .matrix-table tbody td.matrix-cell {
             text-align: center;
             font-weight: 600;
             letter-spacing: 0.02em;
-            min-width: 44px;
+            min-width: 60px;
         }
 
         .matrix-table tbody tr:nth-child(even) td {
@@ -392,6 +555,11 @@
             gap: 16px;
         }
 
+        body,
+        .content-wrapper {
+            background-color: #f4f7fb;
+        }
+
         @media print {
             body {
                 margin: 0;
@@ -459,14 +627,6 @@
 @endpush
 
 @section('content')
-    @php
-        $selectedSubjectLabel = $searchName !== ''
-            ? 'Nama mengandung "' . $searchName . '"'
-            : (($selectedDepartmentId ?? null) ? optional($departments->firstWhere('id', $selectedDepartmentId))->name : null);
-        $selectedSubjectLabel = $selectedSubjectLabel
-            ?? (($selectedPositionId ?? null) ? optional($positions->firstWhere('id', $selectedPositionId))->name : null)
-            ?? 'Semua Karyawan';
-    @endphp
     <section class="content-wrapper">
         <div class="report-header">
             <div class="report-title-block">
@@ -489,7 +649,7 @@
                 <button type="button" class="filter-toggle" id="filter-toggle">Tampilkan/Sembunyikan</button>
             </div>
 
-            <form method="GET" class="report-filter-form" id="report-filter-form">
+            <form method="GET" class="report-filter-form" id="report-filter-form" data-report-filter>
                 @if (request()->has('type'))
                     <input type="hidden" name="type" value="{{ request('type') }}">
                 @endif
@@ -497,14 +657,18 @@
 
                 <div class="filter-field filter-field--wide">
                     <span class="filter-label">Nama</span>
-                    <div class="filter-control">
+                    <div class="filter-control report-search-wrapper">
                         <input
                             type="search"
                             name="name"
                             id="employee_name"
                             placeholder="Ketik nama karyawan"
                             value="{{ $searchName }}"
+                            autocomplete="off"
+                            data-report-search
                         >
+                        <button type="button" class="report-search-clear" data-report-clear aria-label="Hapus pencarian">&times;</button>
+                        <div class="search-suggestions" data-report-suggestions></div>
                     </div>
                 </div>
 
@@ -575,164 +739,183 @@
             </form>
         </div>
 
-        @if ($viewMode === 'summary')
-            <div class="report-printable">
-                <div class="report-print-meta">
-                    <span><strong>Periode:</strong> {{ $startDate->translatedFormat('d F Y') }} &ndash; {{ $endDate->translatedFormat('d F Y') }}</span>
-                    <span><strong>Filter:</strong> {{ $selectedSubjectLabel }}</span>
-                </div>
-                <div class="summary-wrapper">
-                    <div class="legend">
-                        <span><span class="legend-badge present">H</span> Hadir</span>
-                        <span><span class="legend-badge late">T</span> Terlambat</span>
-                        <span><span class="legend-badge leave">I</span> Izin</span>
-                        <span><span class="legend-badge sick">S</span> Sakit</span>
-                        <span><span class="legend-badge absent">A</span> Alpa</span>
-                    </div>
-
-                    <div class="table-scroll">
-                        <table class="matrix-table">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama</th>
-                                    @foreach ($dateRange as $date)
-                                        <th>{{ $date->format('j') }}</th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($summaryMatrix as $row)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>
-                                            <div class="employee-cell">
-                                                <span class="employee-name">{{ $row['employee']->full_name }}</span>
-                                                <span class="employee-department">{{ $row['employee']->department->name ?? '—' }}</span>
-                                            </div>
-                                        </td>
-                                        @foreach ($dateRange as $date)
-                                            @php($key = $date->format('Y-m-d'))
-                                            @php($symbol = $row['days'][$key] ?? '')
-                                            <td class="matrix-cell">{{ $symbol }}</td>
-                                        @endforeach
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="{{ count($dateRange) + 2 }}" class="empty-state">
-                                            Tidak ada data absensi pada rentang tanggal ini.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        @else
-            <div class="report-printable">
-                <div class="report-print-meta">
-                    <span><strong>Periode:</strong> {{ $startDate->translatedFormat('d F Y') }} &ndash; {{ $endDate->translatedFormat('d F Y') }}</span>
-                    <span><strong>Filter:</strong> {{ $selectedSubjectLabel }}</span>
-                </div>
-                <div class="table-scroll">
-                    <table class="detail-table">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama</th>
-                                <th>Departemen</th>
-                                <th>Tanggal</th>
-                                <th>Check-In</th>
-                                <th>Check-Out</th>
-                                <th>Keterangan</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($records as $record)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $record->employee->full_name }}</td>
-                                    <td>{{ $record->employee->department->name ?? '—' }}</td>
-                                    <td>{{ $record->attendance_date->translatedFormat('d F Y') }}</td>
-                                    <td>{{ optional($record->check_in_time)->format('H:i') ?? '--:--' }}</td>
-                                    <td>{{ optional($record->check_out_time)->format('H:i') ?? '--:--' }}</td>
-                                    <td>{{ $record->notes ?? '—' }}</td>
-                                    <td>
-                                        <span class="status-badge status-{{ $record->status }}">{{ $statusLabels[$record->status] ?? $record->status_label }}</span>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="empty-state">
-                                        Tidak ada data absensi pada rentang tanggal ini.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endif
+        <div data-report-results>
+            @include('reports.partials.sheet-content')
+        </div>
     </section>
 @endsection
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', () => {
             const exportButton = document.getElementById('export-pdf-button');
-
-            if (exportButton) {
-                exportButton.addEventListener('click', function () {
-                    window.print();
-                });
-            }
-
-            const form = document.getElementById('report-filter-form');
+            const form = document.querySelector('[data-report-filter]');
             const viewInput = document.getElementById('view-mode');
             const viewButtons = document.querySelectorAll('[data-view-option]');
-            const autoInputs = form ? form.querySelectorAll('input, select') : [];
+            const searchInput = document.querySelector('[data-report-search]');
+            const suggestionsBox = document.querySelector('[data-report-suggestions]');
+            const clearButton = document.querySelector('[data-report-clear]');
+            const resultsContainer = document.querySelector('[data-report-results]');
             const filterCard = document.getElementById('filter-card');
             const filterToggle = document.getElementById('filter-toggle');
 
-            if (!form || !viewInput || !viewButtons.length) {
+            if (exportButton) {
+                exportButton.addEventListener('click', () => window.print());
+            }
+
+            if (!form || !resultsContainer || !viewInput || !viewButtons.length) {
                 return;
             }
 
-            viewButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    const targetView = button.getAttribute('data-view-option');
+            let controller = null;
+            let debounceId = null;
+            const defaultHtml = resultsContainer.innerHTML;
 
-                    if (!targetView) {
+            const hideSuggestions = () => suggestionsBox?.classList.remove('open');
+
+            const renderSuggestions = (items, term) => {
+                if (!suggestionsBox) return;
+                suggestionsBox.innerHTML = '';
+
+                if (!term) {
+                    suggestionsBox.dataset.hasContent = 'false';
+                    hideSuggestions();
+                    return;
+                }
+
+                if (!items || items.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'suggestion-empty';
+                    empty.textContent = `Tidak ada rekomendasi untuk "${term}".`;
+                    suggestionsBox.appendChild(empty);
+                    suggestionsBox.dataset.hasContent = 'true';
+                    suggestionsBox.classList.add('open');
+                    return;
+                }
+
+                items.forEach((item) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'suggestion-item';
+                    button.dataset.term = item.term || item.label || '';
+
+                    const title = document.createElement('span');
+                    title.className = 'suggestion-title';
+                    title.textContent = item.label || 'Tanpa Nama';
+
+                    const subtitle = document.createElement('span');
+                    subtitle.className = 'suggestion-subtitle';
+                    subtitle.textContent = item.department || '';
+
+                    button.appendChild(title);
+                    button.appendChild(subtitle);
+                    suggestionsBox.appendChild(button);
+                });
+
+                suggestionsBox.dataset.hasContent = 'true';
+                suggestionsBox.classList.add('open');
+            };
+
+            const buildUrl = () => {
+                const data = new FormData(form);
+                const url = new URL('{{ route('reports.sheet.search') }}', window.location.origin);
+                data.forEach((value, key) => url.searchParams.set(key, value.toString()));
+                return url;
+            };
+
+            const fetchResults = () => {
+                const url = buildUrl();
+                if (controller) controller.abort();
+                controller = new AbortController();
+
+                fetch(url.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    signal: controller.signal,
+                })
+                    .then((response) => (response.ok ? response.json() : Promise.reject(response)))
+                    .then((payload) => {
+                        if (typeof payload?.html === 'string') {
+                            resultsContainer.innerHTML = payload.html;
+                        }
+                        renderSuggestions(payload?.suggestions || [], searchInput?.value.trim() || '');
+                    })
+                    .catch((error) => {
+                        if (error.name === 'AbortError') return;
+                        console.error('Gagal memuat laporan', error);
+                    });
+            };
+
+            const handleSearchInput = () => {
+                clearTimeout(debounceId);
+                debounceId = setTimeout(() => {
+                    if (searchInput && searchInput.value.trim() === '') {
+                        renderSuggestions([], '');
+                        fetchResults();
                         return;
                     }
+                    fetchResults();
+                }, 220);
+            };
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                fetchResults();
+                hideSuggestions();
+            });
+
+            form.addEventListener('change', (event) => {
+                if (event.target?.name && event.target.name !== 'name') {
+                    fetchResults();
+                }
+            });
+
+            viewButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    const targetView = button.getAttribute('data-view-option');
+                    if (!targetView) return;
 
                     viewInput.value = targetView;
-
-                    viewButtons.forEach(function (btn) {
-                        btn.classList.toggle('active', btn === button);
-                    });
-
-                    form.submit();
+                    viewButtons.forEach((btn) => btn.classList.toggle('active', btn === button));
+                    fetchResults();
                 });
             });
 
-            const debounce = (fn, delay = 400) => {
-                let timer;
-                return (...args) => {
-                    clearTimeout(timer);
-                    timer = setTimeout(() => fn(...args), delay);
-                };
-            };
+            searchInput?.addEventListener('input', handleSearchInput);
+            searchInput?.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === 'Search') {
+                    event.preventDefault();
+                    fetchResults();
+                    hideSuggestions();
+                }
+            });
+            searchInput?.addEventListener('focus', () => {
+                if (searchInput.value.trim() !== '' && suggestionsBox?.dataset.hasContent === 'true') {
+                    suggestionsBox.classList.add('open');
+                }
+            });
+            searchInput?.addEventListener('search', fetchResults);
 
-            const submitForm = debounce(() => form.requestSubmit());
+            suggestionsBox?.addEventListener('click', (event) => {
+                const target = event.target.closest('.suggestion-item');
+                if (!target || !searchInput) return;
+                searchInput.value = target.dataset.term || target.textContent.trim();
+                fetchResults();
+                hideSuggestions();
+            });
 
-            autoInputs.forEach((el) => {
-                if (el.id === 'view-mode') return;
-                el.addEventListener('change', submitForm);
-                if (el.type === 'search' || el.type === 'text') {
-                    el.addEventListener('input', submitForm);
+            clearButton?.addEventListener('click', () => {
+                if (!searchInput) return;
+                searchInput.value = '';
+                renderSuggestions([], '');
+                fetchResults();
+                searchInput.focus();
+            });
+
+            document.addEventListener('click', (event) => {
+                if (suggestionsBox && !suggestionsBox.contains(event.target) && !searchInput?.contains(event.target)) {
+                    hideSuggestions();
                 }
             });
 
@@ -742,6 +925,40 @@
                     filterCard.setAttribute('data-collapsed', (!isCollapsed).toString());
                 });
             }
+
+            const enableDragScroll = (container) => {
+                if (!container) return;
+                let isDown = false;
+                let startX = 0;
+                let scrollLeft = 0;
+
+                container.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    container.classList.add('dragging');
+                    startX = e.pageX - container.offsetLeft;
+                    scrollLeft = container.scrollLeft;
+                });
+
+                container.addEventListener('mouseleave', () => {
+                    isDown = false;
+                    container.classList.remove('dragging');
+                });
+
+                container.addEventListener('mouseup', () => {
+                    isDown = false;
+                    container.classList.remove('dragging');
+                });
+
+                container.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - container.offsetLeft;
+                    const walk = (x - startX) * -1;
+                    container.scrollLeft = scrollLeft + walk;
+                });
+            };
+
+            document.querySelectorAll('[data-drag-scroll]').forEach(enableDragScroll);
         });
     </script>
 @endpush
