@@ -1,3 +1,6 @@
 [submodule "integrations/Backend-HadirIn"]
 	path = integrations/Backend-HadirIn
 	url = https://github.com/itsDhaxy/Backend-HadirIn.git
+[submodule "integrations/HadirIn"]
+	path = integrations/HadirIn
+	url = https://github.com/dindamd/HadirIn.git
