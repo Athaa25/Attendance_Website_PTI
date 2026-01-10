@@ -316,6 +316,37 @@
             box-shadow: 0 12px 30px rgba(17, 43, 105, 0.08);
         }
 
+        .summary-block {
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 16px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .summary-block-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .summary-block-title {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--blue-primary);
+        }
+
+        .summary-block-period {
+            margin: 4px 0 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
         .table-scroll {
             width: 100%;
             overflow: auto;
@@ -838,6 +869,7 @@
                     .then((payload) => {
                         if (typeof payload?.html === 'string') {
                             resultsContainer.innerHTML = payload.html;
+                            bindDragScroll();
                         }
                         renderSuggestions(payload?.suggestions || [], searchInput?.value.trim() || '');
                     })
@@ -958,7 +990,17 @@
                 });
             };
 
-            document.querySelectorAll('[data-drag-scroll]').forEach(enableDragScroll);
+            const bindDragScroll = () => {
+                document.querySelectorAll('[data-drag-scroll]').forEach(enableDragScroll);
+            };
+
+            bindDragScroll();
+
+            const AUTO_REFRESH_MS = 15000;
+            setInterval(() => {
+                if (document.hidden) return;
+                fetchResults();
+            }, AUTO_REFRESH_MS);
         });
     </script>
 @endpush

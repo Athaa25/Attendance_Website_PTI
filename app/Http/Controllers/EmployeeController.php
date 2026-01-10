@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class EmployeeController extends Controller
 {
@@ -185,6 +186,7 @@ class EmployeeController extends Controller
     public function show(Employee $employee)
     {
         $employee->load(['department', 'position', 'schedule', 'user']);
+        $employee->setAttribute('face_photos', $this->getFacePhotos($employee->full_name));
 
         return view('employees.show', [
             'employee' => $employee,
@@ -277,6 +279,78 @@ class EmployeeController extends Controller
             ->with('status', 'Data pegawai berhasil diperbarui.');
     }
 
+    public function deleteFacePhotos(Request $request, Employee $employee)
+    {
+        $validated = $request->validate([
+            'photos' => ['required', 'array', 'min:1'],
+            'photos.*' => ['string'],
+        ]);
+
+        $slug = $this->slugPerson($employee->full_name);
+        $dir = public_path('face-enrollments/' . $slug);
+
+        if (! is_dir($dir)) {
+            return back()->withErrors(['face_photos' => 'Folder foto wajah tidak ditemukan.']);
+        }
+
+        $existingFiles = $this->listFacePhotoFiles($dir);
+        if (empty($existingFiles)) {
+            return back()->withErrors(['face_photos' => 'Belum ada foto wajah tersimpan.']);
+        }
+
+        $selected = array_unique(array_map('basename', $validated['photos']));
+        $selected = array_values(array_filter($selected, fn ($name) => $name !== ''));
+        $selected = array_values(array_intersect($existingFiles, $selected));
+
+        if (empty($selected)) {
+            return back()->withErrors(['face_photos' => 'Foto yang dipilih tidak ditemukan.']);
+        }
+
+        $fastapiBase = trim((string) config('attendance.fastapi_url', env('FASTAPI_URL', '')));
+        if ($fastapiBase === '') {
+            return back()->withErrors(['face_photos' => 'FASTAPI_URL belum diset.']);
+        }
+
+        $deleteResult = $this->deleteFaceEmbeddings($employee->full_name, $fastapiBase);
+        if (! ($deleteResult['success'] ?? false)) {
+            return back()->withErrors(['face_photos' => $deleteResult['error'] ?? 'Gagal menghapus embedding wajah.']);
+        }
+
+        $deletedCount = 0;
+        foreach ($selected as $file) {
+            $path = $dir . DIRECTORY_SEPARATOR . $file;
+            if (is_file($path) && @unlink($path)) {
+                $deletedCount++;
+            }
+        }
+
+        $remainingFiles = $this->listFacePhotoFiles($dir);
+        if (empty($remainingFiles)) {
+            @rmdir($dir);
+        }
+
+        $errors = [];
+        foreach ($remainingFiles as $file) {
+            $path = $dir . DIRECTORY_SEPARATOR . $file;
+            $result = $this->enrollFacePhoto($employee->full_name, $path, $fastapiBase);
+            if (! ($result['success'] ?? false)) {
+                $errors[] = $result['error'] ?? 'Gagal enroll ulang foto wajah.';
+            }
+        }
+
+        $status = $deletedCount > 0
+            ? "Foto wajah terhapus: {$deletedCount}."
+            : 'Tidak ada foto yang terhapus.';
+
+        if (! empty($errors)) {
+            return back()
+                ->withErrors(['face_photos' => 'Sebagian embedding gagal diperbarui: ' . implode(' | ', array_unique($errors))])
+                ->with('status', $status);
+        }
+
+        return back()->with('status', $status);
+    }
+
     public function destroy(Employee $employee)
     {
         $employeeName = $employee->full_name;
@@ -303,6 +377,153 @@ class EmployeeController extends Controller
             ->get()
             ->pluck('name', 'slug')
             ->toArray();
+    }
+
+    private function attachFacePhotos($employees): void
+    {
+        foreach ($employees as $employee) {
+            $employee->setAttribute('face_photos', $this->getFacePhotos($employee->full_name));
+        }
+    }
+
+    private function getFacePhotos(string $name): array
+    {
+        $slug = $this->slugPerson($name);
+        $dir = public_path('face-enrollments/' . $slug);
+
+        $files = $this->listFacePhotoFiles($dir);
+        if (empty($files)) {
+            return [];
+        }
+
+        return array_map(function (string $file) use ($slug) {
+            return [
+                'name' => $file,
+                'url' => asset('face-enrollments/' . $slug . '/' . $file),
+            ];
+        }, $files);
+    }
+
+    private function listFacePhotoFiles(string $dir): array
+    {
+        if (! is_dir($dir)) {
+            return [];
+        }
+
+        $files = [];
+        foreach (scandir($dir) as $file) {
+            if ($file === '.' || $file === '..' || str_starts_with($file, '.')) {
+                continue;
+            }
+
+            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            if (! in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+                continue;
+            }
+
+            $files[] = $file;
+        }
+
+        sort($files);
+
+        return $files;
+    }
+
+    private function slugPerson(string $name): string
+    {
+        $slug = strtolower(trim($name));
+        $slug = preg_replace('/[^a-z0-9\-_. ]+/', '', $slug);
+        $slug = preg_replace('/\s+/', '_', $slug);
+
+        return $slug !== '' ? $slug : 'user_' . time();
+    }
+
+    private function deleteFaceEmbeddings(string $name, string $fastapiBase): array
+    {
+        $fastapiUrl = rtrim($fastapiBase, '/') . '/delete-embeddings';
+
+        try {
+            $resp = Http::withHeaders($this->fastApiHeaders($fastapiBase))
+                ->connectTimeout(5)
+                ->timeout(20)
+                ->post($fastapiUrl, [
+                    'name' => $name,
+                ]);
+        } catch (\Throwable $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+
+        $json = $resp->json();
+        if (! $resp->successful() || !($json['success'] ?? false)) {
+            return [
+                'success' => false,
+                'error' => $json['message'] ?? 'FastAPI gagal menghapus embedding.',
+            ];
+        }
+
+        return ['success' => true];
+    }
+
+    private function enrollFacePhoto(string $name, string $path, string $fastapiBase): array
+    {
+        if (! is_file($path)) {
+            return ['success' => false, 'error' => basename($path) . ': file tidak ditemukan.'];
+        }
+
+        $fastapiUrl = rtrim($fastapiBase, '/') . '/enroll';
+        $headers = $this->fastApiHeaders($fastapiBase);
+        $fileName = basename($path);
+        $stream = fopen($path, 'r');
+        if ($stream === false) {
+            return ['success' => false, 'error' => "{$fileName}: gagal membaca file."];
+        }
+
+        $mime = function_exists('mime_content_type') ? mime_content_type($path) : null;
+        $mime = $mime ?: 'image/jpeg';
+
+        try {
+            $resp = Http::withHeaders($headers)
+                ->connectTimeout(5)
+                ->timeout(45)
+                ->attach('image', $stream, $fileName, [
+                    'Content-Type' => $mime,
+                ])
+                ->post($fastapiUrl, [
+                    'name' => $name,
+                ]);
+        } catch (\Throwable $e) {
+            return ['success' => false, 'error' => "{$fileName}: {$e->getMessage()}"];
+        } finally {
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }
+
+        $json = $resp->json();
+        if (! is_array($json)) {
+            $json = [];
+        }
+        if (! $resp->successful() || !($json['success'] ?? false)) {
+            $raw = trim((string) $resp->body());
+            $raw = $raw !== '' ? mb_substr($raw, 0, 200) : null;
+            return [
+                'success' => false,
+                'error' => "{$fileName}: " . ($json['message']
+                    ?? ($raw ? "FastAPI error: {$raw}" : 'Gagal enroll ulang.')),
+            ];
+        }
+
+        return ['success' => true];
+    }
+
+    private function fastApiHeaders(string $fastapiBase): array
+    {
+        $host = parse_url($fastapiBase, PHP_URL_HOST);
+        if (is_string($host) && str_contains($host, 'ngrok')) {
+            return ['ngrok-skip-browser-warning' => 'true'];
+        }
+
+        return [];
     }
 
     private function mapJenisKelaminToGender(?int $value): ?string

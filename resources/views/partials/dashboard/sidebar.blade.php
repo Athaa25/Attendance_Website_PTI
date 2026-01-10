@@ -34,6 +34,10 @@
                 <img src="{{ asset('images/daily-attendance-icon.png') }}" alt="Daily Attendance Icon">
                 Daily Attendance
             </a>
+            <a class="sidebar-nav-item {{ request()->routeIs('face.enroll*') ? 'active' : '' }}" href="{{ route('face.enroll') }}">
+                <img src="{{ asset('images/manage-user-icon.png') }}" alt="Face Enrollment Icon">
+                Face Enrollment
+            </a>
             <a class="sidebar-nav-item {{ request()->routeIs('reports.sheet') ? 'active' : '' }}" href="{{ route('reports.sheet') }}">
                 <img src="{{ asset('images/sheet-report-icon.png') }}" alt="Sheet Report Icon">
                 Sheet Report

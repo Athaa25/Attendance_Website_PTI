@@ -13,39 +13,66 @@
             </div>
         </div>
 
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Waktu</th>
-                        <th>Pengguna</th>
-                        <th>Aksi</th>
-                        <th>Target</th>
-                        <th>Deskripsi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($logs as $log)
-                        <tr>
-                            <td>{{ $log->created_at->translatedFormat('d M Y H:i') }}</td>
-                            <td>{{ $log->actor_name }}</td>
-                            <td>{{ ucfirst($log->action) }}</td>
-                            <td>{{ $log->entity_label }}</td>
-                            <td>{{ $log->description ?? '-' }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                                Belum ada aktivitas.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
-            {{ $logs->links() }}
+        <div data-activity-results>
+            @include('activity-logs.partials.table', ['logs' => $logs])
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultsContainer = document.querySelector('[data-activity-results]');
+            if (!resultsContainer) return;
+
+            let controller = null;
+
+            const fetchResults = (url = null) => {
+                const targetUrl = url
+                    ? new URL(url, window.location.origin)
+                    : new URL('{{ route('activity-logs.search') }}', window.location.origin);
+
+                if (!url) {
+                    const current = new URL(window.location.href);
+                    current.searchParams.forEach((value, key) => targetUrl.searchParams.set(key, value));
+                }
+
+                if (controller) controller.abort();
+                controller = new AbortController();
+
+                fetch(targetUrl.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    signal: controller.signal,
+                })
+                    .then((response) => (response.ok ? response.json() : Promise.reject(response)))
+                    .then((payload) => {
+                        if (typeof payload?.html === 'string') {
+                            resultsContainer.innerHTML = payload.html;
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.name === 'AbortError') return;
+                        console.error('Gagal memuat log aktivitas', error);
+                    });
+            };
+
+            resultsContainer.addEventListener('click', (event) => {
+                const link = event.target.closest('a');
+                if (!link) return;
+                const href = link.getAttribute('href');
+                if (!href || !href.includes('page=')) return;
+                event.preventDefault();
+                fetchResults(href);
+                window.history.replaceState({}, '', link.href);
+            });
+
+            const AUTO_REFRESH_MS = 10000;
+            setInterval(() => {
+                if (document.hidden) return;
+                fetchResults();
+            }, AUTO_REFRESH_MS);
+        });
+    </script>
+@endpush

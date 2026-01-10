@@ -55,6 +55,8 @@
             align-items: center;
         }
 
+        
+
         .table-actions form {
             margin: 0;
         }

@@ -91,12 +91,22 @@ cd integrations/Backend-HadirIn/Cloudflared
 
 | Method | Endpoint                         | Deskripsi |
 |--------|----------------------------------|-----------|
+| POST   | `/api/face-enroll`               | Enroll wajah baru ke FastAPI (buat embedding .npy). |
+| POST   | `/api/face-reload`               | Reload embeddings dari folder faces/ (bulk import). |
 | POST   | `/api/face-verify`               | Flutter → Laravel → FastAPI → simpan absensi sekaligus cek IN/OUT otomatis. |
 | POST   | `/api/attendance`                | Endpoint fallback untuk menerima payload JSON dari FastAPI. |
 | GET    | `/api/admin/attendance/today`    | Rekap absensi hari ini (count on-time/late/absent). |
 | POST   | `/api/admin/attendance/update`   | Admin override status/ alasan ketidakhadiran. |
 
 Selain API, halaman monitoring cepat tersedia di `/absensi` yang menampilkan isi tabel `absensis` terbaru.
+
+---
+
+## Face Enrollment (Web Admin)
+
+Halaman admin untuk enroll wajah tersedia di `/face-enrollment` (butuh login). Di sana tersedia:
+- Form upload wajah untuk membuat embedding via FastAPI.
+- Tombol "Reload Faces" untuk scan ulang folder `integrations/Backend-HadirIn/face_service/faces`.
 
 ---
 

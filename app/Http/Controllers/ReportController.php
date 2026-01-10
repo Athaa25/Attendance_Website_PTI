@@ -169,6 +169,30 @@ class ReportController extends Controller
             return false;
         })->values();
 
+        $summaryMonths = collect($dateRange)
+            ->groupBy(fn ($date) => $date->format('Y-m'))
+            ->map(function ($dates) use ($summaryMatrix) {
+                $dates = $dates->values();
+                $keys = $dates->map(fn ($date) => $date->format('Y-m-d'));
+
+                $rows = $summaryMatrix->filter(function ($row) use ($keys) {
+                    foreach ($keys as $key) {
+                        if (($row['days'][$key] ?? '') !== '') {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                })->values();
+
+                return [
+                    'label' => $dates->first()->translatedFormat('F Y'),
+                    'dates' => $dates,
+                    'rows' => $rows,
+                ];
+            })
+            ->values();
+
         $selectedDepartmentName = optional($employees->firstWhere('department_id', $selectedDepartmentId))->department->name ?? null;
         $selectedPositionName = optional($employees->firstWhere('position_id', $selectedPositionId))->position->name ?? null;
 
@@ -182,6 +206,7 @@ class ReportController extends Controller
             'positions' => Position::orderBy('name')->get(),
             'records' => $records,
             'summaryMatrix' => $summaryMatrix,
+            'summaryMonths' => $summaryMonths,
             'dateRange' => $dateRange,
             'viewMode' => $viewMode,
             'searchName' => $searchName,

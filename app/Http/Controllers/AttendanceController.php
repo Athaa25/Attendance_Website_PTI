@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Services\ActivityLogger;
+use App\Services\AttendanceSyncService;
 
 class AttendanceController extends Controller
 {
@@ -74,6 +75,7 @@ class AttendanceController extends Controller
             $attendanceRecord,
             "Absensi {$employee->full_name} tanggal {$attendanceRecord->attendance_date->format('d M Y')} ditambahkan"
         );
+        $this->syncAbsensiRecord($attendanceRecord);
 
         return redirect()
             ->route('attendance.index', ['date' => $attendanceRecord->attendance_date->format('Y-m-d')])
@@ -114,6 +116,7 @@ class AttendanceController extends Controller
             $attendanceRecord,
             "Absensi {$employee->full_name} tanggal {$attendanceRecord->attendance_date->format('d M Y')} diperbarui"
         );
+        $this->syncAbsensiRecord($attendanceRecord);
 
         return redirect()
             ->route('attendance.index', ['date' => $attendanceRecord->attendance_date->format('Y-m-d')])
@@ -352,5 +355,13 @@ class AttendanceController extends Controller
             ],
             'statusOptions' => $statusOptions,
         ];
+    }
+
+    private function syncAbsensiRecord(AttendanceRecord $attendanceRecord): void
+    {
+        try {
+            app(AttendanceSyncService::class)->syncAbsensiFromAttendanceRecord($attendanceRecord);
+        } catch (\Throwable $e) {
+        }
     }
 }

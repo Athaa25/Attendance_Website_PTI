@@ -6,11 +6,26 @@ use App\Models\AttendanceRecord;
 use App\Models\Employee;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
+    {
+        return view('dashboard', $this->buildDashboardPayload());
+    }
+
+    public function metrics(Request $request): JsonResponse
+    {
+        $payload = $this->buildDashboardPayload();
+
+        return response()->json([
+            'html' => view('dashboard.partials.metrics', $payload)->render(),
+        ]);
+    }
+
+    private function buildDashboardPayload(): array
     {
         Carbon::setLocale(config('app.locale'));
         $now = now();
@@ -61,7 +76,7 @@ class DashboardController extends Controller
             ]);
         }
 
-        return view('dashboard', [
+        return [
             'metrics' => [
                 'total_absence' => $totalRecords,
                 'late_count' => $lateCount,
@@ -75,6 +90,6 @@ class DashboardController extends Controller
             'monthlyChart' => $chartData,
             'now' => $now,
             'statusLabels' => AttendanceRecord::statusLabels(),
-        ]);
+        ];
     }
 }

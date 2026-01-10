@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Absensi;
+use App\Services\AttendanceSyncService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -198,6 +200,14 @@ class AdminAttendanceController extends Controller
         }
 
         DB::table('absensis')->where(['name' => $name, 'day' => $today])->update($update);
+
+        $row = Absensi::query()->where(['name' => $name, 'day' => $today])->first();
+        if ($row) {
+            try {
+                app(AttendanceSyncService::class)->syncAttendanceRecordFromAbsensi($row);
+            } catch (\Throwable $e) {
+            }
+        }
 
         return response()->json(['success' => true]);
     }

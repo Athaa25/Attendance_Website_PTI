@@ -22,45 +22,61 @@
                 <span><span class="legend-badge sick">S</span> Sakit</span>
                 <span><span class="legend-badge absent">A</span> Alpa</span>
             </div>
+            @forelse ($summaryMonths as $month)
+                <div class="summary-block">
+                    <div class="summary-block-header">
+                        <div>
+                            <h3 class="summary-block-title">Bulan {{ $month['label'] }}</h3>
+                            <p class="summary-block-period">
+                                Periode {{ $month['dates']->first()->translatedFormat('d F Y') }}
+                                &ndash; {{ $month['dates']->last()->translatedFormat('d F Y') }}
+                            </p>
+                        </div>
+                        <span class="filter-badge">Total hari: {{ $month['dates']->count() }}</span>
+                    </div>
 
-            <div class="matrix-vertical">
-                <div class="table-scroll matrix-horizontal drag-scroll" data-drag-scroll>
-                    <table class="matrix-table">
-                        <thead>
-                            <tr>
-                                <th class="sticky-col" style="width: 70px;">No</th>
-                                <th class="sticky-col name-col">Nama</th>
-                                @foreach ($dateRange as $date)
-                                    <th>{{ $date->format('j') }}</th>
-                                @endforeach
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($summaryMatrix as $row)
-                                <tr>
-                                    <td class="sticky-col">{{ $loop->iteration }}</td>
-                                    <td class="sticky-col name-col">
-                                        <div class="employee-cell">
-                                            <span class="employee-name">{{ $row['employee']->full_name }}</span>
-                                        </div>
-                                    </td>
-                                    @foreach ($dateRange as $date)
-                                        @php($key = $date->format('Y-m-d'))
-                                        @php($symbol = $row['days'][$key] ?? '')
-                                        <td class="matrix-cell">{{ $symbol }}</td>
-                                    @endforeach
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="{{ count($dateRange) + 2 }}" class="empty-state">
-                                        Tidak ada data absensi pada rentang tanggal ini.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                    <div class="matrix-vertical">
+                        <div class="table-scroll matrix-horizontal drag-scroll" data-drag-scroll>
+                            <table class="matrix-table">
+                                <thead>
+                                    <tr>
+                                        <th class="sticky-col" style="width: 70px;">No</th>
+                                        <th class="sticky-col name-col">Nama</th>
+                                        @foreach ($month['dates'] as $date)
+                                            <th>{{ $date->format('j') }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($month['rows'] as $row)
+                                        <tr>
+                                            <td class="sticky-col">{{ $loop->iteration }}</td>
+                                            <td class="sticky-col name-col">
+                                                <div class="employee-cell">
+                                                    <span class="employee-name">{{ $row['employee']->full_name }}</span>
+                                                </div>
+                                            </td>
+                                            @foreach ($month['dates'] as $date)
+                                                @php($key = $date->format('Y-m-d'))
+                                                @php($symbol = $row['days'][$key] ?? '')
+                                                <td class="matrix-cell">{{ $symbol }}</td>
+                                            @endforeach
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="{{ $month['dates']->count() + 2 }}" class="empty-state">
+                                                Tidak ada data absensi pada periode ini.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @empty
+                <div class="empty-state">Tidak ada data absensi pada rentang tanggal ini.</div>
+            @endforelse
         </div>
     </div>
 @else

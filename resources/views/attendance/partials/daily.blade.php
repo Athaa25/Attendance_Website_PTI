@@ -365,6 +365,14 @@
                     });
             };
 
+            const AUTO_REFRESH_MS = 10000;
+            const startAutoRefresh = () => {
+                setInterval(() => {
+                    if (document.hidden) return;
+                    fetchResults();
+                }, AUTO_REFRESH_MS);
+            };
+
             const handleInput = () => {
                 clearTimeout(debounceId);
                 debounceId = setTimeout(() => {
@@ -425,6 +433,8 @@
                     hideSuggestions();
                 }
             });
+
+            startAutoRefresh();
         });
     </script>
 @endif
