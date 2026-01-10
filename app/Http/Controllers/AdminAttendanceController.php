@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absensi;
+use App\Models\Employee;
 use App\Services\AttendanceSyncService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class AdminAttendanceController extends Controller
 {
@@ -19,7 +19,7 @@ class AdminAttendanceController extends Controller
         $today = now()->toDateString();
 
         // Ambil SEMUA baris absensi HARI INI saja
-        $rows = DB::table('absensis')
+        $rows = Absensi::query()
             ->where('day', $today)
             ->get(['name', 'check_in_time', 'check_in_status', 'check_out_time', 'check_out_status', 'meta']);
 
@@ -43,19 +43,24 @@ class AdminAttendanceController extends Controller
 
         $items = [];
         $count = ['on_time' => 0, 'late' => 0, 'absent' => 0];
+        $syncService = app(AttendanceSyncService::class);
 
         foreach ($allNames as $n) {
             $r = $map[$n];
+            $employeeId = $syncService->resolveEmployeeFromAbsensi($r)?->id;
 
-            // Jika admin isi reason_name → tampilkan Absent
+            // Jika admin isi reason_name, tampilkan Absent
             $reason = $r->meta['reason_name'] ?? '';
 
             if ($reason) {
                 $items[] = [
+                    'employee_id' => $employeeId,
                     'name' => $n,
                     'time' => '-',
                     'status' => 'Absent',
                     'reason' => $reason,
+                    'check_in_time' => $r->check_in_time,
+                    'check_out_time' => $r->check_out_time,
                 ];
                 $count['absent']++;
                 continue;
@@ -72,7 +77,15 @@ class AdminAttendanceController extends Controller
             else
                 $count['on_time']++; // fallback
 
-            $items[] = ['name' => $n, 'time' => $time, 'status' => $status, 'reason' => ''];
+            $items[] = [
+                'employee_id' => $employeeId,
+                'name' => $n,
+                'time' => $time,
+                'status' => $status,
+                'reason' => '',
+                'check_in_time' => $r->check_in_time,
+                'check_out_time' => $r->check_out_time,
+            ];
         }
 
         return response()->json([
@@ -85,21 +98,29 @@ class AdminAttendanceController extends Controller
 
     /**
      * POST /api/admin/attendance/update
-     * Body: { name: string, status: 'On Time'|'Late'|'Absent', reason?: string, time?: 'HH:MM' }
-     * - On Time/Late → set check_in_time/check_in_status; clear meta.reason_name
-     * - Absent       → simpan meta.reason_name dan kosongkan jam
+     * Body: { name?: string, employee_id?: int, status: 'On Time'|'Late'|'Absent', reason?: string, time?: 'HH:MM', phase?: 'IN'|'OUT', auto?: bool }
+     * - On Time/Late -> set check_in_time/check_in_status; clear meta.reason_name
+     * - Absent       -> simpan meta.reason_name dan kosongkan jam
      */
     public function updateToday(Request $r)
     {
         $name = trim((string) $r->input('name', ''));
+        $employeeId = $r->input('employee_id');
         $status = trim((string) $r->input('status', '')); // 'On Time'|'Late'|'Absent' (boleh kosong jika auto)
         $reason = trim((string) $r->input('reason', ''));
         $time = trim((string) $r->input('time', ''));   // 'HH:MM' atau 'HH:MM:SS'
         $phase = strtoupper(trim((string) $r->input('phase', 'IN'))); // 'IN'|'OUT'
         $auto = filter_var($r->input('auto', false), FILTER_VALIDATE_BOOLEAN); // NEW: auto derive status
 
-        if ($name === '') {
-            return response()->json(['success' => false, 'message' => 'name wajib diisi'], 422);
+        $employee = null;
+        if ($employeeId) {
+            $employee = Employee::query()->find((int) $employeeId);
+            if ($employee && $name === '') {
+                $name = $employee->full_name;
+            }
+        }
+        if ($name === '' && ! $employee) {
+            return response()->json(['success' => false, 'message' => 'name atau employee_id wajib diisi'], 422);
         }
         if (!in_array($phase, ['IN', 'OUT'], true)) {
             return response()->json(['success' => false, 'message' => 'phase invalid'], 422);
@@ -125,14 +146,12 @@ class AdminAttendanceController extends Controller
         };
 
         // cari/buat baris hari ini
-        $row = DB::table('absensis')->where(['name' => $name, 'day' => $today])->first();
-        if (!$row) {
-            DB::table('absensis')->insert([
-                'name' => $name,
-                'day' => $today,
-                'time' => now(),
-            ]);
-            $row = DB::table('absensis')->where(['name' => $name, 'day' => $today])->first();
+        $row = Absensi::query()->where(['name' => $name, 'day' => $today])->first();
+        if (! $row) {
+            $row = new Absensi();
+            $row->name = $name;
+            $row->day = $today;
+            $row->time = now();
         }
 
         // parse meta existing
@@ -144,6 +163,15 @@ class AdminAttendanceController extends Controller
             }
         } elseif (is_array($row->meta)) {
             $meta = $row->meta;
+        } elseif (is_object($row->meta)) {
+            $meta = (array) $row->meta;
+        }
+
+        if (! $employee && ! empty($meta['employee_id'])) {
+            $employee = Employee::query()->find((int) $meta['employee_id']);
+        }
+        if ($employee) {
+            $meta['employee_id'] = $employee->id;
         }
 
         // hitung cut times (pakai tanggal hari ini)
@@ -170,7 +198,6 @@ class AdminAttendanceController extends Controller
             $update['check_in_status'] = null;
             $update['check_out_time'] = null;
             $update['check_out_status'] = null;
-            $update['meta'] = json_encode($meta);
 
         } else {
             // clear reason Absent jika ada
@@ -196,15 +223,18 @@ class AdminAttendanceController extends Controller
                     : ($status ?: 'On Time');
             }
 
-            $update['meta'] = json_encode($meta);
         }
 
-        DB::table('absensis')->where(['name' => $name, 'day' => $today])->update($update);
+        foreach ($update as $key => $value) {
+            $row->{$key} = $value;
+        }
+        $row->meta = $meta ? json_encode($meta) : null;
+        $row->save();
 
-        $row = Absensi::query()->where(['name' => $name, 'day' => $today])->first();
+        $row->refresh();
         if ($row) {
             try {
-                app(AttendanceSyncService::class)->syncAttendanceRecordFromAbsensi($row);
+                app(AttendanceSyncService::class)->syncAttendanceRecordFromAbsensi($row, $employee);
             } catch (\Throwable $e) {
             }
         }
@@ -212,3 +242,5 @@ class AdminAttendanceController extends Controller
         return response()->json(['success' => true]);
     }
 }
+
+

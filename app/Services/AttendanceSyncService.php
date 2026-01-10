@@ -18,18 +18,13 @@ class AttendanceSyncService
             return null;
         }
 
-        $name = trim((string) $absensi->name);
-        if ($name === '') {
-            return null;
-        }
-
         $day = $this->resolveAbsensiDay($absensi);
         if (! $day) {
             return null;
         }
 
         if (! $employee) {
-            $employee = $this->resolveEmployeeByName($name);
+            $employee = $this->resolveEmployeeFromAbsensi($absensi);
         }
         if (! $employee) {
             return null;
@@ -89,6 +84,12 @@ class AttendanceSyncService
         }
 
         $payload = $this->mapAttendanceToAbsensi($record);
+        $meta = $payload['meta'] ?? [];
+        if (! is_array($meta)) {
+            $meta = [];
+        }
+        $meta['employee_id'] = $employee->id;
+        $payload['meta'] = $meta;
 
         $row->check_in_time = $payload['check_in_time'];
         $row->check_out_time = $payload['check_out_time'];
@@ -106,6 +107,26 @@ class AttendanceSyncService
         $row->save();
 
         return $row;
+    }
+
+    public function resolveEmployeeFromAbsensi(Absensi $absensi): ?Employee
+    {
+        $meta = $this->normalizeMeta($absensi->meta ?? null);
+        $employeeId = $meta['employee_id'] ?? null;
+
+        if ($employeeId) {
+            $employee = Employee::query()->find((int) $employeeId);
+            if ($employee) {
+                return $employee;
+            }
+        }
+
+        $name = trim((string) $absensi->name);
+        if ($name === '') {
+            return null;
+        }
+
+        return $this->resolveEmployeeByName($name);
     }
 
     private function resolveAbsensiDay(Absensi $absensi): ?string
