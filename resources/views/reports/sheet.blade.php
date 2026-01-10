@@ -410,6 +410,11 @@
             min-width: 1200px;
         }
 
+        .table-scroll .matrix-table {
+            width: max-content;
+            min-width: 100%;
+        }
+
         .matrix-table .sticky-col {
             position: sticky;
             left: 0;
@@ -465,7 +470,8 @@
         }
 
         .matrix-table thead th:nth-child(n + 3) {
-            min-width: 60px;
+            min-width: 32px;
+            max-width: 32px;
         }
 
         .matrix-table tbody td,
@@ -490,7 +496,9 @@
             text-align: center;
             font-weight: 600;
             letter-spacing: 0.02em;
-            min-width: 60px;
+            min-width: 32px;
+            max-width: 32px;
+            padding: 8px 4px;
         }
 
         .matrix-table tbody tr:nth-child(even) td {
