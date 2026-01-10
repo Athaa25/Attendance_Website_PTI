@@ -592,6 +592,11 @@
         }
 
         @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+
             body {
                 margin: 0;
                 padding: 0;
@@ -613,6 +618,7 @@
                 width: 100%;
                 padding: 24px;
                 box-sizing: border-box;
+                font-size: 11px;
             }
 
             .report-printable .table-scroll {
@@ -620,9 +626,45 @@
                 max-height: none;
             }
 
+            .report-printable .matrix-vertical,
+            .report-printable .matrix-horizontal {
+                overflow: visible !important;
+            }
+
+            .report-printable .summary-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
             .report-printable table {
                 min-width: 0 !important;
                 width: 100%;
+            }
+
+            .report-printable .matrix-table {
+                table-layout: fixed;
+                width: 100%;
+            }
+
+            .report-printable .matrix-table thead th,
+            .report-printable .matrix-table tbody td {
+                padding: 6px 4px;
+                font-size: 9px;
+            }
+
+            .report-printable .matrix-table thead th:nth-child(n + 3),
+            .report-printable .matrix-table tbody td.matrix-cell {
+                min-width: 0;
+                width: auto;
+            }
+
+            .report-printable .matrix-table .sticky-col {
+                position: static;
+                box-shadow: none;
+            }
+
+            .report-printable .matrix-table tbody tr:hover td {
+                background-color: transparent;
             }
 
             .report-printable .summary-wrapper {
